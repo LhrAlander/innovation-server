@@ -1,43 +1,20 @@
 const db = require('../utils/DBHelper')
+const queryHelper = require('../utils/DBQuery')
+
+// 新增一个用户
 let createUser =  function (user) {
-    return new Promise((resolve, reject) => {
-        let returnData
-        db.getConnection((err, connection) => {
-            if (err) {
-                console.log("连接数据库失败")
-                console.log(err)
-                connection.release()
-                reject({
-                    code: 0,
-                    msg: '连接数据库失败',
-                    err: err
-                }) 
-            }
-            else {
-                connection.query('insert into user set ?', user, (err, results) => {
-                    if (err) {
-                        connection.release()
-                        reject({
-                            code: 0,
-                            msg: '数据存储失败',
-                            results: err
-                        })
-                    }
-                    else {
-                        connection.release()
-                        resolve({
-                            code: 200,
-                            msg: '成功',
-                            data: results
-                        })
-                    }
-                })
-            }
-        })
-    })
-    
+    const sql = 'insert into user set ?'
+    return queryHelper.queryPromise(sql, user)
 }
+
+// 更改用户信息
+let changeUserInfo = function (user, userId) {
+    const sql = 'update user set ? where user_id = ?'
+    return queryHelper.queryPromise(sql, [user, userId])
+}
+
 let userDao = {
-    createUser
+    createUser,
+    changeUserInfo
 }
 module.exports = userDao
