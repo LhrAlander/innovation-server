@@ -1,8 +1,15 @@
 const userUtil = require('../modal/user')
 const userDao = require('../dao/userDao')
 
-let getUser = (req, res, next) => {
-    res.send(_user)
+// 获取所有用户信息
+let getUsers = (req, res, next) => {
+    userDao.getUsers()
+    .then(result => {
+        if (result.code == 200) {
+            delete result.msg
+            res.send(result)
+        }
+    })
 }
 
 // 增加一个用户
@@ -10,8 +17,10 @@ let createUser = (req, res, next) => {
     let _user =  userUtil.createUser('2015210405043', '林海瑞', '男', 'AlanderLt@163.com', '13588737694', '待审核', '学生')
     userDao.createUser(_user)
     .then(result => {
-        console.log(result)
-        res.send(result)
+        if (result.code == 200) {
+            delete result.msg
+            res.send(result)
+        }
     })
     .catch(err => {
         console.log(err)
@@ -34,7 +43,10 @@ let delUser = (req, res, next) => {
         // 当dao层正确完成了数据库的操作后返回数据再这里
         console.log(result)
         // 上一步得到数据，加工之后返回数据给前端
-        res.send(result)
+        if (result.code == 200) {
+            delete result.msg
+            res.send(result)
+        }
     })
     .catch(err => {
         console.log(err)
@@ -42,10 +54,64 @@ let delUser = (req, res, next) => {
     })
 }
 
+// 查找一个用户
+let searchUser = (req, res, next) => {
+    const userId = req.body.userId
+    if (userId == null) {
+        res.send({
+            code: 404
+        })
+        return
+    }
+    else {
+        userDao.searchUser(userId)
+        .then(result => {
+            if (result.code == 200) {
+                delete result.msg
+                res.send(result)
+            }
+        })
+        .catch(err => {
+            delete err.msg
+            res.send(err)
+        })
+    }
+}
+
+// 修改一个用户的信息
+let changeUser = (req, res, next) => {
+    let user = req.body.user
+    console.log(typeof user)
+    if (typeof user == 'string') {
+        user = JSON.parse(user)
+    }
+    if (user == null) {
+        res.send({
+            code: 404
+        })
+        return
+    }
+    else {
+        userDao.changeUserInfo(user, user.user_id)
+        .then(result => {
+            if (result.code == 200) {
+                delete result.msg
+                res.send(result)
+            }
+        })
+        .catch(err => {
+            delete err.msg
+            res.send(err)
+        })
+    }
+}
+
 let userController = {
-    getUser,
+    getUsers,
     createUser,
-    delUser
+    delUser,
+    searchUser,
+    changeUser
 }
 
 module.exports = userController
