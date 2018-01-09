@@ -10,6 +10,10 @@ let getUsers = (req, res, next) => {
         res.send(result)
       }
     })
+    .catch(err => {
+      console.log(err)
+      res.send(err)
+    })
 }
 
 // 增加一个用户
