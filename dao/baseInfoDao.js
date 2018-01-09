@@ -93,6 +93,23 @@ let addClass = function (major, _class) {
   return queryHelper.queryPromise(addSql, object)
 }
 
+// 获取所有状态
+let getAllStatus = () => {
+  const sql = 'select * from state_table'
+  return queryHelper.queryPromise(sql, null)
+}
+
+// 增加状态
+let addStatus = status => {
+  const sql = 'insert into state_table set state_name = ?'
+  return queryHelper.queryPromise(sql, status)
+}
+
+let delStatus = status => {
+  const sql = 'delete from state_table where state_name = ?'
+  return queryHelper.queryPromise(sql, status)
+}
+
 let baseInfoDao = {
   getAllAcademy,
   getMajorByAcademy,
@@ -105,7 +122,10 @@ let baseInfoDao = {
   deleteClassFromDB,
   addAcademy,
   addMajor,
-  addClass
+  addClass,
+  getAllStatus,
+  addStatus,
+  delStatus
 }
 
 module.exports = baseInfoDao

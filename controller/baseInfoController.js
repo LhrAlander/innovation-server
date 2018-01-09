@@ -161,6 +161,53 @@ let addClass = (req, res, next) => {
     })
 }
 
+// 获取所有状态
+let getAllStatus = (req, res, next) => {
+  baseInfoDao.getAllStatus()
+    .then(values => {
+      if (values.code == 200) {
+        delete values.msg
+        res.send(values)
+      }
+    })
+    .catch(err => {
+      console.log(err)
+      res.send(err)
+    })
+}
+
+// 增加状态
+let addStatus = (req, res, next) => {
+  const { status } = req.body
+  baseInfoDao.addStatus(status)
+    .then(values => {
+      if (values.code == 200) {
+        delete values.msg
+        res.send(values)
+      }
+    })
+    .catch(err => {
+      console.log(err)
+      res.send(err)
+    })
+}
+
+// 删除状态
+let deleteStatus = (req, res, next) => {
+  const { status } = req.body
+  baseInfoDao.delStatus(status)
+    .then(values => {
+      if (values.code == 200) {
+        delete values.msg
+        res.send(values)
+      }
+    })
+    .catch(err => {
+      console.log(err)
+      res.send(err)
+    })
+}
+
 let baseInfoController = {
   getAllAcademy,
   getMajorByAcademy,
@@ -170,7 +217,10 @@ let baseInfoController = {
   deleteAcademy,
   addAcademy,
   addMajor,
-  addClass
+  addClass,
+  getAllStatus,
+  addStatus,
+  deleteStatus
 }
 
 module.exports = baseInfoController
