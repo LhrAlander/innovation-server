@@ -9,6 +9,9 @@ const index = require('./routes/index');
 // api接口路由所需
 const user = require('./routes/api/user')
 const baseInfo = require('./routes/api/baseInfo')
+const student = require('./routes/api/student')
+const teacher = require('./routes/api/teacher')
+const company = require('./routes/api/company')
 
 const app = express();
 
@@ -26,6 +29,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/user', user)
 app.use('/api/baseInfo', baseInfo)
+app.use('/api/student', student)
+app.use('/api/teacher', teacher)
+app.use('/api/company', company)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
