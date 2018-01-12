@@ -13,6 +13,7 @@ const student = require('./routes/api/student')
 const teacher = require('./routes/api/teacher')
 const company = require('./routes/api/company')
 const category = require('./routes/api/category')
+const project = require('./routes/api/project')
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/api/student', student)
 app.use('/api/teacher', teacher)
 app.use('/api/company', company)
 app.use('/api/category', category)
+app.use('/api/project', project)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

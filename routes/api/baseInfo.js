@@ -20,10 +20,4 @@ router.post('/add/academy', baseInfoController.addAcademy)
 router.post('/add/major', baseInfoController.addMajor)
 // 增加班级
 router.post('/add/class', baseInfoController.addClass)
-// 查询所有状态
-router.get('/status', baseInfoController.getAllStatus)
-// 增加状态
-router.post('/add/status', baseInfoController.addStatus)
-// 删除状态
-router.post('/delete/status', baseInfoController.deleteStatus)
 module.exports = router
