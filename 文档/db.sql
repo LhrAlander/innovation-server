@@ -16,17 +16,9 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `innovation_db`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `innovation_db` /*!40100 DEFAULT CHARACTER SET utf8 */;
-
-USE `innovation_db`;
-
---
 -- Table structure for table `academy`
 --
-
+use `innovation_db`
 DROP TABLE IF EXISTS `academy`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -280,6 +272,8 @@ DROP TABLE IF EXISTS `file_system`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `file_system` (
   `file_system_id` varchar(20) NOT NULL,
+  `title` varchar(50) NOT NULL,
+  `file_type` varchar(20) NOT NULL,
   `state` varchar(50) NOT NULL,
   `publish_time` date NOT NULL,
   `effective_time` date NOT NULL,
@@ -790,4 +784,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-01-12 15:59:38
+-- Dump completed on 2018-01-12 16:56:54
