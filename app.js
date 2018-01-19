@@ -6,7 +6,6 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const multer = require('multer')
 
-const index = require('./routes/index');
 
 const config = require('./config')
 // api接口路由所需

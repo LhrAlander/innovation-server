@@ -1,6 +1,7 @@
 const projectDao = require('../dao/projectDao')
 const teacherDao = require('../dao/teacherDao')
 const studentDao = require('../dao/studentDao')
+const userDao = require('../dao/userDao')
 const utils = require('../utils/util')
 
 // 获取所有项目信息
@@ -51,13 +52,26 @@ let addProject = (req, res, next) => {
   let projectId = utils.getProjectId()
   let project = req.body.project
   project.project_id = projectId
-  projectDao.addProject(project)
-  .then(values => {
-    res.send(values)
-  })
-  .catch(err => {
-    res.send(err)
-  })
+  const teacherId = project.project_teacher
+  const studentId = project.project_principal
+  Promise.all([userDao.searchUser(teacherId), userDao.searchUser(studentId)])
+    .then(values => {
+      if (values[0].code == 200 && values[0].data.length > 0 && values[1].code == 200 && values[1].data.length > 0) {
+        return projectDao.addProject(project)
+      }
+      else {
+        throw new Error('无效负责人或者无效指导老师')
+      }
+    })
+    .then(values => {
+      res.send(values)
+    })
+    .catch(err => {
+      res.send({
+        code: 500,
+        msg: err.msg || err.message
+      })
+    })
 }
 
 let controller = {
