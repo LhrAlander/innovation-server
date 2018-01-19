@@ -32,12 +32,12 @@ let getAllProjects = async (req, res, next) => {
         }
         responseData.push(tmp)
       }
-        res.send({
-          code: 200,
-          data: responseData
-        })
-      }
+      res.send({
+        code: 200,
+        data: responseData
+      })
     }
+  }
   catch (err) {
     console.log(err)
     res.send({
@@ -74,9 +74,59 @@ let addProject = (req, res, next) => {
     })
 }
 
+// 删除项目
+let deleteProject = (req, res, next) => {
+  let projectId = req.body.projectId
+  let payload = {
+    project_status: '不可用'
+  }
+  projectDao.updateProject(payload, projectId)
+    .then(values => {
+      res.send(values)
+    })
+    .catch(err => {
+      res.send({
+        code: 500,
+        msg: err.msg || err.message
+      })
+    })
+}
+
+// 更改项目信息
+let changeProject = (req, res, next) => {
+  let project = req.body.project
+  const projectId = project.project_id
+  delete project.project_id
+  projectDao.updateProject(project, projectId)
+    .then(values => {
+      res.send(values)
+    })
+    .catch(err => {
+      res.send({
+        code: 500,
+        msg: err.msg || err.message
+      })
+    })
+}
+
+// 获取一个项目信息
+let getProject = async (req, res, next) => {
+  const { projectId } = req
+  try {
+    let responseData = await projectDao.getProject(projectId)
+    
+  }
+  catch(err) {
+    console.log(err)
+  }
+}
+
 let controller = {
   getAllProjects,
-  addProject
+  addProject,
+  deleteProject,
+  changeProject,
+  getProject
 }
 
 module.exports = controller

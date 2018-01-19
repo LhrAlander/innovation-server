@@ -1,5 +1,7 @@
 const config = {
-  uploadPath: './public/uploads'
+  uploadPath: {
+    project: './public/uploads/project'
+  }
 }
 
 module.exports = config

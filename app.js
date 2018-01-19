@@ -4,10 +4,8 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const multer = require('multer')
 
 
-const config = require('./config')
 // api接口路由所需
 const user = require('./routes/api/user')
 const baseInfo = require('./routes/api/baseInfo')
@@ -20,17 +18,6 @@ const uploads = require('./routes/api/uploads')
 const download = require('./routes/api/download')
 
 
-// 设置上传组件的参数
-const storage = multer.diskStorage({
-  destination: config.uploadPath,
-  filename: function (req, file, cb) {
-    cb(null, file.originalname + '-' + Date.now() + path.extname(file.originalname))
-  }
-})
-
-const upload = multer({
-  storage: storage
-}).array('file')
 
 const app = express();
 
@@ -54,16 +41,7 @@ app.use('/api/company', company)
 app.use('/api/category', category)
 app.use('/api/project', project)
 app.use('/api/download', download)
-app.use('/api/upload', (req, res, next) => {
-  upload(req, res, (err) => {
-    if (err) {
-      return next(err)
-    }
-    else {
-      next()
-    }
-  })
-}, uploads)
+app.use('/api/upload', uploads)
 
 
 // catch 404 and forward to error handler
