@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `innovation_db` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `innovation_db`;
 -- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: innovation_db
@@ -784,4 +786,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-01-12 16:56:54
+-- Dump completed on 2018-01-18 21:44:18
