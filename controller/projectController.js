@@ -24,10 +24,10 @@ let getAllProjects = async (req, res, next) => {
         const studentId = project.project_principal
         teacher = await teacherDao.getTeacher(teacherId)
         student = await studentDao.getStudent(studentId)
-        if (student.code == 200) {
+        if (student.code == 200 && student.data.length > 0) {
           tmp.student = student.data[0]
         }
-        if (teacher.code == 200) {
+        if (teacher.code == 200 && teacher.data.length > 0) {
           tmp.teacher = teacher.data[0]
         }
         responseData.push(tmp)
@@ -121,12 +121,25 @@ let getProject = async (req, res, next) => {
   }
 }
 
+// 获取所有的项目成员
+let getAllUsers = (req, res, next) => {
+  projectDao.getAllUsers()
+    .then(values => {
+      res.send(vaules)
+    })
+    .catch(err => {
+      console.log(err)
+      res.send(err)
+    })
+}
+
 let controller = {
   getAllProjects,
   addProject,
   deleteProject,
   changeProject,
-  getProject
+  getProject,
+  getAllUsers
 }
 
 module.exports = controller

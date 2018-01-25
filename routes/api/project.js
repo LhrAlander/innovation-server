@@ -12,5 +12,7 @@ router.post('/delete/project', controller.deleteProject)
 router.post('/change/project', controller.changeProject)
 // 获取一个项目信息
 router.post('/project', controller.getProject)
+// 获取所有的项目成员
+router.get('/users', controller.getAllUsers)
 
 module.exports = router

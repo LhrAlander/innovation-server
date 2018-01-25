@@ -72,11 +72,21 @@ let getProject = async projectId => {
   }
 }
 
+/**
+ * 获取所有的项目成员
+ */
+let getAllUsers = () => {
+  const sql = 'select * from project_student'
+  return queryHelper.queryPromise(sql, null)
+}
+
+
 let dao = {
   getAllProjects,
   addProject,
   updateProject,
-  getProject
+  getProject,
+  getAllUsers
 }
 
 module.exports = dao
