@@ -33,6 +33,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// 测试渲染
+app.use('/index', (req, res, next) => {
+  res.render('index')
+})
+
 app.use('/api/user', user)
 app.use('/api/baseInfo', baseInfo)
 app.use('/api/student', student)

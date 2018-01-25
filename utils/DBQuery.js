@@ -4,7 +4,6 @@ let queryPromise = function (sql, values) {
   return new Promise((resolve, reject) => {
     db.getConnection((err, connection) => {
       if (err) {
-        connection.release()
         reject({
           code: 0,
           msg: '连接数据库失败',

@@ -113,8 +113,8 @@ let changeProject = (req, res, next) => {
 let getProject = async (req, res, next) => {
   const { projectId } = req
   try {
-    let responseData = await projectDao.getProject(projectId)
-    
+    const responseData = await projectDao.getProject(123)
+    res.send(responseData)
   }
   catch(err) {
     console.log(err)

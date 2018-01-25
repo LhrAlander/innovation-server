@@ -4,16 +4,10 @@ const fs = require('fs')
 const router = express.Router()
 
 router.get('/', (req, res, next) => {
-  console.log( __dirname)
-  fs.readFile('./public/uploads/project/Jan14.docx-1516364670773.docx', (err, data) => {
+  let path = './public/uploads/project/Jan14.docx-1516364670773.docx'
+  res.download(path, 'a.txt', err => {
     if (err) {
-      console.log('err', err)
-      res.send(err)
-    }
-    else {
-      console.log('success', data.toString())
-      
-      res.send(data.toString('utf-8'))
+      console.log('下载出错', err)
     }
   })
 })

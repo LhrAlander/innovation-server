@@ -1,4 +1,5 @@
 const queryHelper = require('../utils/DBQuery')
+const config = require('../config')
 
 /**
  * 获取所有的项目信息
@@ -28,19 +29,45 @@ let updateProject = (payload, projectId) => {
 }
 
 /**
- * 查找一个项目
+ * 查找一个项目,包括项目材料附件
  * @param {*项目的ID} projectId 
  */
 let getProject = async projectId => {
-  const sql = 'select * from project where project_id = ?'
-  let project = await queryHelper.queryPromise(sql, projectId)
-  if (project.code == 200 && project.data.length > 0) {
-    const uploadFileSql = 'select * from '
+  try {
+    const sql = 'select * from project where project_id = ?'
+    let project = await queryHelper.queryPromise(sql, projectId)
+    if (project.code == 200 && project.data.length > 0) {
+      const uploadFileSql = 'select * from project_files where project_id = ?'
+      let files = await queryHelper.queryPromise(uploadFileSql, projectId)
+      let regFiles = []     // 项目申请材料
+      let finishFiles = []  // 项目结题材料
+      if (files.code == 200) {
+        files = files.data
+        files.forEach(file => {
+          if (file.file_type == config.projectFile.REG_FILE) {
+            regFiles.push(JSON.parse(JSON.stringify(file)))
+          }
+          else {
+            finishFiles.push(JSON.parse(JSON.stringify(file)))
+          }
+        })
+      }
+      return {
+        code: 200,
+        project: project.data,
+        regFiles,
+        finishFiles
+      }
+    }
+    else {
+      throw new Error('不存在该项目!')
+    }
   }
-  else {
+  catch (err) {
+    console.log(err)
     return {
       code: 500,
-      msg: '不存在该项目'
+      msg: err.msg || err.message
     }
   }
 }

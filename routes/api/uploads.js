@@ -32,13 +32,20 @@ const projectUpload = getUpload('project', 'uploadFile')
 router.post('/project', projectUpload, (req, res, next) => {
   try {
     const file = req.file
-    res.send({
-      code: 200,
-      downloadName: file.filename,
-      fileName: file.originalname
-    })
+    // 上传成功
+    if (file != null) {
+      
+      res.send({
+        code: 200,
+        downloadName: file.filename,
+        fileName: file.originalname
+      })
+    }
+    else {
+      throw new Error('上传文件失败!')
+    }
   }
-  catch(err) {
+  catch (err) {
     res.send({
       code: 500,
       msg: '上传文件失败!'
