@@ -22,8 +22,8 @@ let getAllProjects = async (req, res, next) => {
         tmp.finishDate = project.finish_year
         const teacherId = project.project_teacher
         const studentId = project.project_principal
-        teacher = await teacherDao.getTeacher(teacherId)
-        student = await studentDao.getStudent(studentId)
+        let teacher = await teacherDao.getTeacher(teacherId)
+        let student = await studentDao.getStudent(studentId)
         if (student.code == 200 && student.data.length > 0) {
           tmp.student = student.data[0]
         }

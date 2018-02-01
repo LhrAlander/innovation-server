@@ -80,13 +80,28 @@ let getAllUsers = () => {
   return queryHelper.queryPromise(sql, null)
 }
 
+/**
+ * 查找一个团队下的所有项目
+ * @param {*团队Id} teamId 
+ */
+let getProjectsByTeam = teamId => {
+  try {
+    const sql = 'select project_name, project_id from project where team_id = ?'
+    return queryHelper.queryPromise(sql, teamId)
+  }
+  catch (err) {
+    console.log('根据团查找项目失败', err)
+  } 
+}
+
 
 let dao = {
   getAllProjects,
   addProject,
   updateProject,
   getProject,
-  getAllUsers
+  getAllUsers,
+  getProjectsByTeam
 }
 
 module.exports = dao

@@ -18,12 +18,31 @@ let getHash = () => {
   return str.substr(2, 7)
 }
 
+/**
+ * 将一个下划线连接的对象数组中的对象转换为驼峰对象
+ * @param {*需要转换的对象数组} obj 
+ */
+let transformRes = obj => {
+  let _array = []
+  obj.forEach(item => {
+    let tmp = {}
+    for (let key in item) {
+      _key = key.replace(/\_(\w)/g, function(x){return x.slice(1).toUpperCase();});
+      tmp[_key] = item[key]
+    }
+    _array.push(tmp)
+  })
+  return _array
+}
+
+
 let getProjectId = () => {
   return id.project + getDate() + getHash()
 }
 
 let utils = {
-  getProjectId
+  getProjectId,
+  transformRes
 }
 
 module.exports = utils
