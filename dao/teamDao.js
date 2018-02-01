@@ -14,18 +14,18 @@ let getAllTeams = () => {
  * 添加一个团队
  * @param {*团队模型对象} project 
  */
-let addTeam = project => {
-  const sql = 'insert into project set ?'
+let addTeam = team => {
+  const sql = 'insert into team set ?'
   return queryHelper.queryPromise(sql, project)
 }
 
 /**
  * 修改一个团队的信息
  * @param {*需要修改的字段值} payload 
- * @param {*需要修改的团队的ID} projectId 
+ * @param {*需要修改的团队的ID} teamId 
  */
-let updateTeam = (payload, projectId) => {
-  const sql = 'update project set ? where project_id = ?'
+let updateTeam = (payload, teamId) => {
+  const sql = 'update team set ? where team_id = ?'
   return queryHelper.queryPromise(sql, [payload, projectId])
 }
 
@@ -43,6 +43,16 @@ let getTeam = async teamId => {
     console.log('获取一个团队信息失败', err)
   }
 }
+
+/**
+ * 获取所有的团队成员
+ */
+let getAllUsers = () => {
+  const sql = 'select * from team_'
+  return queryHelper.queryPromise(sql, null)
+}
+
+
 
 let teamDao = {
   getAllTeams,

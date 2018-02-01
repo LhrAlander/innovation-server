@@ -1,6 +1,7 @@
 const crypto = require('crypto')
 const id = {
-  project: '01'
+  project: '01',
+  team: '02'
 }
 
 let getDate = () => {
@@ -35,13 +36,16 @@ let transformRes = obj => {
   return _array
 }
 
-
-let getProjectId = () => {
-  return id.project + getDate() + getHash()
+/**
+ * 生成团队、依托单位、项目等ID
+ * @param {*所需ID类型} type 
+ */
+let getId = type => {
+  return id[type] + getDate() + getHash()
 }
 
 let utils = {
-  getProjectId,
+  getId,
   transformRes
 }
 

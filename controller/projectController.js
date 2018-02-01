@@ -49,11 +49,12 @@ let getAllProjects = async (req, res, next) => {
 
 // 增加项目
 let addProject = (req, res, next) => {
-  let projectId = utils.getProjectId()
+  let projectId = utils.getId('project')
   let project = req.body.project
   project.project_id = projectId
   const teacherId = project.project_teacher
   const studentId = project.project_principal
+  // 确保提交过来的负责人和指导老师存在
   Promise.all([userDao.searchUser(teacherId), userDao.searchUser(studentId)])
     .then(values => {
       if (values[0].code == 200 && values[0].data.length > 0 && values[1].code == 200 && values[1].data.length > 0) {

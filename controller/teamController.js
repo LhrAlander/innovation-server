@@ -52,19 +52,67 @@ let getAllTeams = async (req, res, next) => {
   }
 }
 
-// 增加团队await
+// 增加团队
 let addTeam = (req, res, next) => {
-
+  let teamId = utils.getId('team')
+  let team = req.body.team
+  team.team_id = teamId
+  const teacherId = team.team_teacher
+  const studentId = team.team_principal
+  // 确保提交过来的负责人和指导老师存在
+  Promise.all([userDao.searchUser(teacherId), userDao.searchUser(studentId)])
+    .then(values => {
+      if (values[0].code == 200 && values[0].data.length > 0 && values[1].code == 200 && values[1].data.length > 0) {
+        return teamDao.addProject(project)
+      }
+      else {
+        throw new Error('无效负责人或者无效指导老师')
+      }
+    })
+    .then(values => {
+      res.send(values)
+    })
+    .catch(err => {
+      res.send({
+        code: 500,
+        msg: err.msg || err.message
+      })
+    })
 }
 
 // 删除团队
 let deleteTeam = (req, res, next) => {
-
+  let { teamId } = req.body
+  let payload = {
+    team_state: '不可用'
+  }
+  teamDao.updateTeam(payload, teamId)
+    .then(values => {
+      res.send(values)
+    })
+    .catch(err => {
+      res.send({
+        code: 500,
+        msg: err.msg || err.message
+      })
+    })
 }
 
 // 更改团队信息
 let changeTeam = (req, res, next) => {
-
+  let { team } = req.body
+  const teamId = team.team_id
+  delete team.team_id
+  teamDao.updateTeam(team, teamId)
+    .then(values => {
+      res.send(values)
+    })
+    .catch(err => {
+      res.send({
+        code: 500,
+        msg: err.msg || err.message
+      })
+    })
 }
 
 // 获取一个团队信息
@@ -99,7 +147,14 @@ let getTeam = async (req, res, next) => {
 
 // 获取所有的团队成员
 let getAllUsers = (req, res, next) => {
-
+  teamDao.getAllUsers()
+    .then(values => {
+      res.send(vaules)
+    })
+    .catch(err => {
+      console.log(err)
+      res.send(err)
+    })
 }
 
 let controller = {
