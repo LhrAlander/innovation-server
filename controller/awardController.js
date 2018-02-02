@@ -89,16 +89,19 @@ let deleteAward = (req, res, next) => {
 }
 
 // 获取所有的获奖成员信息
-let getAllUsers = (req, res, next) => {
-  awardDao.getAllUsers()
-    .then(values => {
-      console.log(values)
-      res.send(values)
-    })
-    .catch(err => {
-      console.log(err)
-      res.send(err)
-    })
+let getAllUsers = async (req, res, next) => {
+  try {
+    let users = await awardDao.getAllUsers()
+    if (users.code == 200) {
+      console.log(users)
+    }
+    else {
+      throw new Error('查询获奖用户失败')
+    }
+  }
+  catch(err) {
+    console.log(err)
+  }
 }
 
 let controller = {
