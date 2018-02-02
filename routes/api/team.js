@@ -12,5 +12,7 @@ router.post('/delete/team', controller.deleteTeam)
 router.post('/change/team', controller.changeTeam)
 // 获取一个团队信息
 router.post('/team', controller.getTeam)
+// 获取所有团队成员
+router.get('/users', controller.getAllUsers)
 
 module.exports = router

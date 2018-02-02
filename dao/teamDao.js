@@ -48,7 +48,7 @@ let getTeam = async teamId => {
  * 获取所有的团队成员
  */
 let getAllUsers = () => {
-  const sql = 'select * from team_'
+  const sql = 'select * from team_student'
   return queryHelper.queryPromise(sql, null)
 }
 
@@ -58,7 +58,8 @@ let teamDao = {
   getAllTeams,
   addTeam,
   updateTeam,
-  getTeam
+  getTeam,
+  getAllUsers
 }
 
 module.exports = teamDao

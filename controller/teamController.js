@@ -149,7 +149,7 @@ let getTeam = async (req, res, next) => {
 let getAllUsers = (req, res, next) => {
   teamDao.getAllUsers()
     .then(values => {
-      res.send(vaules)
+      res.send(values)
     })
     .catch(err => {
       console.log(err)

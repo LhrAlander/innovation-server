@@ -1,8 +1,40 @@
 const crypto = require('crypto')
 const id = {
   project: '01',
-  team: '02'
+  team: '02',
+  award: '03'
 }
+
+//格式化日期
+Date.prototype.Format = function (fmt) {
+  var o = {
+    "y+": this.getFullYear(),
+    "M+": this.getMonth() + 1,                 //月份
+    "d+": this.getDate(),                    //日
+    "h+": this.getHours(),                   //小时
+    "m+": this.getMinutes(),                 //分
+    "s+": this.getSeconds(),                 //秒
+    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+    "S+": this.getMilliseconds()             //毫秒
+  };
+  for (var k in o) {
+    if (new RegExp("(" + k + ")").test(fmt)){
+      if(k == "y+"){
+        fmt = fmt.replace(RegExp.$1, ("" + o[k]).substr(4 - RegExp.$1.length));
+      }
+      else if(k=="S+"){
+        var lens = RegExp.$1.length;
+        lens = lens==1?3:lens;
+        fmt = fmt.replace(RegExp.$1, ("00" + o[k]).substr(("" + o[k]).length - 1,lens));
+      }
+      else{
+        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+      }
+    }
+  }
+  return fmt;
+}
+
 
 let getDate = () => {
   let date = new Date()
@@ -37,6 +69,49 @@ let transformRes = obj => {
 }
 
 /**
+ * 将一个驼峰式转换为下划线
+ * @param {*需要转换的对象数组} obj 
+ */
+let camel2_ = obj => {
+  const transformObj = obj => {
+    let tmp = {}
+    for (let key in obj) {
+      let value = obj[key]
+      key = key.replace(/([A-Z])/g,"_$1").toLowerCase()
+      tmp[key] = value
+    }
+    return tmp
+  }
+  if (obj instanceof Array) {
+    let tmpArray = []
+    obj.forEach(item => {
+      tmpArray.push(transformObj(item))
+    })
+    console.log(tmpArray)
+    return tmpArray
+  }
+  else if(obj instanceof Object) {
+    return transformObj(obj)
+  }
+  return obj
+}
+
+
+
+/**
+ * 格式化时间
+ * @param {*日期对象的键名} key 
+ * @param {*一个数组} array 
+ * @param {*格式化字符串} format
+ */
+let formatDate = (key, array, format) => {
+  array.forEach(obj => {
+    let date = new Date(obj[key])
+    obj[key] = date.Format(format)
+  })
+}
+
+/**
  * 生成团队、依托单位、项目等ID
  * @param {*所需ID类型} type 
  */
@@ -46,7 +121,9 @@ let getId = type => {
 
 let utils = {
   getId,
-  transformRes
+  transformRes,
+  camel2_,
+  formatDate
 }
 
 module.exports = utils
