@@ -1,13 +1,36 @@
 const userUtil = require('../modal/user')
 const userDao = require('../dao/userDao')
+const countHelper = require('../utils/DBQuery')
 
 // 获取所有用户信息
-let getUsers = (req, res, next) => {
-  userDao.getUsers()
+let getUsers = async (req, res, next) => {
+  let { param, pageNum, pageSize } = req.query
+  let count = await countHelper.getTableCount('user')
+  count = count.data[0].number
+  userDao.getUsers(pageNum, pageSize)
     .then(result => {
       if (result.code == 200) {
+        let responseData = []
         delete result.msg
-        res.send(result)
+        result.data.forEach((item, index) => {
+          let data = {
+            // 表格数据
+            id: index + 1,
+            username: item.user_id,
+            name: item.user_name,
+            role: item.user_identity,
+            status: item.account_state,
+            phone: item.user_phone,
+            email: item.user_mail
+          }
+          responseData.push(data)
+        })
+        
+        res.send({
+          code: 200,
+          data: responseData,
+          count: count
+        })
       }
     })
     .catch(err => {

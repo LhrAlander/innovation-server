@@ -34,10 +34,19 @@ let queryPromise = function (sql, values) {
   })
 }
 
+/**
+ * 查询表中记录数量
+ * @param {*表名} tableName 
+ */
+let getTableCount = async tableName => {
+  const sql = `select count(*) as number from ${tableName}`
+  return queryPromise(sql, null)
+}
 
 
 
 let queryUtil = {
-  queryPromise
+  queryPromise,
+  getTableCount
 }
 module.exports = queryUtil

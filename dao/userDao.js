@@ -2,8 +2,8 @@ const db = require('../utils/DBHelper')
 const queryHelper = require('../utils/DBQuery')
 
 // 获取所有用户
-let getUsers = function () {
-  const sql = 'select * from user'
+let getUsers = function (pageNum, pageSize) {
+  const sql = `select * from user order by user_id limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   return queryHelper.queryPromise(sql, null)
 }
 
