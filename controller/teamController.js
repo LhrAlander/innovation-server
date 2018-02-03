@@ -46,7 +46,7 @@ let getAllTeams = async (req, res, next) => {
   catch (err) {
     console.log('获取所有团队信息失败', err)
     res.send({
-      code: 400,
+      code: 500,
       data: err
     })
   }

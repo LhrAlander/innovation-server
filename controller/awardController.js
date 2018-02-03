@@ -93,7 +93,24 @@ let getAllUsers = async (req, res, next) => {
   try {
     let users = await awardDao.getAllUsers()
     if (users.code == 200) {
-      console.log(users)
+      let awards = utils.transformRes(users.data)
+      let responseData = []
+      utils.formatDate('awardTime', awards, 'yyyy-MM-dd')
+      awards.forEach(award => {
+        let _award = {}
+        _award.awardId = award.awardId
+        _award.projectId = award.awardProject
+        _award.awardName = [award.awardTime, award.awardName, award.awardIdentity, award.awardLevel].join(' ')
+        _award.awardProject = award.awardProject == null ? '个人' : award.projectName
+        _award.userId = award.userId
+        _award.userName = award.userName
+        _award.userPhone = award.userPhone
+        responseData.push(_award)
+      })
+      res.send({
+        code: 200,
+        data: responseData
+      })
     }
     else {
       throw new Error('查询获奖用户失败')
@@ -101,7 +118,46 @@ let getAllUsers = async (req, res, next) => {
   }
   catch(err) {
     console.log(err)
+    res.send({
+      code: 500,
+      msg: err.msg || err.message
+    })
   }
+}
+
+// 增加一个获奖成员信息
+let addUser = (req, res, next) => {
+  let { award } = req.body
+  award = utils.camel2_(award)
+  awardDao.addUser(award)
+    .then(values => {
+      res.send(values)
+    })
+    .catch(err => {
+      res.send({
+        code: 500,
+        msg: '添加获奖成员信息失败'
+      })
+    })
+}
+
+// 删除一个获奖成员信息
+let deleteUser = (req, res, next) => {
+  const { award } = req.body
+  awardDao.deleteUser(award.awardId, award.userId)
+    .then(values => {
+      res.send({
+        code: 200,
+        msg: '删除获奖成员成功'
+      })
+    })
+    .catch(err => {
+      console.log(err)
+      res.send({
+        code: 500,
+        msg: '删除获奖成员失败'
+      })
+    })
 }
 
 let controller = {
@@ -109,7 +165,9 @@ let controller = {
   changeAward,
   addAward,
   deleteAward,
-  getAllUsers
+  getAllUsers,
+  addUser,
+  deleteUser
 }
 
 module.exports = controller
