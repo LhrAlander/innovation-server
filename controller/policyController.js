@@ -32,8 +32,65 @@ let getAllPolicys = (req, res, next) => {
     })
 }
 
+// 修改政策
+let updatePolicy = (req, res, next) => {
+  const { policy } = req.body
+  utils.camel2_(policy)
+  const policyId = policy.policy_id
+  delete policy.policy_id
+  policyDao.updatePolicy(policy, policy_id)
+    .then(values => {
+      res.send({
+        code: 200,
+        msg: '发布政策成功'
+      })
+    })
+    .catch(err => {
+      res.send({
+        code: 500,
+        msg: '发布政策失败'
+      })
+    })
+}
+
+// 增加一个政策
+let addPolicy = (req, res, next) => {
+  const { policy } = req.body
+  utils.camel2_(policy)
+  policy.policy_id = utils.getId('policy')
+  policyDao.addPolicy(policy)
+    .then(values => {
+      res.send(values)
+    })
+    .catch(err => {
+      res.send({
+        code: 500,
+        msg: '增加政策信息失败'
+      })
+    })
+}
+
+// 获取一个政策
+let getPolicy = (req, res, next) => {
+  const { policyId } = req.body
+  policyDao.getPolicy(policyId)
+    .then(values => {
+      res.send(values)
+    })
+    .catch(err => {
+      res.send({
+        code: 500,
+        msg: '获取一个政策信息失败'
+      })
+    })
+
+}
+
 let controller = {
-  getAllPolicys
+  getAllPolicys,
+  updatePolicy,
+  addPolicy,
+  getPolicy
 }
 
 module.exports = controller

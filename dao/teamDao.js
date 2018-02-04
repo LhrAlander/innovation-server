@@ -53,13 +53,29 @@ let getAllUsers = () => {
 }
 
 
+/**
+ * 查找一个依托单位下的所有团队
+ * @param {*依托单位Id} unitId 
+ */
+let getTeamsByUnit = unitId => {
+  try {
+    const sql = 'select team_id, team_name from team where team_dependent_unit = ?'
+    return queryHelper.queryPromise(sql, unitId)
+  } 
+  catch (err) {
+    console.log('根据团查找项目失败', err)
+    return null
+  }
+}
+
 
 let teamDao = {
   getAllTeams,
   addTeam,
   updateTeam,
   getTeam,
-  getAllUsers
+  getAllUsers,
+  getTeamsByUnit
 }
 
 module.exports = teamDao

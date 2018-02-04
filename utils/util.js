@@ -2,7 +2,9 @@ const crypto = require('crypto')
 const id = {
   project: '01',
   team: '02',
-  award: '03'
+  award: '03',
+  policy: '04',
+  dependent: '05'
 }
 
 //格式化日期
