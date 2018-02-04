@@ -73,11 +73,25 @@ let addPolicy = (req, res, next) => {
 // 获取一个政策
 let getPolicy = (req, res, next) => {
   const { policyId } = req.body
+  let responseData = {
+    code: 200
+  }
   policyDao.getPolicy(policyId)
     .then(values => {
-      res.send(values)
+      utils.formatDate('publish_time', values.data, 'yyyy-MM-dd')
+      values.data = utils.transformRes(values.data)[0]
+      responseData.policy= values.data
+      const projectId = values.data.policyId
+      return policyDao.getFile(policyId)
+    })
+    .then(values => {
+      if (values.code == 200) {
+        responseData.file = utils.transformRes(values.data)[0]
+      }
+      res.send(responseData)
     })
     .catch(err => {
+      console.log(err)
       res.send({
         code: 500,
         msg: '获取一个政策信息失败'

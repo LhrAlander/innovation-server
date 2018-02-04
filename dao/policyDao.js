@@ -35,10 +35,17 @@ let getPolicy = policyId => {
   return queryHelper.queryPromise(sql, policyId)
 }
 
+// 获取项目材料
+let getFile = policyId => {
+  const sql = 'select * from policy_files where policy_id = ?'
+  return queryHelper.queryPromise(sql, policyId)
+}
+
 let policyDao = {
   getAllPolicys,
   updatePolicy,
-  getPolicy
+  getPolicy,
+  getFile
 }
 
 module.exports = policyDao
