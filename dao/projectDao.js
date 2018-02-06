@@ -1,6 +1,9 @@
 const queryHelper = require('../utils/DBQuery')
 const config = require('../config')
-
+const utils = require('../utils/util')
+const userDao = require('../dao/userDao')
+const studentDao = require('../dao/studentDao')
+const teamDao = require('../dao/teamDao')
 /**
  * 获取所有的项目信息
  */
@@ -36,7 +39,21 @@ let getProject = async projectId => {
   try {
     const sql = 'select * from project where project_id = ?'
     let project = await queryHelper.queryPromise(sql, projectId)
+    console.log(project)
     if (project.code == 200 && project.data.length > 0) {
+      utils.formatDate(['register_year', 'start_year', 'finish_year'], project.data, 'yyyy-MM-dd')
+      const studentId = project.data[0].project_principal
+      const teacherId = project.data[0].project_teacher
+      const teamId = project.data[0].team_id
+      let student = await userDao.searchUser(studentId)
+      let teacher = await userDao.searchUser(teacherId)
+      let _student = await studentDao.getStudent(studentId)
+      let team = await teamDao.getTeam(teamId)
+      project.data[0].projectPerson = _student.data[0].user_name
+      project.data[0].personMajor = _student.data[0].student_major
+      project.data[0].personClass = _student.data[0].student_class
+      project.data[0].projectDep = team.data[0].team_name
+
       const uploadFileSql = 'select * from project_files where project_id = ?'
       let files = await queryHelper.queryPromise(uploadFileSql, projectId)
       let regFiles = []     // 项目申请材料
@@ -52,11 +69,25 @@ let getProject = async projectId => {
           }
         })
       }
+      project.data = utils.transformRes(project.data)
+      project.data[0].projectTeacher = teacher.data[0].user_name
+      regFiles = utils.transformRes(regFiles)
+      finishFiles = utils.transformRes(finishFiles)
       return {
         code: 200,
-        project: project.data,
-        regFiles,
-        finishFiles
+        project: project.data[0],
+        regFile: regFiles[0],
+        finishFile: finishFiles[0],
+        leader: {
+          userId: student.data[0].user_id,
+          name: student.data[0].user_name,
+          userPhone: student.data[0].user_phone,
+        },
+        teacher: {
+          userId: teacher.data[0].user_id,
+          name: teacher.data[0].user_name,
+          userPhone: teacher.data[0].user_phone,
+        }
       }
     }
     else {

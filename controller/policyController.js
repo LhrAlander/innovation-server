@@ -13,7 +13,8 @@ let getAllPolicys = (req, res, next) => {
           govCategory: item.policy_identity,
           title: item.policy_title,
           status: item.state == '已发布' ? 'published' : 'unpublished',
-          intro: item.policy_introduction
+          intro: item.policy_introduction,
+          policyId: item.policy_id
         }
         responseData.push(data)
       })

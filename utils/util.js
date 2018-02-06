@@ -108,8 +108,18 @@ let camel2_ = obj => {
  */
 let formatDate = (key, array, format) => {
   array.forEach(obj => {
-    let date = new Date(obj[key])
-    obj[key] = date.Format(format)
+    if (key instanceof Array) {
+      console.log('数组')
+      key.forEach(k => {
+        let date = new Date(obj[k])
+        obj[k] = date.Format(format)
+      })
+      
+    }
+    else {
+      let date = new Date(obj[key])
+      obj[key] = date.Format(format)
+    }
   })
 }
 
