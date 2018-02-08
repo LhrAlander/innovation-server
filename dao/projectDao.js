@@ -39,7 +39,6 @@ let getProject = async projectId => {
   try {
     const sql = 'select * from project where project_id = ?'
     let project = await queryHelper.queryPromise(sql, projectId)
-    console.log(project)
     if (project.code == 200 && project.data.length > 0) {
       utils.formatDate(['register_year', 'start_year', 'finish_year'], project.data, 'yyyy-MM-dd')
       const studentId = project.data[0].project_principal

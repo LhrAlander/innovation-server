@@ -20,16 +20,16 @@ Date.prototype.Format = function (fmt) {
     "S+": this.getMilliseconds()             //毫秒
   };
   for (var k in o) {
-    if (new RegExp("(" + k + ")").test(fmt)){
-      if(k == "y+"){
+    if (new RegExp("(" + k + ")").test(fmt)) {
+      if (k == "y+") {
         fmt = fmt.replace(RegExp.$1, ("" + o[k]).substr(4 - RegExp.$1.length));
       }
-      else if(k=="S+"){
+      else if (k == "S+") {
         var lens = RegExp.$1.length;
-        lens = lens==1?3:lens;
-        fmt = fmt.replace(RegExp.$1, ("00" + o[k]).substr(("" + o[k]).length - 1,lens));
+        lens = lens == 1 ? 3 : lens;
+        fmt = fmt.replace(RegExp.$1, ("00" + o[k]).substr(("" + o[k]).length - 1, lens));
       }
-      else{
+      else {
         fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
       }
     }
@@ -43,7 +43,7 @@ let getDate = () => {
   let year = date.getFullYear().toString()
   let month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + ''
   let day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate() + ''
-  return year+month+day
+  return year + month + day
 }
 
 let getHash = () => {
@@ -62,7 +62,7 @@ let transformRes = obj => {
   obj.forEach(item => {
     let tmp = {}
     for (let key in item) {
-      _key = key.replace(/\_(\w)/g, function(x){return x.slice(1).toUpperCase();});
+      _key = key.replace(/\_(\w)/g, function (x) { return x.slice(1).toUpperCase(); });
       tmp[_key] = item[key]
     }
     _array.push(tmp)
@@ -79,7 +79,7 @@ let camel2_ = obj => {
     let tmp = {}
     for (let key in obj) {
       let value = obj[key]
-      key = key.replace(/([A-Z])/g,"_$1").toLowerCase()
+      key = key.replace(/([A-Z])/g, "_$1").toLowerCase()
       tmp[key] = value
     }
     return tmp
@@ -92,7 +92,7 @@ let camel2_ = obj => {
     console.log(tmpArray)
     return tmpArray
   }
-  else if(obj instanceof Object) {
+  else if (obj instanceof Object) {
     return transformObj(obj)
   }
   return obj
@@ -109,16 +109,20 @@ let camel2_ = obj => {
 let formatDate = (key, array, format) => {
   array.forEach(obj => {
     if (key instanceof Array) {
-      console.log('数组')
       key.forEach(k => {
-        let date = new Date(obj[k])
-        obj[k] = date.Format(format)
+        if (obj[k] != null) {
+          let date = new Date(obj[k])
+          obj[k] = date.Format(format)
+        }
       })
-      
+
     }
     else {
-      let date = new Date(obj[key])
-      obj[key] = date.Format(format)
+
+      if (obj[key] != null) {
+        let date = new Date(obj[key])
+        obj[key] = date.Format(format)
+      }
     }
   })
 }

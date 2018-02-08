@@ -13,20 +13,20 @@ const pool = mysql.createPool({
 });
 
 
-pool.on('acquire', function (connection) {
-  console.log('Connection %d acquired', connection.threadId);
-});
+// pool.on('acquire', function (connection) {
+//   console.log('Connection %d acquired', connection.threadId);
+// });
 
-pool.on('connection', function (connection) {
-  console.log('创建连接')
-});
+// pool.on('connection', function (connection) {
+//   console.log('创建连接')
+// });
 
-pool.on('enqueue', function () {
-  console.log('进入等待');
-});
-pool.on('release', function (connection) {
-  console.log('Connection %d released', connection.threadId);
-});
+// pool.on('enqueue', function () {
+//   console.log('进入等待');
+// });
+// pool.on('release', function (connection) {
+//   console.log('Connection %d released', connection.threadId);
+// });
 
 
 module.exports = pool
