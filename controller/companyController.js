@@ -1,16 +1,49 @@
 const dao = require('../dao/companyDao')
+const countHelper = require('../utils/DBQuery')
+const utils = require('../utils/util')
 
 // 获取所有企业信息
-let getAllCompanies = (req, res, next) => {
-  dao.getAllCompanies()
-    .then(values => {
-      if (values.code == 200) {
-        res.send(values)
-      }
+let getAllCompanies = async (req, res, next) => {
+  try {
+    let { param, pageNum, pageSize } = req.query
+    let count = await countHelper.getTableCount('company')
+    count = count.data[0].number
+    let responseData = []
+    let companies = await dao.getAllCompanies(pageNum, pageSize)
+    if (companies.code == 200) {
+      companies = utils.transformRes(companies.data)
+      companies.forEach((company, index) => {
+        console.log(company)
+        responseData.push({
+          companyId: company.companyId,
+          id: index,
+          companyName: company.companyName,
+          principalName: company.companyPrincipal,
+          companyAccess: company.companyPhone,
+          status: company.accountState,
+          principalPhone: company.userPhone,
+          gender: company.userSex,
+          email: company.userMail,
+          specAddress: company.companyAddress
+        })
+      })
+      res.send({
+        code: 200,
+        data: responseData,
+        count: count
+      })
+    }
+    else {
+      throw new Error('未能找到')
+    }
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      msg: err.message || err.msg
     })
-    .catch(err => {
-      res.send(err)
-    })
+  }
 }
 
 // 增加企业信息
@@ -61,6 +94,8 @@ let getCompany = (req, res, next) => {
   dao.getCompany(userId)
     .then(values => {
       if (values.code == 200) {
+        console.log(values)
+        values.data = utils.transformRes(values.data)
         res.send(values)
       }
     })

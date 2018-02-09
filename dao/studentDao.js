@@ -1,8 +1,8 @@
 const queryHelper = require('../utils/DBQuery')
 
 // 获取所有的学生信息
-let getAllStudents = () => {
-  const sql = 'select user.user_id, user.user_name, user.user_sex, user.user_mail, user.user_phone, user.account_state, student.student_academy, student.student_major, student.student_class from user, student where user.user_id = student.user_id'
+let getAllStudents = (pageNum, pageSize) => {
+  const sql = `select user.user_id, user.user_name, user.user_sex, user.user_mail, user.user_phone, user.account_state, student.student_academy, student.student_major, student.student_class from user, student where user.user_id = student.user_id limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   return queryHelper.queryPromise(sql, null)
 }
 

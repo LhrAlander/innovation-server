@@ -34,8 +34,10 @@ let getUsers = async (req, res, next) => {
       }
     })
     .catch(err => {
-      console.log(err)
-      res.send(err)
+      res.send({
+        code: 500,
+        msg: err.message || err.msg
+      })
     })
 }
 
