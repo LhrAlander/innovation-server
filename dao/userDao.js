@@ -4,12 +4,12 @@ const queryHelper = require('../utils/DBQuery')
 // 获取所有用户
 let getUsers = function (pageNum, pageSize, filter) {
   if (filter != null) {
-    const sql = `select * from user where ${filter} order by user_id limit  ${(pageNum - 1) * pageSize}, ${pageSize}`
+    const sql = `select * from user where ${filter} and account_state not like '%删除%' order by user_id limit  ${(pageNum - 1) * pageSize}, ${pageSize}`
     console.log(sql)
     return queryHelper.queryPromise(sql, null)
   }
   else {
-    const sql = `select * from user order by user_id limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+    const sql = `select * from user  where account_state not like '%删除%' order by user_id limit ${(pageNum - 1) * pageSize}, ${pageSize}`
     console.log(sql)
     return queryHelper.queryPromise(sql, null)
   }
@@ -29,7 +29,7 @@ let changeUserInfo = function (user, userId) {
 
 // 查找一个用户
 let searchUser = function (userId) {
-  const sql = 'select * from user where user_id = ?'
+  const sql = 'select * from user where user_id = ? and account_state not like "%删除%"'
   return queryHelper.queryPromise(sql, userId)
 }
 

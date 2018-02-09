@@ -41,7 +41,7 @@ let queryPromise = function (sql, values) {
 let getTableCount = async (tableName, filter) => {
   if (filter != null) {
     console.log(filter)
-    const sql = `select count(*) as number from (select * from ${tableName} where ${filter}) as t`
+    const sql = `select count(*) as number from (select * from ${tableName} where ${filter} and account_state not like '%删除%') as t`
     console.log(sql)
     return queryPromise(sql, filter)
   }
