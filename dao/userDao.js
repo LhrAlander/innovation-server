@@ -2,9 +2,17 @@ const db = require('../utils/DBHelper')
 const queryHelper = require('../utils/DBQuery')
 
 // 获取所有用户
-let getUsers = function (pageNum, pageSize) {
-  const sql = `select * from user order by user_id limit ${(pageNum - 1) * pageSize}, ${pageSize}`
-  return queryHelper.queryPromise(sql, null)
+let getUsers = function (pageNum, pageSize, filter) {
+  if (filter != null) {
+    const sql = `select * from user where ${filter} order by user_id limit  ${(pageNum - 1) * pageSize}, ${pageSize}`
+    console.log(sql)
+    return queryHelper.queryPromise(sql, null)
+  }
+  else {
+    const sql = `select * from user order by user_id limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+    console.log(sql)
+    return queryHelper.queryPromise(sql, null)
+  }
 }
 
 // 新增一个用户

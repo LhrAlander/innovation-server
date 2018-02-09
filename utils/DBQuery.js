@@ -38,9 +38,17 @@ let queryPromise = function (sql, values) {
  * 查询表中记录数量
  * @param {*表名} tableName 
  */
-let getTableCount = async tableName => {
-  const sql = `select count(*) as number from ${tableName}`
-  return queryPromise(sql, null)
+let getTableCount = async (tableName, filter) => {
+  if (filter != null) {
+    console.log(filter)
+    const sql = `select count(*) as number from (select * from ${tableName} where ${filter}) as t`
+    console.log(sql)
+    return queryPromise(sql, filter)
+  }
+  else {
+    const sql = `select count(*) as number from ${tableName}`
+    return queryPromise(sql, null)
+  }
 }
 
 

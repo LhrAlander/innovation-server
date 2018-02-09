@@ -1,14 +1,25 @@
 const userUtil = require('../modal/user')
 const userDao = require('../dao/userDao')
 const countHelper = require('../utils/DBQuery')
+const utils = require('../utils/util')
 
 // 获取所有用户信息
 let getUsers = async (req, res, next) => {
-  let { param, pageNum, pageSize } = req.query
-  let count = await countHelper.getTableCount('user')
+  try {
+    let { param, pageNum, pageSize } = req.query
+  let count = null
+  let filter = utils.obj2MySql(param)
+  console.log(filter)
+  if (filter != null) {
+    count = await countHelper.getTableCount('user', filter)
+  }
+  else {
+    count = await countHelper.getTableCount('user', null)
+  }
   count = count.data[0].number
-  userDao.getUsers(pageNum, pageSize)
+  userDao.getUsers(pageNum, pageSize, filter)
     .then(result => {
+      console.log(result)
       if (result.code == 200) {
         let responseData = []
         delete result.msg
@@ -39,6 +50,11 @@ let getUsers = async (req, res, next) => {
         msg: err.message || err.msg
       })
     })
+  } 
+  catch (err) {
+    console.log(err)
+  }
+  
 }
 
 // 增加一个用户

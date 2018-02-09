@@ -135,11 +135,33 @@ let getId = type => {
   return id[type] + getDate() + getHash()
 }
 
+/**
+ * 将对象转换成sql语句
+ * @param {*筛选条件} filter 
+ */
+let obj2MySql = filter => {
+  console.log(filter)
+  if (typeof filter == 'string') {
+    filter = JSON.parse(filter)
+  }
+  let str = null
+  let first = true
+  for (let key in filter) {
+    str = ''
+    if (!first) {
+      str += ` and `
+    }
+    str += `${key} like '%${filter[key]}%'`
+  }
+  return str
+}
+
 let utils = {
   getId,
   transformRes,
   camel2_,
-  formatDate
+  formatDate,
+  obj2MySql
 }
 
 module.exports = utils
