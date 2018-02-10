@@ -69,15 +69,9 @@ let addCompany = (req, res, next) => {
 
 // 修改企业信息
 let changeCompany = (req, res, next) => {
-  const { userId, userName, companyName, phone, principal, address } = req.body
-  dao.changeCompany({
-    user_id: userId,
-    user_name: userName,
-    company_name: companyName,
-    company_phone: phone,
-    company_principal: principal,
-    company_address: address
-  })
+  let company = req.body.company
+  company = utils.camel2_(company)
+  dao.changeCompany(company)
     .then(values => {
       if (values.code == 200) {
         res.send(values)

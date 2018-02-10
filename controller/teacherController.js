@@ -77,13 +77,9 @@ let addTeacher = (req, res, next) => {
 // 修改教师信息
 let changeTeacher = (req, res, next) => {
   const { userId, userName, degree, bachelor, major } = req.body
-  dao.changeTeacher({
-    user_id: userId,
-    user_name: userName,
-    teacher_degree: degree,
-    teacher_bachelor: bachelor,
-    teacher_major: major
-  })
+  let teacher = req.body.teacher
+  teacher = utils.camel2_(teacher)
+  dao.changeTeacher(teacher)
     .then(values => {
       if (values.code == 200) {
         res.send(values)

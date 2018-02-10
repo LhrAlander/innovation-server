@@ -130,6 +130,7 @@ let searchUser = (req, res, next) => {
 // 修改一个用户的信息
 let changeUser = (req, res, next) => {
   let user = req.body.user
+  console.log(user)
   if (typeof user == 'string') {
     user = JSON.parse(user)
   }
@@ -141,7 +142,6 @@ let changeUser = (req, res, next) => {
   }
   else {
     user = utils.camel2_(user)
-    console.log(user)
     userDao.changeUserInfo(user, user.user_id)
       .then(result => {
         if (result.code == 200) {

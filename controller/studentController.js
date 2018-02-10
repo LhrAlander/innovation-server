@@ -6,10 +6,21 @@ const utils = require('../utils/util')
 let getAllStudents = async (req, res, next) => {
   try {
     let { param, pageNum, pageSize } = req.query
-    let count = await countHelper.getTableCount('student')
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    // if ('user_id' in param) {
+    //   param['user.user_id'] = param.user_id
+    //   delete param.user_id
+    // }
+    let filter = utils.obj2MySql(param)
+    console.log(param)
+    // let count = await countHelper.getTableCount('student')
+    let count = await dao.getCount(filter)
     count = count.data[0].number
+    console.log(count)
     let responseData = []
-    let students = await dao.getAllStudents(pageNum, pageSize)
+    let students = await dao.getAllStudents(pageNum, pageSize, filter)
     if (students.code == 200) {
       students = utils.transformRes(students.data)
       students.forEach((student, index) => {
@@ -68,22 +79,24 @@ let addStudent = (req, res, next) => {
 
 // 修改学生信息
 let changeStudent = (req, res, next) => {
-  const { userId, userName, academy, major, _class } = req.body
-  dao.changeStudent({
-    user_id: userId,
-    user_name: userName,
-    student_academy: academy,
-    student_major: major,
-    student_class: _class
-  })
-    .then(values => {
-      if (values.code == 200) {
-        res.send(values)
-      }
-    })
-    .catch(err => {
-      res.send(err)
-    })
+  try {
+    let { student } = req.body
+    student = utils.camel2_(student)
+    console.log(student)
+    dao.changeStudent(student)
+      .then(values => {
+        if (values.code == 200) {
+          res.send(values)
+        }
+      })
+      .catch(err => {
+        res.send(err)
+      })
+  }
+  catch (err) {
+    console.log(err)
+  }
+
 }
 
 // 获取特定学生信息
