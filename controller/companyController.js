@@ -6,16 +6,21 @@ const utils = require('../utils/util')
 let getAllCompanies = async (req, res, next) => {
   try {
     let { param, pageNum, pageSize } = req.query
-    let count = await countHelper.getTableCount('company')
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    utils.camel2_(param)
+    let filter = utils.obj2MySql(param)
+    console.log(filter)
+    let count = await dao.getCount(filter)
     count = count.data[0].number
     let responseData = []
-    let companies = await dao.getAllCompanies(pageNum, pageSize)
+    let companies = await dao.getAllCompanies(pageNum, pageSize, filter)
     if (companies.code == 200) {
       companies = utils.transformRes(companies.data)
       companies.forEach((company, index) => {
-        console.log(company)
         responseData.push({
-          companyId: company.companyId,
+          userId: company.userId,
           id: index,
           companyName: company.companyName,
           principalName: company.companyPrincipal,

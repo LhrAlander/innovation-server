@@ -15,7 +15,7 @@ let getCount = filter => {
 // 获取所有的学生信息
 let getAllStudents = (pageNum, pageSize, filter) => {
   // let sql = `select user.user_id, user.user_name, user.user_sex, user.user_mail, user.user_phone, user.account_state, student.student_academy, student.student_major, student.student_class from user, student where user.user_id = student.user_id limit ${(pageNum - 1) * pageSize}, ${pageSize}`
-  let sql = `select user.*, student.student_academy, student.student_major, student.student_class from student left join user on user.user_id = student.user_id where ${ filter ? filter : 'account_state not like "%删除%"'} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  let sql = `select user.*, student.student_academy, student.student_major, student.student_class from student left join user on user.user_id = student.user_id where ${ filter ? filter + ' and ' : ''} account_state not like "%删除%" limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   return queryHelper.queryPromise(sql, null)
 }
 

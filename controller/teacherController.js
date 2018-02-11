@@ -6,10 +6,16 @@ const utils = require('../utils/util')
 let getAllTeachers = async (req, res, next) => {
   try {
     let { param, pageNum, pageSize } = req.query
-    let count = await countHelper.getTableCount('teacher')
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    let filter = utils.obj2MySql(param)
+    let count = await dao.getCount(filter)
+    console.log(count)
     count = count.data[0].number
+    
     let responseData = []
-    let teachers = await dao.getAllTeachers(pageNum, pageSize)
+    let teachers = await dao.getAllTeachers(pageNum, pageSize, filter)
     if (teachers.code == 200) {
       teachers = utils.transformRes(teachers.data)
       teachers.forEach((teacher, index) => {
@@ -43,15 +49,6 @@ let getAllTeachers = async (req, res, next) => {
       msg: err.message || err.msg
     })
   }
-  dao.getAllTeachers()
-    .then(values => {
-      if (values.code == 200) {
-        res.send(values)
-      }
-    })
-    .catch(err => {
-      res.send(err)
-    })
 }
 
 // 增加教师信息

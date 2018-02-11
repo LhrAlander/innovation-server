@@ -140,18 +140,21 @@ let getId = type => {
  * @param {*筛选条件} filter 
  */
 let obj2MySql = filter => {
-  console.log(filter)
   if (typeof filter == 'string') {
     filter = JSON.parse(filter)
   }
   let str = null
   let first = true
   for (let key in filter) {
-    str = ''
-    if (!first) {
+    console.log(key, filter[key])
+    if (first) {
+      str = ''
+    }
+    else {
       str += ` and `
     }
     str += `${key} like '%${filter[key]}%'`
+    first = false
   }
   return str
 }
