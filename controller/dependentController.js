@@ -1,7 +1,55 @@
 const dependentDao = require('../dao/dependentDao')
 const userDao = require('../dao/userDao')
 const teamDao = require('../dao/teamDao')
+const projectDao = require('../dao/projectDao')
 const utils = require('../utils/util')
+
+// 级联获取 依托单位 -> 团队 -> 项目 信息
+let getSelectors = async (req, res, next) => {
+  try {
+    let dep = await dependentDao.getAllDependents()
+    let responseData = []
+    await dep.data.forEach(async item => {
+      let teams = await teamDao.getTeamsByUnit(item.unit_id)
+      let tmp = {
+        unitId: item.unit_id,
+        unitName: item.unit_name,
+        teams: []
+      }
+      await teams.data.forEach(async (team, index) => {
+        let projects = await projectDao.getProjectsByTeam(team.team_id)
+        tmp.teams.push({
+          teamId: team.team_id,
+          teamName: team.team_name,
+          projects: []
+        })
+
+        await projects.data.forEach(async project => {
+          tmp.teams[index].projects.push({
+            projectId: project.project_id,
+            projectName: project.project_name
+          })
+        })
+        responseData.push(tmp)
+        console.log(responseData)
+      })
+      console.log(responseData)
+    })
+    console.log(responseData)
+    res.send({
+      code: 200,
+      data: responseData
+    })
+  }
+  catch (err) {
+    console.log('err', err)
+    res.send({
+      code: 500,
+      msg: '获取数据失败'
+    })
+  }
+
+}
 
 // 获取所有的依托单位信息
 let getAllDependents = (req, res, next) => {
@@ -67,7 +115,7 @@ let addDependent = async (req, res, next) => {
         .catch(err => {
           throw new Error(err)
         })
-    } 
+    }
     else {
       throw new Error('不存在改负责人')
     }
@@ -100,7 +148,7 @@ let getDependent = async (req, res, next) => {
       code: 200,
       data: responseData
     })
-  } 
+  }
   catch (err) {
     console.log('获取一个政策信息失败', err)
     res.send({
@@ -116,6 +164,7 @@ let controller = {
   changeDependent,
   changeDependent,
   addDependent,
-  getDependent
+  getDependent,
+  getSelectors
 }
 module.exports = controller
