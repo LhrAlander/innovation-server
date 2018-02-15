@@ -7,35 +7,35 @@ const utils = require('../utils/util')
 // 级联获取 依托单位 -> 团队 -> 项目 信息
 let getSelectors = async (req, res, next) => {
   try {
-    let dep = await dependentDao.getAllDependents()
-    let responseData = []
-    await dep.data.forEach(async item => {
-      let teams = await teamDao.getTeamsByUnit(item.unit_id)
-      let tmp = {
-        unitId: item.unit_id,
-        unitName: item.unit_name,
-        teams: []
+    let deps = await dependentDao.getAllDependents()
+    let responseData = deps.data.map(dep => {
+      return {
+        unitId: dep.unit_id,
+        unitName: dep.unit_name
       }
-      await teams.data.forEach(async (team, index) => {
-        let projects = await projectDao.getProjectsByTeam(team.team_id)
-        tmp.teams.push({
+    })
+    for (let i = 0; i < responseData.length; i++) {
+      let unit = responseData[i]
+      let teams = await teamDao.getTeamsByUnit(unit.unitId)
+      teams = teams.data.map(team => {
+        return {
           teamId: team.team_id,
-          teamName: team.team_name,
-          projects: []
-        })
-
-        await projects.data.forEach(async project => {
-          tmp.teams[index].projects.push({
+          teamName: team.team_name
+        }
+      })
+      unit.teams = teams
+      for (let i = 0; i < teams.length; i++) {
+        let team = teams[i]
+        let projects = await projectDao.getProjectsByTeam(team.teamId)
+        projects = projects.data.map(project => {
+          return {
             projectId: project.project_id,
             projectName: project.project_name
-          })
+          }
         })
-        responseData.push(tmp)
-        console.log(responseData)
-      })
-      console.log(responseData)
-    })
-    console.log(responseData)
+        team.projects = projects
+      }
+    }
     res.send({
       code: 200,
       data: responseData
