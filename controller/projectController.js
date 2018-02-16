@@ -133,6 +133,7 @@ let getProject = async (req, res, next) => {
   console.log(projectId)
   try {
     const responseData = await projectDao.getProject(projectId)
+    console.log(responseData)
     res.send(responseData)
   }
   catch (err) {
