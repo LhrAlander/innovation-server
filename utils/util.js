@@ -1,4 +1,7 @@
+const path = require('path');
+
 const crypto = require('crypto')
+const fs = require('fs')
 const id = {
   project: '01',
   team: '02',
@@ -159,12 +162,47 @@ let obj2MySql = filter => {
   return str
 }
 
+/**
+ * 删除文件
+ * @param {*文件数组} files 
+ */
+let rmFile = (files, cb) => {
+  let createPromise = path => {
+    return new Promise((resolve, reject) => {
+      fs.unlink(path, err => {
+        if (err) {
+          reject({
+            code: 500,
+            filePath: path
+          })
+        }
+        else {
+          resolve({
+            code: 200,
+            filePath: path
+          })
+        }
+      })
+    })
+  }
+  if (files instanceof Array) {
+    let promises = []
+    for (let i = 0; i < files.length; i++) {
+      console.log(files[i])
+      promises.push(createPromise(files[i].filePath))
+    }
+    return Promise.all(promises)
+  }
+}
+
+
 let utils = {
   getId,
   transformRes,
   camel2_,
   formatDate,
-  obj2MySql
+  obj2MySql,
+  rmFile
 }
 
 module.exports = utils

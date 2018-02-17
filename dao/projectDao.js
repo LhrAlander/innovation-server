@@ -72,11 +72,12 @@ let getProject = async projectId => {
       project.data[0].projectTeacher = teacher.data[0].user_name
       regFiles = utils.transformRes(regFiles)
       finishFiles = utils.transformRes(finishFiles)
+      console.log(regFiles, finishFiles)
       return {
         code: 200,
         project: project.data[0],
-        regFile: regFiles[0],
-        finishFile: finishFiles[0],
+        regFile: regFiles,
+        finishFile: finishFiles,
         leader: {
           userId: student.data[0].user_id,
           name: student.data[0].user_name,
@@ -124,6 +125,29 @@ let getProjectsByTeam = teamId => {
   } 
 }
 
+/**
+ * 上传项目材料
+ * @param {*文件对象} file 
+ */
+let uploadFile = file => {
+  try {
+    const sql = `insert into project_files set ?`
+    return queryHelper.queryPromise(sql, file)  
+  } 
+  catch (err) {
+    console.log('上传项目材料失败',  err)
+  }
+}
+
+/**
+ * 删除文件信息
+ * @param {*文件对象} files 
+ */
+let deleteFile = path => {
+  const sql = `delete from project_files where file_path = ?`
+  return queryHelper.queryPromise(sql, path)
+}
+
 
 let dao = {
   getAllProjects,
@@ -131,7 +155,9 @@ let dao = {
   updateProject,
   getProject,
   getAllUsers,
-  getProjectsByTeam
+  getProjectsByTeam,
+  uploadFile,
+  deleteFile
 }
 
 module.exports = dao

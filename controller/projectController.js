@@ -192,13 +192,44 @@ let getAllUsers = async (req, res, next) => {
 
 }
 
+// 删除项目材料附件
+let deleteFiles = async (req, res, next) => {
+  let files = req.body.files
+  try {
+    let rmRes = await utils.rmFile(files)
+    console.log(rmRes)
+    for (let i = 0; i < rmRes.length; i++) {
+      if (rmRes[i].code == 200) {
+        let delRes = await projectDao.deleteFile(rmRes[i].filePath)
+        if (delRes.code != 200) {
+          throw new Error('删除数据库失败')
+        }
+        console.log(delRes.code)
+      }
+    }
+    console.log('success')
+    res.send({
+      code: 200,
+      data: '删除材料成功'
+    })
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      data: '删除材料失败'
+    })
+  }
+}
+
 let controller = {
   getAllProjects,
   addProject,
   deleteProject,
   changeProject,
   getProject,
-  getAllUsers
+  getAllUsers,
+  deleteFiles
 }
 
 module.exports = controller
