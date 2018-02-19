@@ -1,42 +1,75 @@
 const teamDao = require('../dao/teamDao')
 const teacherDao = require('../dao/teacherDao')
 const studentDao = require('../dao/studentDao')
+const userDao = require('../dao/userDao')
 const projectDao = require('../dao/projectDao')
+const unitDao = require('../dao/dependentDao')
 const utils = require('../utils/util')
+const countHelper = require('../utils/DBQuery')
 
 // 处理项目信息, 返回完整的项目信息包括项目基本信息，依托单位信息，负责人用户信息，负责老师用户信息
 let dealTeamInfo = async _team => {
-  let tmp = {}
-  const teacherId = _team.teamTeacher
-  const studentId = _team.teamPrincipal
-  let teacher = await teacherDao.getTeacher(teacherId)
-  let student = await studentDao.getStudent(studentId)
-  if (teacher.code == 200 && teacher.data.length > 0) {
-    teacher = utils.transformRes(teacher.data)[0]
+  try {
+    let tmp = {}
+    const teacherId = _team.teamTeacher
+    const studentId = _team.teamPrincipal
+    const unitId = _team.teamDependentUnit
+    let teacher = await userDao.searchUser(teacherId)
+    let student = await userDao.searchUser(studentId)
+    let unit = await unitDao.getDependent(unitId)
+    if (teacher.code == 200 && teacher.data.length > 0) {
+      teacher = utils.transformRes(teacher.data)[0]
+    }
+    if (student.code == 200 && student.data.length > 0) {
+      student = utils.transformRes(student.data)[0]
+    }
+    if (unit.code == 200 && unit.data.length > 0) {
+      unit = utils.transformRes(unit.data)[0]
+    }
+    tmp.team = _team
+    tmp.teacher = teacher
+    tmp.student = student
+    tmp.unit = unit
+    return tmp
   }
-  if (student.code == 200 && student.data.length > 0) {
-    student = utils.transformRes(student.data)[0]
+  catch (err) {
+    console.log(err)
   }
-  tmp.team = _team
-  tmp.teacher = teacher
-  tmp.student = student
-  return tmp
+
 }
 
 // 获取所有团队信息
 let getAllTeams = async (req, res, next) => {
   try {
+    let { param, pageNum, pageSize } = req.query
+    let count = await countHelper.getTableCount('team')
+    count = count.data[0].number
+    console.log(count)
     let responseData = []
     let team = await teamDao.getAllTeams()
     if (team.code == 200) {
       const teams = utils.transformRes(team.data)
       for (let i = 0; i < teams.length; i++) {
-        let tmp = await dealTeamInfo(teams[i])
-        responseData.push(tmp)
+        let _team = await dealTeamInfo(teams[i])
+        const {team, teacher, student, unit} = _team
+        responseData.push({
+          id: i + 1,
+          teamId: team.teamId,
+          groupName: team.teamName,
+          leaderName: student.userName,
+          teacher: teacher.userName,
+          dependentUnit: unit.unitName,
+          intro: team.teamIntroduction,
+          leaderPhone: student.userPhone,
+          leaderId: student.userId,
+          teacherPhone: teacher.userPhone,
+          teacherId: teacher.userId
+        })
       }
       res.send({
         code: 200,
-        data: responseData
+        data: responseData,
+        count
       })
     }
     else {
