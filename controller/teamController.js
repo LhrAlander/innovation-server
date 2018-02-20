@@ -15,7 +15,7 @@ let dealTeamInfo = async _team => {
     const studentId = _team.teamPrincipal
     const unitId = _team.teamDependentUnit
     let teacher = await userDao.searchUser(teacherId)
-    let student = await userDao.searchUser(studentId)
+    let student = await studentDao.getStudent(studentId)
     let unit = await unitDao.getDependent(unitId)
     if (teacher.code == 200 && teacher.data.length > 0) {
       teacher = utils.transformRes(teacher.data)[0]
@@ -51,7 +51,7 @@ let getAllTeams = async (req, res, next) => {
       const teams = utils.transformRes(team.data)
       for (let i = 0; i < teams.length; i++) {
         let _team = await dealTeamInfo(teams[i])
-        const {team, teacher, student, unit} = _team
+        const { team, teacher, student, unit } = _team
         responseData.push({
           id: i + 1,
           teamId: team.teamId,
@@ -133,19 +133,25 @@ let deleteTeam = (req, res, next) => {
 
 // 更改团队信息
 let changeTeam = (req, res, next) => {
-  let { team } = req.body
-  const teamId = team.team_id
-  delete team.team_id
-  teamDao.updateTeam(team, teamId)
-    .then(values => {
-      res.send(values)
-    })
-    .catch(err => {
-      res.send({
-        code: 500,
-        msg: err.msg || err.message
+  try {
+    let { team } = req.body
+    const teamId = team.team_id
+    delete team.team_id
+    teamDao.updateTeam(team, teamId)
+      .then(values => {
+        res.send(values)
       })
-    })
+      .catch(err => {
+        res.send({
+          code: 500,
+          msg: err.msg || err.message
+        })
+      })
+  }
+  catch (err) {
+    console.log(err)
+  }
+
 }
 
 // 获取一个团队信息
@@ -157,9 +163,32 @@ let getTeam = async (req, res, next) => {
       let responseData = {}
       responseData.team = utils.transformRes(team.data)[0]
       let tmp = await dealTeamInfo(responseData.team)
-      responseData = tmp
       let projects = await projectDao.getProjectsByTeam(tmp.team.teamId)
-      responseData.projects = utils.transformRes(projects.data)
+      tmp.projects = utils.transformRes(projects.data)
+      responseData = {
+        team: {
+          teamName: tmp.team.teamName,
+          teamId: tmp.team.teamId,
+          teamLeader: tmp.student.userName,
+          supportOrg: tmp.unit.unitName,
+          teamTeacher: tmp.teacher.userName,
+          leaderMajor: tmp.student.studentMajor,
+          leaderClass: tmp.student.studentClass,
+          teamInfo: tmp.team.teamIntroduction,
+          unitId: tmp.unit.unitId
+        },
+        leader: {
+          userId: tmp.student.userId,
+          name: tmp.student.userName,
+          userPhone: tmp.student.userPhone
+        },
+        teacher: {
+          userId: tmp.teacher.userId,
+          name: tmp.teacher.userName,
+          userPhone: tmp.teacher.userPhone
+        },
+        proInfo: tmp.projects
+      }
       res.send({
         code: 200,
         data: responseData

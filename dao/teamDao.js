@@ -26,7 +26,7 @@ let addTeam = team => {
  */
 let updateTeam = (payload, teamId) => {
   const sql = 'update team set ? where team_id = ?'
-  return queryHelper.queryPromise(sql, [payload, projectId])
+  return queryHelper.queryPromise(sql, [payload, teamId])
 }
 
 
