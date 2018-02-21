@@ -18,7 +18,7 @@ let getAllPolicys = (req, res, next) => {
         }
         responseData.push(data)
       })
-      
+
       res.send({
         code: 200,
         data: responseData
@@ -35,23 +35,31 @@ let getAllPolicys = (req, res, next) => {
 
 // 修改政策
 let updatePolicy = (req, res, next) => {
-  const { policy } = req.body
-  utils.camel2_(policy)
-  const policyId = policy.policy_id
-  delete policy.policy_id
-  policyDao.updatePolicy(policy, policy_id)
-    .then(values => {
-      res.send({
-        code: 200,
-        msg: '发布政策成功'
+  try {
+    const { policy } = req.body
+    utils.camel2_(policy)
+    console.log(policy)
+    const policyId = policy.policy_id
+    delete policy.policy_id
+    policyDao.updatePolicy(policy, policyId)
+      .then(values => {
+        res.send({
+          code: 200,
+          msg: '发布政策成功'
+        })
       })
-    })
-    .catch(err => {
-      res.send({
-        code: 500,
-        msg: '发布政策失败'
+      .catch(err => {
+        console.log(err)
+        res.send({
+          code: 500,
+          msg: '发布政策失败'
+        })
       })
-    })
+  }
+  catch (err) {
+    console.log(err)
+  }
+
 }
 
 // 增加一个政策
@@ -81,14 +89,15 @@ let getPolicy = (req, res, next) => {
     .then(values => {
       utils.formatDate('publish_time', values.data, 'yyyy-MM-dd')
       values.data = utils.transformRes(values.data)[0]
-      responseData.policy= values.data
+      responseData.policy = values.data
       const projectId = values.data.policyId
       return policyDao.getFile(policyId)
     })
     .then(values => {
       if (values.code == 200) {
-        responseData.file = utils.transformRes(values.data)[0]
+        responseData.file = utils.transformRes(values.data)
       }
+      console.log(responseData.file)
       res.send(responseData)
     })
     .catch(err => {
@@ -101,11 +110,43 @@ let getPolicy = (req, res, next) => {
 
 }
 
+// 删除项目材料附件
+let deleteFiles = async (req, res, next) => {
+  let files = req.body.files
+  try {
+    let rmRes = await utils.rmFile(files)
+    console.log(rmRes)
+    for (let i = 0; i < rmRes.length; i++) {
+      if (rmRes[i].code == 200) {
+        let delRes = await policyDao.deleteFile(rmRes[i].filePath)
+        if (delRes.code != 200) {
+          throw new Error('删除数据库失败')
+        }
+        console.log(delRes.code)
+      }
+    }
+    console.log('success')
+    res.send({
+      code: 200,
+      data: '删除材料成功'
+    })
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      data: '删除材料失败'
+    })
+  }
+}
+
+
 let controller = {
   getAllPolicys,
   updatePolicy,
   addPolicy,
-  getPolicy
+  getPolicy,
+  deleteFiles
 }
 
 module.exports = controller

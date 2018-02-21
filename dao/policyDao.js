@@ -14,7 +14,7 @@ let getAllPolicys = () => {
  */
 let updatePolicy = (payload, policy_id) => {
   const sql = 'update policy set ? where policy_id = ?'
-  return queryHelper.queryPromise(payload, [payload, policy_id])
+  return queryHelper.queryPromise(sql, [payload, policy_id])
 }
 
 /**
@@ -41,11 +41,33 @@ let getFile = policyId => {
   return queryHelper.queryPromise(sql, policyId)
 }
 
+let uploadFile = file => {
+  try {
+    const sql = `insert into policy_files set ?`
+    return queryHelper.queryPromise(sql, file)  
+  } 
+  catch (err) {
+    console.log('上传政策材料失败',  err)
+  }
+
+}
+
+/**
+ * 删除文件信息
+ * @param {*文件对象} files 
+ */
+let deleteFile = path => {
+  const sql = `delete from policy_files where file_path = ?`
+  return queryHelper.queryPromise(sql, path)
+}
+
 let policyDao = {
   getAllPolicys,
   updatePolicy,
   getPolicy,
-  getFile
+  getFile,
+  uploadFile,
+  deleteFile
 }
 
 module.exports = policyDao

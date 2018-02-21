@@ -10,4 +10,6 @@ router.post('/change/policy', controller.updatePolicy)
 router.post('/add/policy', controller.addPolicy)
 // 获取一个政策信息
 router.post('/policy', controller.getPolicy)
+// 删除材料附件
+router.post('/delete/files', controller.deleteFiles)
 module.exports = router
