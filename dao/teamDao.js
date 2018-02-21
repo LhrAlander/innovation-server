@@ -48,7 +48,7 @@ let getTeam = async teamId => {
  * 获取所有的团队成员
  */
 let getAllUsers = () => {
-  const sql = 'select * from team_student'
+  const sql = `select team.team_name,user.user_id, user.user_name, user.user_phone, team_student.add_time from team_student left join team on team.team_id = team_student.team_id left join user on team_student.user_id = user.user_id where team_student.is_in_service = 1`
   return queryHelper.queryPromise(sql, null)
 }
 
@@ -61,7 +61,7 @@ let getTeamsByUnit = unitId => {
   try {
     const sql = 'select team_id, team_name from team where team_dependent_unit = ?'
     return queryHelper.queryPromise(sql, unitId)
-  } 
+  }
   catch (err) {
     console.log('根据团查找项目失败', err)
     return null

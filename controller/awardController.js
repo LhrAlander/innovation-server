@@ -1,22 +1,40 @@
 const awardDao = require('../dao/awardDao')
 const utils = require('../utils/util')
+const countHelper = require('../utils/DBQuery')
 
 
 // 获取所有获奖信息
-let getAllAwards = (req, res, next) => {
-  awardDao.getAllAwards()
-    .then(values => {
-      values.data = utils.transformRes(values.data)
-      utils.formatDate('awardTime', values.data, 'yyyy-MM-dd')
-      res.send(values)
-    })
-    .catch(err => {
-      console.log(err)
+let getAllAwards = async (req, res, next) => {
+  try {
+    let { param, pageNum, pageSize } = req.query
+    let count = await countHelper.getTableCount('award')
+    count = count.data[0].number
+    let responseData = []
+    let awards = await awardDao.getAllAwards()
+    if (awards.code == 200) {
+      awards.data = utils.transformRes(awards.data)
+      utils.formatDate('awardTime', awards.data, 'yyyy-MM-dd')
+      awards = awards.data
+      for (let i = 0; i < awards.length; i++) {
+        let award = awards[i]
+        responseData.push({
+          awardName: award.awardName,
+          awardLevel: award.awardLevel,
+          awardSecondLevel: award.awardIdentity,
+          awardTime: award.awardTime
+        })
+      }
+      console.log(responseData)
       res.send({
-        code: 400,
-        data: err
+        code: 200,
+        data: responseData,
+        count
       })
-    })
+    }
+  }
+  catch (err) {
+    console.log(err)
+  }
 }
 
 // 修改获奖信息
@@ -78,45 +96,49 @@ let deleteAward = (req, res, next) => {
         })
       })
   }
-  catch(err) {
+  catch (err) {
     console.log('删除获奖信息失败', err.msg, err.message)
     res.send({
       code: 500,
       msg: '删除获奖信息失败'
     })
   }
- 
+
 }
 
 // 获取所有的获奖成员信息
 let getAllUsers = async (req, res, next) => {
   try {
+    let { param, pageNum, pageSize } = req.query
+    let count = await countHelper.getTableCount('award_user')
+    count = count.data[0].number
+    let responseData = []
     let users = await awardDao.getAllUsers()
     if (users.code == 200) {
       let awards = utils.transformRes(users.data)
       let responseData = []
       utils.formatDate('awardTime', awards, 'yyyy-MM-dd')
       awards.forEach(award => {
-        let _award = {}
-        _award.awardId = award.awardId
-        _award.projectId = award.awardProject
-        _award.awardName = [award.awardTime, award.awardName, award.awardIdentity, award.awardLevel].join(' ')
-        _award.awardProject = award.awardProject == null ? '个人' : award.projectName
-        _award.userId = award.userId
-        _award.userName = award.userName
-        _award.userPhone = award.userPhone
-        responseData.push(_award)
+        console.log(award)
+        responseData.push({
+          awardName: award.awardName,
+          projectName: award.projectName || '个人',
+          username: award.userName,
+          contact: award.userPhone,
+          userId: award.userId
+        })
       })
       res.send({
         code: 200,
-        data: responseData
+        data: responseData,
+        count
       })
     }
     else {
       throw new Error('查询获奖用户失败')
     }
   }
-  catch(err) {
+  catch (err) {
     console.log(err)
     res.send({
       code: 500,

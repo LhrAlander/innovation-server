@@ -208,15 +208,38 @@ let getTeam = async (req, res, next) => {
 }
 
 // 获取所有的团队成员
-let getAllUsers = (req, res, next) => {
-  teamDao.getAllUsers()
-    .then(values => {
-      res.send(values)
-    })
-    .catch(err => {
-      console.log(err)
-      res.send(err)
-    })
+let getAllUsers = async (req, res, next) => {
+  try {
+    let { param, pageNum, pageSize } = req.query
+    let count = await countHelper.getTableCount('team_student')
+    count = count.data[0].number
+    let responseData = []
+    let users = await teamDao.getAllUsers()
+    if (users.code == 200) {
+      utils.formatDate(['add_time'], users.data, 'yyyy-MM-dd')
+      users = utils.transformRes(users.data)
+      console.log(users)
+      for (let i = 0; i < users.length; i++) {
+        let user = users[i]
+        responseData.push({
+          id: i + 1,
+          groupName: user.teamName,
+          userId: user.userId,
+          username: user.userName,
+          contact: user.userPhone,
+          joinTime: user.addTime
+        })
+      }
+      res.send({
+        code: 200,
+        data: responseData,
+        count
+      })
+    }
+  }
+  catch (err) {
+    console.log(err)
+  }
 }
 
 let controller = {

@@ -34,7 +34,7 @@ let deleteAward = awardId => {
 
 // 获取所有获奖用户
 let getAllUsers = () => {
-  const sql = 'select * from (select award.*, user.*, award_user.award_project from award, award_user, user where award.award_id = award_user.award_id and award_user.user_id = user.user_id) t1 left join project on project.project_id = t1.award_project'
+  const sql = 'select award.award_name, project.project_name, user.user_name, user.user_phone,user.user_id from award_user left join user on user.user_id = award_user.user_id left join project on award_user.award_project = project.project_id left join award on award_user.award_id = award.award_id'
   return queryHelper.queryPromise(sql, null)
 }
 
