@@ -3,6 +3,7 @@ const userDao = require('../dao/userDao')
 const teamDao = require('../dao/teamDao')
 const projectDao = require('../dao/projectDao')
 const utils = require('../utils/util')
+const countHelper = require('../utils/DBQuery')
 
 // 级联获取 依托单位 -> 团队 -> 项目 信息
 let getSelectors = async (req, res, next) => {
@@ -52,15 +53,36 @@ let getSelectors = async (req, res, next) => {
 }
 
 // 获取所有的依托单位信息
-let getAllDependents = (req, res, next) => {
+let getAllDependents = async (req, res, next) => {
   try {
-    dependentDao.getAllDependents()
-      .then(values => {
-        res.send(values)
+    let { param, pageNum, pageSize } = req.query
+    let count = await countHelper.getTableCount('dependent_unit_identity')
+    count = count.data[0].number
+    console.log(count)
+    let responseData = []
+    let units = await dependentDao.getAllDependents()
+    if (units.code == 200) {
+      units = units.data
+      console.log(units)
+      for (let i = 0; i < units.length; i++) {
+        let unit = units[i]
+        responseData.push({
+          unitId: unit.unit_id,
+          unitName: unit.unit_name,
+          unitCategory: unit.unit_identity,
+          leader: unit.user_name,
+          leaderPhone: unit.user_phone,
+          leaderId: unit.user_id,
+          email: unit.user_mail,
+          address: unit.unit_address
+        })
+      }
+      res.send({
+        code: 200,
+        data: responseData,
+        count: count
       })
-      .catch(err => {
-        throw new Error(err)
-      })
+    }
   }
   catch (err) {
     console.log('获取所有依托单位信息失败', err)
@@ -73,30 +95,37 @@ let getAllDependents = (req, res, next) => {
 
 // 修改一个依托单位信息
 let changeDependent = async (req, res, next) => {
-  let { dependent } = req.body
-  utils.camel2_(dependent)
-  const userId = dependent.unit_principal
-  let user = await userDao.searchUser(userId)
-  if (user.code == 200 && user.data.length > 0) {
-    const unitId = dependent.unit_id
-    delete dependent.unit_id
-    dependentDao.updateDependent(dependent, unitId)
-      .then(values => {
-        res.send(values)
-      })
-      .catch(err => {
-        res.send({
-          code: 500,
-          msg: '修改依托单位信息失败'
+  try {
+    let { dependent } = req.body
+    utils.camel2_(dependent)
+    const userId = dependent.unit_principal
+    let user = await userDao.searchUser(userId)
+    if (user.code == 200 && user.data.length > 0) {
+      const unitId = dependent.unit_id
+      delete dependent.unit_id
+      dependentDao.updateDependent(dependent, unitId)
+        .then(values => {
+          res.send(values)
         })
+        .catch(err => {
+          console.log(err)
+          res.send({
+            code: 500,
+            msg: '修改依托单位信息失败'
+          })
+        })
+    }
+    else {
+      res.send({
+        code: 400,
+        msg: '负责人不存在'
       })
+    }
   }
-  else {
-    res.send({
-      code: 400,
-      msg: '负责人不存在'
-    })
+  catch (err) {
+    console.log(err)
   }
+
 }
 
 // 添加一个依托单位信息
@@ -139,10 +168,39 @@ let getDependent = async (req, res, next) => {
     console.log(unitId, dependent, userId)
     let user = await userDao.searchUser(userId)
     let teams = await teamDao.getTeamsByUnit(unitId)
+    user = utils.transformRes(user.data)[0]
+    teams = utils.transformRes(teams.data)
+    dependent = utils.transformRes(dependent.data)[0]
+    let _teams = []
+    let tmp = []
+    for (let i = 0; i < teams.length; i++) {
+      tmp.push({
+        name: teams[i].teamName,
+        teamId: teams[i].teamId
+      })
+      if (i & 1 == 1 && i > 0) {
+        _teams.push(tmp)
+        tmp = []
+      }
+    }
+    if (tmp.length > 0) {
+      _teams.push(tmp)
+    }
+
     let responseData = {
-      unit: utils.transformRes(dependent.data)[0],
-      user: utils.transformRes(user.data)[0],
-      teams: utils.transformRes(teams.data)
+      unit: {
+        unitName: dependent.unitName,
+        unitType: dependent.unitIdentity,
+        unitPerson: user.userName,
+        unitAddress: dependent.unitAddress,
+        unitPhone: dependent.unitPhone,
+      },
+      user: {
+        userId: user.userId,
+        name: user.userName,
+        userPhone: user.userPhone
+      },
+      teams: _teams
     }
     res.send({
       code: 200,
