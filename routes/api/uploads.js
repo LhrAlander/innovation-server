@@ -30,11 +30,16 @@ let getUpload = (key, name) => {
 const projectUpload = getUpload('project', 'uploadFile')
 // 获取政策信息上传中间件
 const policyUpload = getUpload('policy', 'uploadFile')
+// 获取通知公告上传中间件
+const notificationUpload = getUpload('notification', 'uploadFile')
 
 
 // 上传项目材料
 router.post('/project', projectUpload, controller.uploadProjectFiles)
 // 上传政策材料
 router.post('/policy', policyUpload, controller.uploadPolicyFiles)
+// 上传通知公告材料
+router.post('/notification', notificationUpload, controller.uploadNotificationFiles)
+
 
 module.exports = router

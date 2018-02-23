@@ -9,13 +9,8 @@ let getAllStudents = async (req, res, next) => {
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
-    // if ('user_id' in param) {
-    //   param['user.user_id'] = param.user_id
-    //   delete param.user_id
-    // }
     let filter = utils.obj2MySql(param)
     console.log(param)
-    // let count = await countHelper.getTableCount('student')
     let count = await dao.getCount(filter)
     count = count.data[0].number
     console.log(count)

@@ -49,7 +49,6 @@ let uploadFile = file => {
   catch (err) {
     console.log('上传政策材料失败',  err)
   }
-
 }
 
 /**
