@@ -1,7 +1,4 @@
 const projectDao = require('../dao/projectDao')
-const teacherDao = require('../dao/teacherDao')
-const teamDao = require('../dao/teamDao')
-const studentDao = require('../dao/studentDao')
 const userDao = require('../dao/userDao')
 const utils = require('../utils/util')
 const countHelper = require('../utils/DBQuery')
@@ -10,17 +7,21 @@ const countHelper = require('../utils/DBQuery')
 let getAllProjects = async (req, res, next) => {
   try {
     let { param, pageNum, pageSize } = req.query
-    let count = await countHelper.getTableCount('project')
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    console.log(param, pageNum, pageSize)
+    let filter = utils.obj2MySql(param)
+    console.log(filter)
+    let count = await projectDao.getCount(filter)
     count = count.data[0].number
     let responseData = []
-    let project = await projectDao.getAllProjects()
+    let project = await projectDao.getAllProjects(pageNum, pageSize, filter)
     if (project.code == 200) {
       const projects = project.data
       for (let i = 0; i < projects.length; i++) {
         let tmp = {}
         const project = projects[i]
-        const teamId = project.team_id
-        let team = await teamDao.getTeam(teamId)
         tmp.projectName = project.project_name
         tmp.projectCategory = project.project_identity
         tmp.projectLevel = project.project_level
@@ -28,26 +29,16 @@ let getAllProjects = async (req, res, next) => {
         tmp.startDate = project.start_year
         tmp.finishDate = project.finish_year
         tmp.projectId = project.project_id
-        tmp.dependentUnit = team.data[0].team_name
+        tmp.dependentUnit = project.team_name
         tmp.beginYear = project.start_year
         tmp.deadlineYear = project.finish_year
+        tmp.principalName = project.studentId
+        tmp.guideTeacher = project.teacherName
+        tmp.guideTeacherName = project.teacherId
         utils.formatDate(['applyYear', 'startDate', 'finishDate', 'beginYear', 'deadlineYear'], [tmp], 'yyyy-MM-dd')
-        const teacherId = project.project_teacher
-        const studentId = project.project_principal
-        let teacher = await teacherDao.getTeacher(teacherId)
-        let student = await studentDao.getStudent(studentId)
-
-        if (student.code == 200 && student.data.length > 0) {
-          tmp.student = student.data[0]
-          tmp.principalName = tmp.student.user_id
-        }
-        if (teacher.code == 200 && teacher.data.length > 0) {
-          tmp.teacher = teacher.data[0]
-          tmp.guideTeacher = tmp.teacher.user_name
-          tmp.guideTeacherName = tmp.teacher.user_id
-        }
         responseData.push(tmp)
       }
+      console.log(responseData)
       res.send({
         code: 200,
         data: responseData,

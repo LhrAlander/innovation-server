@@ -4,11 +4,25 @@ const utils = require('../utils/util')
 const userDao = require('../dao/userDao')
 const studentDao = require('../dao/studentDao')
 const teamDao = require('../dao/teamDao')
+
+
+// 获取信息数量
+let getCount = filter => {
+  if (filter) {
+    let sql = `select count(*) as number from(select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id) as t where ${filter} and project_status not like '%删除%'`
+    return queryHelper.queryPromise(sql, null)
+  }
+  else {
+    let sql = `select count(*) as number from(select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id) as t where project_status not like '%删除%'`
+    return queryHelper.queryPromise(sql, null)
+  }
+}
+
 /**
  * 获取所有的项目信息
  */
-let getAllProjects = () => {
-  const projectSql = 'select * from project'
+let getAllProjects = (pageNum, pageSize, filter) => {
+  const projectSql = `select * from (select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName,team.team_name from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id left join team on project.team_id = team.team_id) as t  where ${ filter ? filter + ' and ' : ''} project_status not like "%删除%" limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   return queryHelper.queryPromise(projectSql)
 }
 
@@ -150,6 +164,7 @@ let deleteFile = path => {
 
 
 let dao = {
+  getCount,
   getAllProjects,
   addProject,
   updateProject,
