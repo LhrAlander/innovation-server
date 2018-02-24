@@ -2,7 +2,8 @@ const config = {
   uploadPath: {
     project: './public/uploads/project',
     policy: './public/uploads/policy',
-    notification: './public/uploads/notification'
+    notification: './public/uploads/notification',
+    fileSystem: './public/uploads/fileSystem'
   },
   projectFile: {
     REG_FILE: 1,

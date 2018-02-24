@@ -85,8 +85,8 @@ let getNotification = async (req, res, next) => {
 // 修改一个通知公告
 let updateNotification = async (req, res, next) =>{
   try {
-    const { notification } = req.body
-    utils.camel2_(notification)
+    let { notification } = req.body
+    notification = utils.camel2_(notification)
     console.log(notification)
     const notificationId = notification.notification_id
     delete notification.notification_id

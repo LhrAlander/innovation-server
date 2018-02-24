@@ -32,6 +32,8 @@ const projectUpload = getUpload('project', 'uploadFile')
 const policyUpload = getUpload('policy', 'uploadFile')
 // 获取通知公告上传中间件
 const notificationUpload = getUpload('notification', 'uploadFile')
+// 获取政策制度上传中间件
+const fileSystemUpload = getUpload('fileSystem', 'uploadFile')
 
 
 // 上传项目材料
@@ -40,6 +42,7 @@ router.post('/project', projectUpload, controller.uploadProjectFiles)
 router.post('/policy', policyUpload, controller.uploadPolicyFiles)
 // 上传通知公告材料
 router.post('/notification', notificationUpload, controller.uploadNotificationFiles)
-
+// 上传政策制度材料
+router.post('/fileSystem', fileSystemUpload, controller.uploadfileSystemFiles)
 
 module.exports = router
