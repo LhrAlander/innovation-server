@@ -1,12 +1,18 @@
 const queryHelper = require('../utils/DBQuery')
 const config = require('../config')
 
+// 获取信息数量
+let getCount = filter => {
+  let sql = `select count(*) as number from(select t.team_id as teamId,t.team_name as groupName,st.user_id as leaderId,st.user_name as leaderName,st.user_phone as leaderPhone,teacher.user_name as teacher,teacher.user_id as teacherId,teacher.user_phone teacherPhone,unit.unit_name as dependentUnit,unit.unit_id as unitId from team as t left join user as st on t.team_principal=st.user_id left join user as teacher on t.team_teacher=teacher.user_id left join dependent_unit as unit on t.team_dependent_unit=unit.unit_id where team_state not like '%删除%') as t ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql, null)
+}
 
 /**
  * 获取所有的团队信息
  */
-let getAllTeams = () => {
-  const teamSql = 'select * from team'
+let getAllTeams = (pageNum, pageSize, filter) => {
+  const teamSql = `select * from (select t.team_id as teamId,t.team_name as groupName,st.user_id as leaderId,st.user_name as leaderName,st.user_phone as leaderPhone,teacher.user_name as teacher,teacher.user_id as teacherId,teacher.user_phone teacherPhone,unit.unit_name as dependentUnit,unit.unit_id as unitId from team as t left join user as st on t.team_principal=st.user_id left join user as teacher on t.team_teacher=teacher.user_id left join dependent_unit as unit on t.team_dependent_unit=unit.unit_id where team_state not like '%删除%') as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize} `
+  console.log(teamSql)
   return queryHelper.queryPromise(teamSql)
 }
 
@@ -70,6 +76,7 @@ let getTeamsByUnit = unitId => {
 
 
 let teamDao = {
+  getCount,
   getAllTeams,
   addTeam,
   updateTeam,

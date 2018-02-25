@@ -42,33 +42,22 @@ let dealTeamInfo = async _team => {
 let getAllTeams = async (req, res, next) => {
   try {
     let { param, pageNum, pageSize } = req.query
-    let count = await countHelper.getTableCount('team')
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    let filter = utils.obj2MySql(param)
+    let count = await teamDao.getCount(filter)
     count = count.data[0].number
-    console.log(count)
-    let responseData = []
-    let team = await teamDao.getAllTeams()
+    let team = await teamDao.getAllTeams(pageNum, pageSize, filter)
     if (team.code == 200) {
-      const teams = utils.transformRes(team.data)
+      let teams = utils.transformRes(team.data)
+      teams = team.data
       for (let i = 0; i < teams.length; i++) {
-        let _team = await dealTeamInfo(teams[i])
-        const { team, teacher, student, unit } = _team
-        responseData.push({
-          id: i + 1,
-          teamId: team.teamId,
-          groupName: team.teamName,
-          leaderName: student.userName,
-          teacher: teacher.userName,
-          dependentUnit: unit.unitName,
-          intro: team.teamIntroduction,
-          leaderPhone: student.userPhone,
-          leaderId: student.userId,
-          teacherPhone: teacher.userPhone,
-          teacherId: teacher.userId
-        })
+        teams.id = i + 1
       }
       res.send({
         code: 200,
-        data: responseData,
+        data: teams,
         count
       })
     }
