@@ -136,39 +136,24 @@ let getProject = async (req, res, next) => {
 let getAllUsers = async (req, res, next) => {
   try {
     let { param, pageNum, pageSize } = req.query
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    console.log(param, pageNum, pageSize)
+    let filter = utils.obj2MySql(param)
+    console.log(filter)
     let count = await countHelper.getTableCount('project_student')
     count = count.data[0].number
-    let responseData = []
-    let users = await projectDao.getAllUsers()
+    let users = await projectDao.getAllUsers(pageNum, pageSize, filter)
     if (users.code == 200) {
-      utils.formatDate(['add_time', 'leave_time'], users.data, 'yyyy-MM-dd')
-      users = utils.transformRes(users.data)
+      utils.formatDate(['joinTime'], users.data, 'yyyy-MM-dd')
+      users = users.data
       for (let index = 0; index < users.length; index++) {
-        let _user = users[index]
-        let project = await projectDao.getProject(_user.projectId)
-        let user = await userDao.searchUser(_user.userId)
-        if (project.code != 200 || project.project == null) {
-          throw new Error('不存在该项目')
-        }
-        if (user.code != 200 || user.data.length <= 0) {
-          throw new Error('不存在该用户')
-        }
-        project = project.project
-        user = user.data[0]
-        let tmp = {
-          id: index + 1,
-          projectName: project.projectName,
-          userId: user.user_id,
-          username: user.user_name,
-          contact: user.user_phone,
-          joinTime: project.startYear
-        }
-        responseData.push(tmp)
+       users[index].index = index + 1
       }
-      console.log(responseData)
       res.send({
         code: 200,
-        data: responseData,
+        data: users,
         count: count
       })
     }

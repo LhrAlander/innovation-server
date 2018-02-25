@@ -18,6 +18,18 @@ let getCount = filter => {
   }
 }
 
+// 获取信息数量
+let getUserCount = filter => {
+  if (filter) {
+    let sql = `select count(*) as number from(select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id) as t where ${filter} and project_status not like '%删除%'`
+    return queryHelper.queryPromise(sql, null)
+  }
+  else {
+    let sql = `select count(*) as number from(select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id) as t where project_status not like '%删除%'`
+    return queryHelper.queryPromise(sql, null)
+  }
+}
+
 /**
  * 获取所有的项目信息
  */
@@ -120,8 +132,9 @@ let getProject = async projectId => {
 /**
  * 获取所有的项目成员
  */
-let getAllUsers = () => {
-  const sql = 'select * from project_student'
+let getAllUsers = (pageNum, pageSize, filter) => {
+  const sql = `select * from (select p.project_name as projectName,p.project_id as projectId, u.user_id as userId,u.user_name as username, u.user_phone as contact, st.add_time as joinTime from project_student as st left join project as p on st.project_id = p.project_id left join user as u on u.user_id = st.user_id) as t  ${ filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  console.log(sql)
   return queryHelper.queryPromise(sql, null)
 }
 

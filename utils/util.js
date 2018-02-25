@@ -150,14 +150,17 @@ let obj2MySql = filter => {
   let first = true
   for (let key in filter) {
     console.log(key, filter[key])
-    if (first) {
-      str = ''
+    if (filter[key] != null && filter[key] != undefined && filter[key] != '') {
+      if (first) {
+        str = ''
+      }
+      else {
+        str += ` and `
+      }
+      str += `${key} like '%${filter[key]}%'`
+      first = false
     }
-    else {
-      str += ` and `
-    }
-    str += `${key} like '%${filter[key]}%'`
-    first = false
+    
   }
   return str
 }
