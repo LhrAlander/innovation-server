@@ -7,6 +7,13 @@ let getCount = filter => {
   return queryHelper.queryPromise(sql, null)
 }
 
+// 获取信息数量
+let getUserCount = filter => {
+  const sql = `select count(*) as number from (select t.team_name as groupName,t.team_id as teamId,u.user_id as userId,u.user_name as username,u.user_phone as contact,ts.add_time as joinTime from team_student as ts left join team as t on ts.team_id=t.team_id left join user as u on ts.user_id=u.user_id where ts.is_in_service=1) as t  ${filter ? 'where ' + filter : ''} `
+  return queryHelper.queryPromise(sql, null)
+}
+
+
 /**
  * 获取所有的团队信息
  */
@@ -53,8 +60,8 @@ let getTeam = async teamId => {
 /**
  * 获取所有的团队成员
  */
-let getAllUsers = () => {
-  const sql = `select team.team_name,user.user_id, user.user_name, user.user_phone, team_student.add_time from team_student left join team on team.team_id = team_student.team_id left join user on team_student.user_id = user.user_id where team_student.is_in_service = 1`
+let getAllUsers = (pageNum, pageSize, filter) => {
+  const sql = `select * from (select t.team_name as groupName,t.team_id as teamId,u.user_id as userId,u.user_name as username,u.user_phone as contact,ts.add_time as joinTime from team_student as ts left join team as t on ts.team_id=t.team_id left join user as u on ts.user_id=u.user_id where ts.is_in_service=1) as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   return queryHelper.queryPromise(sql, null)
 }
 
@@ -77,6 +84,7 @@ let getTeamsByUnit = unitId => {
 
 let teamDao = {
   getCount,
+  getUserCount,
   getAllTeams,
   addTeam,
   updateTeam,

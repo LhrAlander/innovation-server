@@ -53,7 +53,7 @@ let getAllTeams = async (req, res, next) => {
       let teams = utils.transformRes(team.data)
       teams = team.data
       for (let i = 0; i < teams.length; i++) {
-        teams.id = i + 1
+        teams[i].id = i + 1
       }
       res.send({
         code: 200,
@@ -200,28 +200,18 @@ let getTeam = async (req, res, next) => {
 let getAllUsers = async (req, res, next) => {
   try {
     let { param, pageNum, pageSize } = req.query
-    let count = await countHelper.getTableCount('team_student')
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    let filter = utils.obj2MySql(param)
+    let count = await teamDao.getUserCount(filter)
     count = count.data[0].number
-    let responseData = []
-    let users = await teamDao.getAllUsers()
+    let users = await teamDao.getAllUsers(pageNum, pageSize, filter)
     if (users.code == 200) {
-      utils.formatDate(['add_time'], users.data, 'yyyy-MM-dd')
-      users = utils.transformRes(users.data)
-      console.log(users)
-      for (let i = 0; i < users.length; i++) {
-        let user = users[i]
-        responseData.push({
-          id: i + 1,
-          groupName: user.teamName,
-          userId: user.userId,
-          username: user.userName,
-          contact: user.userPhone,
-          joinTime: user.addTime
-        })
-      }
+      utils.formatDate(['joinTime'], users.data, 'yyyy-MM-dd')
       res.send({
         code: 200,
-        data: responseData,
+        data: users.data,
         count
       })
     }
