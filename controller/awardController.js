@@ -7,31 +7,41 @@ const countHelper = require('../utils/DBQuery')
 let getAllAwards = async (req, res, next) => {
   try {
     let { param, pageNum, pageSize } = req.query
-    let count = await countHelper.getTableCount('award')
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    let filter = utils.obj2MySql(param)
+    let count = await awardDao.getCount(filter)
     count = count.data[0].number
-    let responseData = []
-    let awards = await awardDao.getAllAwards()
+    let awards = await awardDao.getAllAwards(pageNum, pageSize, filter)
     if (awards.code == 200) {
-      awards.data = utils.transformRes(awards.data)
       utils.formatDate('awardTime', awards.data, 'yyyy-MM-dd')
-      awards = awards.data
-      for (let i = 0; i < awards.length; i++) {
-        let award = awards[i]
-        responseData.push({
-          awardName: award.awardName,
-          awardLevel: award.awardLevel,
-          awardSecondLevel: award.awardIdentity,
-          awardTime: award.awardTime
-        })
-      }
-      console.log(responseData)
       res.send({
         code: 200,
-        data: responseData,
+        data: awards.data,
         count
       })
     }
   }
+  catch (err) {
+    console.log(err)
+  }
+}
+
+// 获取所有获奖名称
+let  getAllAwardNames = async (req, res, next) => {
+  try {
+    let names = await awardDao.getAllAwardNames()
+    if (names.code == 200) {
+      names = names.data.map(name => {
+        return name.name
+      })
+      res.send({
+        code: 200,
+        data: names
+      })
+    }
+  } 
   catch (err) {
     console.log(err)
   }
@@ -110,27 +120,23 @@ let deleteAward = (req, res, next) => {
 let getAllUsers = async (req, res, next) => {
   try {
     let { param, pageNum, pageSize } = req.query
-    let count = await countHelper.getTableCount('award_user')
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    let filter = utils.obj2MySql(param)
+    let count = await awardDao.getUserCount(filter)
     count = count.data[0].number
-    let responseData = []
-    let users = await awardDao.getAllUsers()
+    let users = await awardDao.getAllUsers(pageNum, pageSize, filter)
     if (users.code == 200) {
-      let awards = utils.transformRes(users.data)
-      let responseData = []
-      utils.formatDate('awardTime', awards, 'yyyy-MM-dd')
-      awards.forEach(award => {
-        console.log(award)
-        responseData.push({
-          awardName: award.awardName,
-          projectName: award.projectName || '个人',
-          username: award.userName,
-          contact: award.userPhone,
-          userId: award.userId
-        })
+      users.data.forEach(user => {
+        user.awardName = `${user.name} ${user.awardLevel} ${user.awardSecondLevel}`
+        if (user.projectId == '个人') {
+          user.projectName = '个人'
+        }
       })
       res.send({
         code: 200,
-        data: responseData,
+        data: users.data,
         count
       })
     }
@@ -184,6 +190,7 @@ let deleteUser = (req, res, next) => {
 
 let controller = {
   getAllAwards,
+  getAllAwardNames,
   changeAward,
   addAward,
   deleteAward,

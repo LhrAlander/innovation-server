@@ -4,6 +4,8 @@ const controller = require('../../controller/awardController')
 
 // 获取所有获奖信息
 router.get('/awards', controller.getAllAwards)
+// 获取所有获奖名称
+router.get('/awardNames', controller.getAllAwardNames)
 // 修改一个获奖信息
 router.post('/change/award', controller.changeAward)
 // 增加一个获奖信息
