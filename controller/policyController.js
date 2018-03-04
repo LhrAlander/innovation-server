@@ -2,35 +2,29 @@ const policyDao = require('../dao/policyDao')
 const utils = require('../utils/util')
 
 // 查找所有政策信息
-let getAllPolicys = (req, res, next) => {
-  policyDao.getAllPolicys()
-    .then(values => {
-      let responseData = []
-      values.data.forEach((item, index) => {
-        let data = {
-          // 表格数据
-          id: index + 1,
-          govCategory: item.policy_identity,
-          title: item.policy_title,
-          status: item.state == '已发布' ? 'published' : 'unpublished',
-          intro: item.policy_introduction,
-          policyId: item.policy_id
-        }
-        responseData.push(data)
-      })
-
+let getAllPolicys = async (req, res, next) => {
+  try {
+    let { param, pageNum, pageSize } = req.query
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    let filter = utils.obj2MySql(param)
+    console.log(filter)
+    let count = await policyDao.getCount(filter)
+    count = count.data[0].number
+    let policys = await policyDao.getAllPolicys(pageNum, pageSize, filter)
+    if (policys.code == 200) {
       res.send({
         code: 200,
-        data: responseData
+        data: policys.data,
+        count
       })
-    })
-    .catch(err => {
-      console.log(err)
-      res.send({
-        code: 500,
-        msg: '查找所有政策失败'
-      })
-    })
+    }
+  } 
+  catch (err) {
+    console.log(err)
+  }
+ 
 }
 
 // 修改政策

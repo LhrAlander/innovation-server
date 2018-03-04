@@ -149,8 +149,9 @@ let obj2MySql = filter => {
   let str = null
   let first = true
   for (let key in filter) {
-    console.log(key, filter[key])
     if (filter[key] != null && filter[key] != undefined && filter[key] != '') {
+    console.log(key, filter[key])
+      
       if (first) {
         str = ''
       }

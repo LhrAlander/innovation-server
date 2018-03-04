@@ -1,9 +1,16 @@
 const queryHelper = require('../utils/DBQuery')
 const config = require('../config')
 
+
+// 获取信息数量
+let getCount = filter => {
+  let sql = `select count(*) as number from(select p.policy_identity as govCategory,p.policy_title as title,p.state as status,p.policy_id as policyId from policy as p) as t  ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql, null)
+}
 // 获取所有的政策信息
-let getAllPolicys = () => {
-  const sql = 'select * from policy'
+let getAllPolicys = (pageNum, pageSize, filter) => {
+  const sql = `select * from (select p.policy_identity as govCategory,p.policy_title as title,p.state as status,p.policy_id as policyId from policy as p) as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  console.log(sql)
   return queryHelper.queryPromise(sql)
 }
 
@@ -61,6 +68,7 @@ let deleteFile = path => {
 }
 
 let policyDao = {
+  getCount,
   getAllPolicys,
   updatePolicy,
   getPolicy,
