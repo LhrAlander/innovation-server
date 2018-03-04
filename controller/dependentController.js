@@ -56,31 +56,18 @@ let getSelectors = async (req, res, next) => {
 let getAllDependents = async (req, res, next) => {
   try {
     let { param, pageNum, pageSize } = req.query
-    let count = await countHelper.getTableCount('dependent_unit_identity')
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    let filter = utils.obj2MySql(param)
+    let count = await dependentDao.getCount(filter)
     count = count.data[0].number
-    console.log(count)
-    let responseData = []
-    let units = await dependentDao.getAllDependents()
+    let units = await dependentDao.getAllDependents(pageNum, pageSize, filter)
     if (units.code == 200) {
-      units = units.data
-      console.log(units)
-      for (let i = 0; i < units.length; i++) {
-        let unit = units[i]
-        responseData.push({
-          unitId: unit.unit_id,
-          unitName: unit.unit_name,
-          unitCategory: unit.unit_identity,
-          leader: unit.user_name,
-          leaderPhone: unit.user_phone,
-          leaderId: unit.user_id,
-          email: unit.user_mail,
-          address: unit.unit_address
-        })
-      }
       res.send({
         code: 200,
-        data: responseData,
-        count: count
+        data: units.data,
+        count
       })
     }
   }

@@ -1,13 +1,28 @@
 const queryHelper = require('../utils/DBQuery')
 const config = require('../config')
 
+// 获取信息数量
+let getCount = filter => {
+  let sql = `select count(*) as number from(select unit.unit_name as unitName,unit.unit_identity as unitCategory,unit.unit_address as address,user.user_name as leader,user.user_phone as leaderPhone,user.user_mail as email,user.user_id as leaderId from dependent_unit as unit left join user on unit.unit_principal=user.user_id) as t  ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql, null)
+}
+
 /**
  * 获取所有的依托单位信息
  */
-let getAllDependents = () => {
-  const sql = 'select * from dependent_unit left join user on dependent_unit.unit_principal = user.user_id'
+let getAllDependents = (pageNum, pageSize, filter) => {
+  let sql = 'select * from dependent_unit'
+  if (pageNum != null) {
+    sql = `select * from (select unit.unit_name as unitName,unit.unit_identity as unitCategory,unit.unit_address as address,user.user_name as leader,user.user_phone as leaderPhone,user.user_mail as email,user.user_id as leaderId from dependent_unit as unit left join user on unit.unit_principal=user.user_id) as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  }
+  console.log(sql)
   return queryHelper.queryPromise(sql, null)
 }
+
+/**
+ * 获取所有依托单位的名字
+ */
+
 
 /**
  * 更新依托单位信息
@@ -39,6 +54,7 @@ let getDependent = unitId => {
 }
 
 let dao = {
+  getCount,
   getAllDependents,
   updateDependent,
   addDependent,
