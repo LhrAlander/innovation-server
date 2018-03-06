@@ -18,7 +18,6 @@ let getUsers = async (req, res, next) => {
     count = count.data[0].number
     userDao.getUsers(pageNum, pageSize, filter)
       .then(result => {
-        console.log('res', result)
         if (result.code == 200) {
           let responseData = []
           delete result.msg
@@ -84,7 +83,6 @@ let delUser = (req, res, next) => {
   userDao.changeUserInfo(user, userId)
     .then(result => {
       // 当dao层正确完成了数据库的操作后返回数据再这里
-      console.log(result)
       // 上一步得到数据，加工之后返回数据给前端
       if (result.code == 200) {
         delete result.msg
@@ -130,7 +128,6 @@ let searchUser = (req, res, next) => {
 // 修改一个用户的信息
 let changeUser = (req, res, next) => {
   let user = req.body.user
-  console.log(user)
   if (typeof user == 'string') {
     user = JSON.parse(user)
   }
