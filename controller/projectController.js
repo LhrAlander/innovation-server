@@ -10,9 +10,7 @@ let getAllProjects = async (req, res, next) => {
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
-    console.log(param, pageNum, pageSize)
     let filter = utils.obj2MySql(param)
-    console.log(filter)
     let count = await projectDao.getCount(filter)
     count = count.data[0].number
     let responseData = []
@@ -38,7 +36,6 @@ let getAllProjects = async (req, res, next) => {
         utils.formatDate(['applyYear', 'startDate', 'finishDate', 'beginYear', 'deadlineYear'], [tmp], 'yyyy-MM-dd')
         responseData.push(tmp)
       }
-      console.log(responseData)
       res.send({
         code: 200,
         data: responseData,
@@ -121,10 +118,8 @@ let changeProject = (req, res, next) => {
 // 获取一个项目信息
 let getProject = async (req, res, next) => {
   const { projectId } = req.body
-  console.log(projectId)
   try {
     const responseData = await projectDao.getProject(projectId)
-    console.log(responseData)
     res.send(responseData)
   }
   catch (err) {
@@ -139,9 +134,7 @@ let getAllUsers = async (req, res, next) => {
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
-    console.log(param, pageNum, pageSize)
     let filter = utils.obj2MySql(param)
-    console.log(filter)
     let count = await countHelper.getTableCount('project_student')
     count = count.data[0].number
     let users = await projectDao.getAllUsers(pageNum, pageSize, filter)
@@ -173,17 +166,14 @@ let deleteFiles = async (req, res, next) => {
   let files = req.body.files
   try {
     let rmRes = await utils.rmFile(files)
-    console.log(rmRes)
     for (let i = 0; i < rmRes.length; i++) {
       if (rmRes[i].code == 200) {
         let delRes = await projectDao.deleteFile(rmRes[i].filePath)
         if (delRes.code != 200) {
           throw new Error('删除数据库失败')
         }
-        console.log(delRes.code)
       }
     }
-    console.log('success')
     res.send({
       code: 200,
       data: '删除材料成功'
