@@ -1,4 +1,5 @@
 const queryHelper = require('../utils/DBQuery')
+const db = require('../utils/DBHelper')
 
 // 获取信息数量
 let getCount = filter => {
@@ -20,8 +21,47 @@ let getAllCompanies = (pageNum, pageSize, filter) => {
 
 // 增加企业信息
 let addCompany = company => {
-  const sql = 'insert into company set ?'
-  return queryHelper.queryPromise(sql, company)
+  return new Promise(async (resolve, reject) => {
+    await db.getConnection(async (err, connection) => {
+      if (err) {
+        resolve({
+          code: 500,
+          msg: '获取数据库链接失败'
+        })
+      }
+      else {
+        try {
+          await connection.beginTransaction()
+          let user = {
+            user_id: company.user_id,
+            user_name: company.user_name,
+            user_identity: '企业',
+            user_pwd: '123456',
+            account_state: '可用'
+          }
+          let res1 = await queryHelper.queryPromise('insert into user set ?', user, connection)
+          let res2 = await queryHelper.queryPromise(`insert into company set user_id = ?, user_name = ?, company_name = ?`, [company.user_id, company.user_name, company.company_name], connection)
+          await connection.commit()
+          connection.release()
+          resolve({
+            code: 200,
+            msg: '增加用户信息成功'
+          })
+        }
+        catch (error) {
+          console.log('出错了，准备回滚', error)
+          await connection.rollback(() => {
+            console.log('回滚成功')
+            connection.release()
+          });
+          resolve({
+            code: 500,
+            msg: '增加用户信息失败'
+          })
+        }
+      }
+    })
+  })
 }
 
 // 修改企业信息

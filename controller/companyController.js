@@ -21,9 +21,8 @@ let getAllCompanies = async (req, res, next) => {
       companies.forEach((company, index) => {
         responseData.push({
           userId: company.userId,
-          id: index,
           companyName: company.companyName,
-          principalName: company.companyPrincipal,
+          principalName: company.userName,
           companyAccess: company.companyPhone,
           status: company.accountState,
           principalPhone: company.userPhone,
@@ -53,17 +52,11 @@ let getAllCompanies = async (req, res, next) => {
 
 // 增加企业信息
 let addCompany = (req, res, next) => {
-  const { userId, userName, companyName, phone, principal, address } = req.body
-  dao.addCompany({
-    user_id: userId,
-    user_name: userName,
-    company_name: companyName,
-    company_phone: phone,
-    company_principal: principal,
-    company_address: address
-  })
+  const { user } = req.body
+  dao.addCompany(user)
     .then(values => {
       if (values.code == 200) {
+        console.log(values)
         res.send(values)
       }
     })
