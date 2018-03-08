@@ -56,19 +56,15 @@ let getUsers = async (req, res, next) => {
 }
 
 // 增加一个用户
-let createUser = (req, res, next) => {
-  let _user = userUtil.createUser('2015210405043', '林海瑞', '男', 'AlanderLt@163.com', '13588737694', '待审核', '学生')
-  userDao.createUser(_user)
-    .then(result => {
-      if (result.code == 200) {
-        delete result.msg
-        res.send(result)
-      }
-    })
-    .catch(err => {
-      console.log(err)
-      res.send(err)
-    })
+let createUser = async (req, res, next) => {
+  let user = req.body.user
+  user.user_pwd = '123456'
+  user.account_state = '可用'
+  console.log(user)
+  let result = await userDao.createUser(user);
+  console.log(result)
+  res.send(result)
+
 }
 
 // 删除一个用户
