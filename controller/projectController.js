@@ -73,12 +73,42 @@ let addProject = (req, res, next) => {
       res.send(values)
     })
     .catch(err => {
+      console.log(err)
       res.send({
         code: 500,
         msg: err.msg || err.message
       })
     })
 }
+
+// 增加项目成员
+let addProjectUser = (req, res, next) => {
+  let {user} = req.body
+  const {project_id, user_id} = user
+  Promise.all([userDao.searchUser(user_id), projectDao.getProject(project_id)])
+    .then(values => {
+      if (values.every((el, index, array) => {
+        console.log(el)
+        return el.code == 200
+      })) {
+        return projectDao.addProjectUser(user)
+      }
+      else {
+        throw new Error('无效用户或者无效项目')
+      }
+    })
+    .then(values => {
+      res.send(values)
+    })
+    .catch(err => {
+      console.log(err)
+      res.send({
+        code: 500,
+        msg: err.msg || err.message
+      })
+    })
+}
+
 
 // 删除项目
 let deleteProject = (req, res, next) => {
@@ -189,6 +219,7 @@ let deleteFiles = async (req, res, next) => {
 }
 
 let controller = {
+  addProjectUser,
   getAllProjects,
   addProject,
   deleteProject,

@@ -16,5 +16,7 @@ router.post('/project', controller.getProject)
 router.get('/users', controller.getAllUsers)
 // 删除材料附件
 router.post('/delete/files', controller.deleteFiles)
+// 增加项目成员
+router.post('/add/project/user', controller.addProjectUser)
 
 module.exports = router

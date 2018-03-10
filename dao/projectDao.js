@@ -48,6 +48,15 @@ let addProject = project => {
 }
 
 /**
+ * 
+ * @param {*项目成员模型对象} user 
+ */
+let addProjectUser = user => {
+  const sql = 'insert into project_student set ?'
+  return queryHelper.queryPromise(sql, user)
+}
+
+/**
  * 修改一个项目的信息
  * @param {*需要修改的字段值} payload 
  * @param {*需要修改的项目的ID} projectId 
@@ -177,6 +186,7 @@ let deleteFile = path => {
 
 
 let dao = {
+  addProjectUser,
   getCount,
   getAllProjects,
   addProject,
