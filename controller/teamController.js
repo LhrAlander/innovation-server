@@ -85,7 +85,7 @@ let addTeam = (req, res, next) => {
   Promise.all([userDao.searchUser(teacherId), userDao.searchUser(studentId)])
     .then(values => {
       if (values[0].code == 200 && values[0].data.length > 0 && values[1].code == 200 && values[1].data.length > 0) {
-        return teamDao.addProject(project)
+        return teamDao.addTeam(team)
       }
       else {
         throw new Error('无效负责人或者无效指导老师')
@@ -95,6 +95,7 @@ let addTeam = (req, res, next) => {
       res.send(values)
     })
     .catch(err => {
+      console.log(err)
       res.send({
         code: 500,
         msg: err.msg || err.message

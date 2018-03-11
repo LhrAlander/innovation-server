@@ -29,7 +29,7 @@ let getAllTeams = (pageNum, pageSize, filter) => {
  */
 let addTeam = team => {
   const sql = 'insert into team set ?'
-  return queryHelper.queryPromise(sql, project)
+  return queryHelper.queryPromise(sql, team)
 }
 
 /**
