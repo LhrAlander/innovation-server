@@ -133,7 +133,7 @@ let addDependent = async (req, res, next) => {
         })
     }
     else {
-      throw new Error('不存在改负责人')
+      throw new Error('不存在该负责人')
     }
   }
   catch (err) {
