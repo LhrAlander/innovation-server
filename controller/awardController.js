@@ -29,7 +29,7 @@ let getAllAwards = async (req, res, next) => {
 }
 
 // 获取所有获奖名称
-let  getAllAwardNames = async (req, res, next) => {
+let getAllAwardNames = async (req, res, next) => {
   try {
     let names = await awardDao.getAllAwardNames()
     if (names.code == 200) {
@@ -41,7 +41,7 @@ let  getAllAwardNames = async (req, res, next) => {
         data: names
       })
     }
-  } 
+  }
   catch (err) {
     console.log(err)
   }
@@ -129,7 +129,7 @@ let getAllUsers = async (req, res, next) => {
     let users = await awardDao.getAllUsers(pageNum, pageSize, filter)
     if (users.code == 200) {
       users.data.forEach(user => {
-        user.awardName = `${user.name} ${user.awardLevel} ${user.awardSecondLevel}`
+        user.awardName = `${user.awardTime.toLocaleDateString()} ${user.name} ${user.awardLevel} ${user.awardSecondLevel}`
         if (user.projectId == '个人') {
           user.projectName = '个人'
         }
@@ -154,19 +154,35 @@ let getAllUsers = async (req, res, next) => {
 }
 
 // 增加一个获奖成员信息
-let addUser = (req, res, next) => {
-  let { award } = req.body
-  award = utils.camel2_(award)
-  awardDao.addUser(award)
-    .then(values => {
-      res.send(values)
+let addUser = async (req, res, next) => {
+  try {
+    let { award, user } = req.body.award
+    let filter = utils.obj2MySql(award)
+    award = await awardDao.getAwardByFilter(filter)
+    console.log(award)
+    if (award.code == 200 && award.data.length > 0) {
+      user.award_id = award.data[0].award_id
+      let values = await awardDao.addUser(user)
+      console.log(values)
+      if (values.code == 200) {
+        res.send({
+          code: 200,
+          data: '增加获奖成员成功'
+        })
+      }
+    }
+    else {
+      throw Error('没有该奖项信息')
+    }
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      err
     })
-    .catch(err => {
-      res.send({
-        code: 500,
-        msg: '添加获奖成员信息失败'
-      })
-    })
+  }
+
 }
 
 // 删除一个获奖成员信息
