@@ -57,20 +57,23 @@ let updatePolicy = (req, res, next) => {
 }
 
 // 增加一个政策
-let addPolicy = (req, res, next) => {
+let addPolicy = async (req, res, next) => {
   const { policy } = req.body
   utils.camel2_(policy)
   policy.policy_id = utils.getId('policy')
-  policyDao.addPolicy(policy)
-    .then(values => {
-      res.send(values)
-    })
-    .catch(err => {
+  console.log(policy)
+  try {
+    let values = await policyDao.addPolicy(policy)
+    values.policyId = policy.policy_id
+    res.send(values)
+  } 
+  catch (err) {
+    console.log(err)
       res.send({
         code: 500,
         msg: '增加政策信息失败'
       })
-    })
+  }
 }
 
 // 获取一个政策

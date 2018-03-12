@@ -69,6 +69,7 @@ let deleteFile = path => {
 
 let policyDao = {
   getCount,
+  addPolicy,
   getAllPolicys,
   updatePolicy,
   getPolicy,
