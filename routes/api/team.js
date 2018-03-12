@@ -14,5 +14,7 @@ router.post('/change/team', controller.changeTeam)
 router.post('/team', controller.getTeam)
 // 获取所有团队成员
 router.get('/users', controller.getAllUsers)
+// 增加项目成员
+router.post('/add/team/user', controller.addTeamUser)
 
 module.exports = router

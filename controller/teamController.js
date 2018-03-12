@@ -222,7 +222,36 @@ let getAllUsers = async (req, res, next) => {
   }
 }
 
+// 增加项目成员
+let addTeamUser = (req, res, next) => {
+  let {user} = req.body
+  const {team_id, user_id} = user
+  Promise.all([userDao.searchUser(user_id), teamDao.getTeam(team_id)])
+    .then(values => {
+      if (values.every((el, index, array) => {
+        console.log(el)
+        return el.code == 200
+      })) {
+        return teamDao.addTeamUser(user)
+      }
+      else {
+        throw new Error('无效用户或者无效项目')
+      }
+    })
+    .then(values => {
+      res.send(values)
+    })
+    .catch(err => {
+      console.log(err)
+      res.send({
+        code: 500,
+        msg: err.msg || err.message
+      })
+    })
+}
+
 let controller = {
+  addTeamUser,
   getAllTeams,
   addTeam,
   deleteTeam,

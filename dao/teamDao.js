@@ -32,6 +32,16 @@ let addTeam = team => {
   return queryHelper.queryPromise(sql, team)
 }
 
+
+/**
+ * 
+ * @param {*团队成员模型对象} user 
+ */
+let addTeamUser = user => {
+  const sql = 'insert into team_student set ?'
+  return queryHelper.queryPromise(sql, user)
+}
+
 /**
  * 修改一个团队的信息
  * @param {*需要修改的字段值} payload 
@@ -83,6 +93,7 @@ let getTeamsByUnit = unitId => {
 
 
 let teamDao = {
+  addTeamUser,
   getCount,
   getUserCount,
   getAllTeams,
