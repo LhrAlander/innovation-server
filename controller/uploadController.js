@@ -108,6 +108,7 @@ let uploadNotificationFiles = (req, res, next) => {
           })
         })
         .catch(err => {
+          console.log(err)
           throw new Error('上传文件失败!')
         })
 

@@ -60,6 +60,11 @@ let deleteFile = path => {
   return queryHelper.queryPromise(sql, path)
 }
 
+let addNotification = notification => {
+  const sql = `insert into notification set ?`
+  return queryHelper.queryPromise(sql, notification)
+}
+
 
 let dao = {
   getCount,
@@ -68,6 +73,7 @@ let dao = {
   getFilesByNotification,
   uploadFile,
   deleteFile,
-  updateNotification
+  updateNotification,
+  addNotification
 }
 module.exports = dao

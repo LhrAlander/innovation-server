@@ -20,11 +20,11 @@ let getAllPolicys = async (req, res, next) => {
         count
       })
     }
-  } 
+  }
   catch (err) {
     console.log(err)
   }
- 
+
 }
 
 // 修改政策
@@ -66,13 +66,13 @@ let addPolicy = async (req, res, next) => {
     let values = await policyDao.addPolicy(policy)
     values.policyId = policy.policy_id
     res.send(values)
-  } 
+  }
   catch (err) {
     console.log(err)
-      res.send({
-        code: 500,
-        msg: '增加政策信息失败'
-      })
+    res.send({
+      code: 500,
+      msg: '增加政策信息失败'
+    })
   }
 }
 

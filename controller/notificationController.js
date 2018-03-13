@@ -37,7 +37,7 @@ let getAllNotifications = async (req, res, next) => {
     else {
       throw new Error('未能找到')
     }
-  } 
+  }
   catch (err) {
     console.log(err)
     res.send({
@@ -63,7 +63,7 @@ let getNotification = async (req, res, next) => {
       })
       console.log(files)
       res.send({
-        code: 200, 
+        code: 200,
         data: notification,
         files: files
       })
@@ -71,8 +71,8 @@ let getNotification = async (req, res, next) => {
     else {
       throw new Error('未能找到该通知公告')
     }
-    
-  } 
+
+  }
   catch (err) {
     console.log(err)
     res.send({
@@ -83,7 +83,7 @@ let getNotification = async (req, res, next) => {
 }
 
 // 修改一个通知公告
-let updateNotification = async (req, res, next) =>{
+let updateNotification = async (req, res, next) => {
   try {
     let { notification } = req.body
     notification = utils.camel2_(notification)
@@ -139,11 +139,31 @@ let deleteFiles = async (req, res, next) => {
   }
 }
 
+// 增加一个通知公告
+let addNotification = async (req, res, next) => {
+  try {
+    const { notification } = req.body
+    notification.notification_id = utils.getId('notification')
+    let values = await notificationDao.addNotification(notification)
+    console.log(values)
+    values.notificationId = notification.notification_id
+    res.send(values)
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      msg: '增加通知公告失败'
+    })
+  }
+}
+
 let controller = {
   getAllNotifications,
   getNotification,
   deleteFiles,
-  updateNotification
+  updateNotification,
+  addNotification
 }
 
 module.exports = controller
