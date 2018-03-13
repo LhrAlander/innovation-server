@@ -34,7 +34,7 @@ let getUserCount = filter => {
  * 获取所有的项目信息
  */
 let getAllProjects = (pageNum, pageSize, filter) => {
-  const projectSql = `select * from (select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName,team.team_name from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id left join team on project.team_id = team.team_id) as t  where ${ filter ? filter + ' and ' : ''} project_status not like "%删除%" limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const projectSql = `select * from (select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName,team.team_name from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id left join team on project.team_id = team.team_id) as t  where ${filter ? filter + ' and ' : ''} project_status not like "%删除%" limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   return queryHelper.queryPromise(projectSql)
 }
 
@@ -51,9 +51,24 @@ let addProject = project => {
  * 
  * @param {*项目成员模型对象} user 
  */
-let addProjectUser = user => {
-  const sql = 'insert into project_student set ?'
-  return queryHelper.queryPromise(sql, user)
+let addProjectUser = async user => {
+  try {
+    console.log(user)
+    let checkSql = `select * from project_student where project_id = ? and user_id = ?`
+    let values = await queryHelper.queryPromise(checkSql, [user.project_id, user.user_id])
+    console.log(values)
+    if (values.code == 200 && values.data.length > 0) {
+      const sql = `update project_student set is_in_service = 1, leave_time = null, add_time = '${user.add_time}' where project_id = '${user.project_id}' and user_id = '${user.user_id}'`
+      return queryHelper.queryPromise(sql)
+    }
+    else {
+      const sql = 'insert into project_student set ?'
+      return queryHelper.queryPromise(sql, user)
+    }
+  }
+  catch (err) {
+    console.log(err)
+  }
 }
 
 /**
@@ -142,7 +157,7 @@ let getProject = async projectId => {
  * 获取所有的项目成员
  */
 let getAllUsers = (pageNum, pageSize, filter) => {
-  const sql = `select * from (select p.project_name as projectName,p.project_id as projectId, u.user_id as userId,u.user_name as username, u.user_phone as contact, st.add_time as joinTime from project_student as st left join project as p on st.project_id = p.project_id left join user as u on u.user_id = st.user_id) as t  ${ filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const sql = `select * from (select p.project_name as projectName,p.project_id as projectId, u.user_id as userId,u.user_name as username, u.user_phone as contact, st.add_time as joinTime from project_student as st left join project as p on st.project_id = p.project_id left join user as u on u.user_id = st.user_id where st.is_in_service='1') as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   console.log(sql)
   return queryHelper.queryPromise(sql, null)
 }
@@ -158,7 +173,7 @@ let getProjectsByTeam = teamId => {
   }
   catch (err) {
     console.log('根据团查找项目失败', err)
-  } 
+  }
 }
 
 /**
@@ -168,10 +183,10 @@ let getProjectsByTeam = teamId => {
 let uploadFile = file => {
   try {
     const sql = `insert into project_files set ?`
-    return queryHelper.queryPromise(sql, file)  
-  } 
+    return queryHelper.queryPromise(sql, file)
+  }
   catch (err) {
-    console.log('上传项目材料失败',  err)
+    console.log('上传项目材料失败', err)
   }
 }
 
@@ -182,6 +197,19 @@ let uploadFile = file => {
 let deleteFile = path => {
   const sql = `delete from project_files where file_path = ?`
   return queryHelper.queryPromise(sql, path)
+}
+
+let delProjectUser = user => {
+  if (user.del) {
+    const sql = `delete from project_student where project_id = '${user.projectId}' and user_id = '${user.userId}'`
+    console.log(sql)
+    return queryHelper.queryPromise(sql, [user.projectId, user.userId])
+  }
+  else {
+    const sql = `update project_student set is_in_service = 0, leave_time = ? where project_id = ? and user_id = ?`
+    console.log(sql)
+    return queryHelper.queryPromise(sql, [user.leaveTime, user.projectId, user.userId])
+  }
 }
 
 
@@ -195,7 +223,8 @@ let dao = {
   getAllUsers,
   getProjectsByTeam,
   uploadFile,
-  deleteFile
+  deleteFile,
+  delProjectUser
 }
 
 module.exports = dao

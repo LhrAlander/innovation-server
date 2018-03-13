@@ -33,6 +33,7 @@ let getAllProjects = async (req, res, next) => {
         tmp.principalName = project.studentId
         tmp.guideTeacher = project.teacherName
         tmp.guideTeacherName = project.teacherId
+        tmp.status = project.project_status
         utils.formatDate(['applyYear', 'startDate', 'finishDate', 'beginYear', 'deadlineYear'], [tmp], 'yyyy-MM-dd')
         responseData.push(tmp)
       }
@@ -83,12 +84,11 @@ let addProject = (req, res, next) => {
 
 // 增加项目成员
 let addProjectUser = (req, res, next) => {
-  let {user} = req.body
-  const {project_id, user_id} = user
+  let { user } = req.body
+  const { project_id, user_id } = user
   Promise.all([userDao.searchUser(user_id), projectDao.getProject(project_id)])
     .then(values => {
       if (values.every((el, index, array) => {
-        console.log(el)
         return el.code == 200
       })) {
         return projectDao.addProjectUser(user)
@@ -114,7 +114,7 @@ let addProjectUser = (req, res, next) => {
 let deleteProject = (req, res, next) => {
   let projectId = req.body.projectId
   let payload = {
-    project_status: '不可用'
+    project_status: req.body.project_status
   }
   projectDao.updateProject(payload, projectId)
     .then(values => {
@@ -172,7 +172,7 @@ let getAllUsers = async (req, res, next) => {
       utils.formatDate(['joinTime'], users.data, 'yyyy-MM-dd')
       users = users.data
       for (let index = 0; index < users.length; index++) {
-       users[index].index = index + 1
+        users[index].index = index + 1
       }
       res.send({
         code: 200,
@@ -218,6 +218,28 @@ let deleteFiles = async (req, res, next) => {
   }
 }
 
+// 删除项目成员
+let delProjectUser = async (req, res, next) => {
+  try {
+    const { user } = req.body
+    user.leaveTime = new Date().toLocaleDateString()
+    let values = await projectDao.delProjectUser(user)
+    if (values.code == 200) {
+      res.send({
+        code: 200,
+        data: '删除成员成功'
+      })
+    }
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      data: '删除成员失败'
+    })
+  }
+}
+
 let controller = {
   addProjectUser,
   getAllProjects,
@@ -226,7 +248,8 @@ let controller = {
   changeProject,
   getProject,
   getAllUsers,
-  deleteFiles
+  deleteFiles,
+  delProjectUser
 }
 
 module.exports = controller
