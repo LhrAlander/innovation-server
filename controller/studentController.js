@@ -10,31 +10,13 @@ let getAllStudents = async (req, res, next) => {
       param = JSON.parse(param)
     }
     let filter = utils.obj2MySql(param)
-    console.log(param)
     let count = await dao.getCount(filter)
     count = count.data[0].number
-    console.log(count)
-    let responseData = []
     let students = await dao.getAllStudents(pageNum, pageSize, filter)
     if (students.code == 200) {
-      students = utils.transformRes(students.data)
-      students.forEach((student, index) => {
-        responseData.push({
-          id: index + 1,
-          studentId: student.userId,
-          name: student.userName,
-          status: student.accountState,
-          phone: student.userPhone,
-          email: student.userMail,
-          institute: student.studentAcademy,
-          specialty: student.studentMajor,
-          class: student.studentClass,
-          gender: student.userSex,
-        })
-      })
       res.send({
         code: 200,
-        data: responseData,
+        data: students.data,
         count: count
       })
     }

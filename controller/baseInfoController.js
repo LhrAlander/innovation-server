@@ -21,6 +21,7 @@ let getMajorByAcademy = (req, res, next) => {
   const academy = req.body.academy
   baseInfoDao.getMajorByAcademy(academy)
     .then(results => {
+      console.log(results)
       if (results.code == 200) {
         delete results.msg
         res.send(results)

@@ -3,6 +3,11 @@ const router = express.Router()
 const controller = require('../../controller/teacherController')
 
 // 教师路由
+
+// 查询教师基本学位信息
+router.get('/selectors', controller.getSelectors)
+
+
 // 查询所有的教师信息
 router.get('/teachers', controller.getAllTeachers)
 

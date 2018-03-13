@@ -7,47 +7,20 @@ const utils = require('../utils/util')
 let getUsers = async (req, res, next) => {
   try {
     let { param, pageNum, pageSize } = req.query
-    let count = null
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
     let filter = utils.obj2MySql(param)
-    if (filter != null) {
-      count = await countHelper.getTableCount('user', filter)
-    }
-    else {
-      count = await countHelper.getTableCount('user', null)
-    }
+    let count = await userDao.getCount(filter)
     count = count.data[0].number
-    userDao.getUsers(pageNum, pageSize, filter)
-      .then(result => {
-        if (result.code == 200) {
-          let responseData = []
-          delete result.msg
-          result.data.forEach((item, index) => {
-            let data = {
-              // 表格数据
-              id: index + 1,
-              username: item.user_id,
-              name: item.user_name,
-              role: item.user_identity,
-              status: item.account_state,
-              phone: item.user_phone,
-              email: item.user_mail
-            }
-            responseData.push(data)
-          })
-
-          res.send({
-            code: 200,
-            data: responseData,
-            count: count
-          })
-        }
+    let users = await userDao.getUsers(pageNum, pageSize, filter)
+    if (users.code == 200) {
+      res.send({
+        code: 200,
+        data: users.data,
+        count
       })
-      .catch(err => {
-        res.send({
-          code: 500,
-          msg: err.message || err.msg
-        })
-      })
+    }
   }
   catch (err) {
     console.log(err)

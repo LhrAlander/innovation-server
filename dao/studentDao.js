@@ -1,21 +1,15 @@
 const queryHelper = require('../utils/DBQuery')
 // 获取信息数量
 let getCount = filter => {
-  if (filter) {
-    let sql = `select count(*) as number from (select student.* from student left join user on user.user_id = student.user_id where ${filter} and account_state not like '%删除%' ) as t`
-    return queryHelper.queryPromise(sql, null)
-  }
-  else {
-    let sql = `select count(*) as number from (select student.* from student left join user on user.user_id = student.user_id where account_state not like '%删除%') as t`
-    return queryHelper.queryPromise(sql, null)
-  }
+  let sql = `select count(*) as number from (select user.user_id as studentId,user.user_name as name,user.user_phone as phone,user.account_state as status,user.user_sex as gender,user.user_mail as email,student.student_academy as institute,student.student_major as specialty,student.student_class as class from student left join user on student.user_id=user.user_id) as t ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql)
 }
 
 
 // 获取所有的学生信息
 let getAllStudents = (pageNum, pageSize, filter) => {
-  // let sql = `select user.user_id, user.user_name, user.user_sex, user.user_mail, user.user_phone, user.account_state, student.student_academy, student.student_major, student.student_class from user, student where user.user_id = student.user_id limit ${(pageNum - 1) * pageSize}, ${pageSize}`
-  let sql = `select user.*, student.student_academy, student.student_major, student.student_class from student left join user on user.user_id = student.user_id where ${ filter ? filter + ' and ' : ''} account_state not like "%删除%" limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const sql = `select * from (select user.user_id as studentId,user.user_name as name,user.user_phone as phone,user.account_state as status,user.user_sex as gender,user.user_mail as email,student.student_academy as institute,student.student_major as specialty,student.student_class as class from student left join user on student.user_id=user.user_id order by user.account_state desc) as t ${filter ? 'where ' + filter : '' } limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  console.log(sql)
   return queryHelper.queryPromise(sql, null)
 }
 

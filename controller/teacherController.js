@@ -2,6 +2,46 @@ const dao = require('../dao/teacherDao')
 const countHelper = require('../utils/DBQuery')
 const utils = require('../utils/util')
 
+
+// 获取教师学位信息
+let getSelectors = async (req, res, next) => {
+  try {
+    Promise.all([dao.getDegrees(), dao.getBachelors(), dao.getMajors()])
+      .then(value => {
+        let degree = value[0].data.map(i => {
+          return {
+            label: i.degree,
+            value: i.degree
+          }
+        })
+        let background = value[1].data.map(i => {
+          return {
+            label: i.background,
+            value: i.background
+          }
+        })
+        let specialty = value[2].data.map(i => {
+          return {
+            label: i.specialty,
+            value: i.specialty
+          }
+        })
+        res.send({
+          code: 200,
+          degree,
+          background,
+          specialty
+        })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+  catch (err) {
+
+  }
+}
+
 // 获取所有教师信息
 let getAllTeachers = async (req, res, next) => {
   try {
@@ -11,37 +51,19 @@ let getAllTeachers = async (req, res, next) => {
     }
     let filter = utils.obj2MySql(param)
     let count = await dao.getCount(filter)
-    console.log(count)
     count = count.data[0].number
-    
-    let responseData = []
     let teachers = await dao.getAllTeachers(pageNum, pageSize, filter)
     if (teachers.code == 200) {
-      teachers = utils.transformRes(teachers.data)
-      teachers.forEach((teacher, index) => {
-        console.log(teacher)
-        responseData.push({
-          teacherId: teacher.userId,
-          name: teacher.userName,
-          phone: teacher.userPhone,
-          status: teacher.accountState,
-          background: teacher.teacherDegree,
-          degree: teacher.teacherBachelor,
-          specialty: teacher.teacherMajor,
-          gender: teacher.userSex,
-          email: teacher.userMail
-        })
-      })
       res.send({
         code: 200,
-        data: responseData,
-        count: count
+        data: teachers.data,
+        count
       })
     }
     else {
       throw new Error('未能找到')
     }
-  } 
+  }
   catch (err) {
     console.log(err)
     res.send({
@@ -104,6 +126,7 @@ let getTeacher = (req, res, next) => {
 }
 
 let controller = {
+  getSelectors,
   getAllTeachers,
   addTeacher,
   changeTeacher,

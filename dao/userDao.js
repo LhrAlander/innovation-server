@@ -1,18 +1,17 @@
 const db = require('../utils/DBHelper')
 const queryHelper = require('../utils/DBQuery')
 
+// 获取信息数量
+let getCount = filter => {
+  let sql = `select count(*) as number from(select user_id as username,user_name as name,user_identity as role,account_state as status,user_phone as phone,user_mail as email from user) as t  ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql, null)
+}
+
 // 获取所有用户
 let getUsers = function (pageNum, pageSize, filter) {
-  if (filter != null) {
-    const sql = `select * from user where ${filter} and account_state not like '%删除%' order by user_id limit  ${(pageNum - 1) * pageSize}, ${pageSize}`
-    console.log(sql)
-    return queryHelper.queryPromise(sql, null)
-  }
-  else {
-    const sql = `select * from user  where account_state not like '%删除%' order by user_id limit ${(pageNum - 1) * pageSize}, ${pageSize}`
-    console.log(sql)
-    return queryHelper.queryPromise(sql, null)
-  }
+  const sql = `select * from (select user_id as username,user_name as name,user_identity as role,account_state as status,user_phone as phone,user_mail as email from user order by status desc) as t ${filter ? 'where ' + filter : '' } limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  console.log(sql)
+  return queryHelper.queryPromise(sql)
 }
 
 // 新增一个用户
@@ -79,6 +78,7 @@ let searchUser = function (userId) {
 }
 
 let userDao = {
+  getCount,
   createUser,
   changeUserInfo,
   getUsers,

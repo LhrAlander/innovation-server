@@ -11,30 +11,14 @@ let getAllCompanies = async (req, res, next) => {
     }
     utils.camel2_(param)
     let filter = utils.obj2MySql(param)
-    console.log(filter)
     let count = await dao.getCount(filter)
     count = count.data[0].number
-    let responseData = []
     let companies = await dao.getAllCompanies(pageNum, pageSize, filter)
     if (companies.code == 200) {
-      companies = utils.transformRes(companies.data)
-      companies.forEach((company, index) => {
-        responseData.push({
-          userId: company.userId,
-          companyName: company.companyName,
-          principalName: company.userName,
-          companyAccess: company.companyPhone,
-          status: company.accountState,
-          principalPhone: company.userPhone,
-          gender: company.userSex,
-          email: company.userMail,
-          specAddress: company.companyAddress
-        })
-      })
       res.send({
         code: 200,
-        data: responseData,
-        count: count
+        data: companies.data,
+        count
       })
     }
     else {

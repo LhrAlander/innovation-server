@@ -9,8 +9,8 @@ let getAllAcademy = function () {
 
 // 获取学院下特定专业
 let getMajorByAcademy = function (academy) {
-  const sql = 'select major from major where academy = ? where status = "可用"'
-  return queryHelper.queryPromise(sql, academy)
+  const sql = `select major from major where academy = '${academy}' and status = "可用"`
+  return queryHelper.queryPromise(sql, null)
 }
 
 // 获取专业下特定班级

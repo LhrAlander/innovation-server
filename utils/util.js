@@ -160,7 +160,7 @@ let obj2MySql = filter => {
       else {
         str += ` and `
       }
-      str += `${key} like '%${filter[key].trim()}%'`
+      str += `${key} = '${filter[key].trim()}'`
       first = false
     }
     

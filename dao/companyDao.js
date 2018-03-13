@@ -3,19 +3,14 @@ const db = require('../utils/DBHelper')
 
 // 获取信息数量
 let getCount = filter => {
-  if (filter) {
-    let sql = `select count(*) as number from (select company.* from company left join user on user.user_id = company.user_id where ${filter} and account_state not like '%删除%' ) as t`
-    return queryHelper.queryPromise(sql, null)
-  }
-  else {
-    let sql = `select count(*) as number from (select company.* from company left join user on user.user_id = company.user_id where account_state not like '%删除%') as t`
-    return queryHelper.queryPromise(sql, null)
-  }
+  const sql = `select count(*) as number from (select user.user_id as userId,user.user_name as principalName,user.account_state as status,user.user_phone as principalPhone,user.user_sex as gender,user.user_mail as email,company.company_phone as companyAccess,company.company_name as companyName,company.company_address as specAddress from company left join user on company.user_id=user.user_id order by user.account_state desc) as t ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql, null)
+
 }
 
 // 获取所有的企业信息
 let getAllCompanies = (pageNum, pageSize, filter) => {
-  const sql = `select user.*, company.company_name, company.company_principal, company.company_address from company left join user on user.user_id = company.user_id where ${filter != null ? filter + ' and ' : ''} account_state not like '%删除%' limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const sql = `select * from (select user.user_id as userId,user.user_name as principalName,user.account_state as status,user.user_phone as principalPhone,user.user_sex as gender,user.user_mail as email,company.company_phone as companyAccess,company.company_name as companyName,company.company_address as specAddress from company left join user on company.user_id=user.user_id order by user.account_state desc) as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   return queryHelper.queryPromise(sql, null)
 }
 
