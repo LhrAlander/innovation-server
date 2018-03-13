@@ -63,6 +63,11 @@ let uploadFile = file => {
   }
 }
 
+let addFileSystem = info => {
+  const sql = `insert into file_system set ?`
+  return queryHelper.queryPromise(sql, info)
+}
+
 let dao = {
   getCount,
   getAllFiles,
@@ -70,6 +75,7 @@ let dao = {
   getFilesByFileSystem,
   updateFileSystem,
   deleteFile,
-  uploadFile
+  uploadFile,
+  addFileSystem
 }
 module.exports = dao

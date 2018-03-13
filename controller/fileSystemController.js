@@ -136,6 +136,24 @@ let updateFileSystem = async (req, res, next) => {
   }
 }
 
+// 增加政策制度信息
+let addFileSystem = async (req, res, next) => {
+  try {
+    const {info} = req.body
+    info.file_system_id = utils.getId('fileSystem')
+    let values = await fileSystemDao.addFileSystem(info)
+    console.log(values)
+    values.fileSystemId = info.file_system_id
+    res.send(values)
+  } 
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      msg: '增加文件制度失败'
+    })
+  }
+}
 
 
 let controller = {
@@ -143,5 +161,6 @@ let controller = {
   getFile,
   deleteFiles,
   updateFileSystem,
+  addFileSystem
 }
 module.exports = controller

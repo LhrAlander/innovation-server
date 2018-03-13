@@ -10,5 +10,7 @@ router.post('/file', controller.getFile)
 router.post('/delete/files', controller.deleteFiles)
 // 修改政策制度信息
 router.post('/change/file', controller.updateFileSystem)
+// 增加政策制度信息
+router.post('/add/fileSystem', controller.addFileSystem)
 
 module.exports = router

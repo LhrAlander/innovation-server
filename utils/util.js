@@ -8,7 +8,8 @@ const id = {
   award: '03',
   policy: '04',
   dependent: '05',
-  notification: '06'
+  notification: '06',
+  fileSystem: '07'
 }
 
 //格式化日期
