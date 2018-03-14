@@ -3,13 +3,13 @@ const config = require('../config')
 
 // 获取信息数量
 let getCount = filter => {
-  let sql = `select count(*) as number from(select t.team_id as teamId,t.team_name as groupName,st.user_id as leaderId,st.user_name as leaderName,st.user_phone as leaderPhone,teacher.user_name as teacher,teacher.user_id as teacherId,teacher.user_phone teacherPhone,unit.unit_name as dependentUnit,unit.unit_id as unitId from team as t left join user as st on t.team_principal=st.user_id left join user as teacher on t.team_teacher=teacher.user_id left join dependent_unit as unit on t.team_dependent_unit=unit.unit_id where team_state not like '%删除%') as t ${filter ? 'where ' + filter : ''}`
+  let sql = `select count(*) as number from(select  t.team_state as status,t.team_id as teamId,t.team_name as groupName,st.user_id as leaderId,st.user_name as leaderName,st.user_phone as leaderPhone,teacher.user_name as teacher,teacher.user_id as teacherId,teacher.user_phone teacherPhone,unit.unit_name as dependentUnit,unit.unit_id as unitId from team as t left join user as st on t.team_principal=st.user_id left join user as teacher on t.team_teacher=teacher.user_id left join dependent_unit as unit on t.team_dependent_unit=unit.unit_id where team_state not like '%删除%') as t ${filter ? 'where ' + filter : ''}`
   return queryHelper.queryPromise(sql, null)
 }
 
 // 获取信息数量
 let getUserCount = filter => {
-  const sql = `select count(*) as number from (select t.team_name as groupName,t.team_id as teamId,u.user_id as userId,u.user_name as username,u.user_phone as contact,ts.add_time as joinTime from team_student as ts left join team as t on ts.team_id=t.team_id left join user as u on ts.user_id=u.user_id where ts.is_in_service=1) as t  ${filter ? 'where ' + filter : ''} `
+  const sql = `select count(*) as number from (select t.team_state as status,t.team_name as groupName,t.team_id as teamId,u.user_id as userId,u.user_name as username,u.user_phone as contact,ts.add_time as joinTime from team_student as ts left join team as t on ts.team_id=t.team_id left join user as u on ts.user_id=u.user_id where ts.is_in_service=1) as t  ${filter ? 'where ' + filter : ''} `
   return queryHelper.queryPromise(sql, null)
 }
 
@@ -18,7 +18,7 @@ let getUserCount = filter => {
  * 获取所有的团队信息
  */
 let getAllTeams = (pageNum, pageSize, filter) => {
-  const teamSql = `select * from (select t.team_id as teamId,t.team_name as groupName,st.user_id as leaderId,st.user_name as leaderName,st.user_phone as leaderPhone,teacher.user_name as teacher,teacher.user_id as teacherId,teacher.user_phone teacherPhone,unit.unit_name as dependentUnit,unit.unit_id as unitId from team as t left join user as st on t.team_principal=st.user_id left join user as teacher on t.team_teacher=teacher.user_id left join dependent_unit as unit on t.team_dependent_unit=unit.unit_id where team_state not like '%删除%') as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize} `
+  const teamSql = `select * from (select  t.team_state as status,t.team_id as teamId,t.team_name as groupName,st.user_id as leaderId,st.user_name as leaderName,st.user_phone as leaderPhone,teacher.user_name as teacher,teacher.user_id as teacherId,teacher.user_phone teacherPhone,unit.unit_name as dependentUnit,unit.unit_id as unitId from team as t left join user as st on t.team_principal=st.user_id left join user as teacher on t.team_teacher=teacher.user_id left join dependent_unit as unit on t.team_dependent_unit=unit.unit_id where team_state not like '%删除%' order by t.team_state desc) as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize} `
   console.log(teamSql)
   return queryHelper.queryPromise(teamSql)
 }
@@ -37,9 +37,23 @@ let addTeam = team => {
  * 
  * @param {*团队成员模型对象} user 
  */
-let addTeamUser = user => {
-  const sql = 'insert into team_student set ?'
-  return queryHelper.queryPromise(sql, user)
+let addTeamUser = async user => {
+  try {
+    console.log(user)
+    let checkSql = `select * from team_student where team_id=? and user_id=?`
+    let values = await queryHelper.queryPromise(checkSql, [user.team_id, user.user_id])
+    if (values.code == 200 && values.data.length > 0) {
+      const sql = `update team_student set is_in_service = 1, leave_time = null, add_time = '${user.add_time}' where team_id = '${user.team_id}' and user_id = '${user.user_id}'`
+      return queryHelper.queryPromise(sql)
+    }
+    else {
+      const sql = 'insert into team_student set ?'
+      return queryHelper.queryPromise(sql, user)
+    }
+  } 
+  catch (err) {
+    console.log(err)
+  }
 }
 
 /**
@@ -91,6 +105,15 @@ let getTeamsByUnit = unitId => {
   }
 }
 
+// 删除团队成员
+let delTeamUser = user => {
+  let sql = `update team_student set is_in_service = 0, leave_time='${user.leave_time}' where team_id='${user.team_id}' and user_id = '${user.user_id}' `
+  if (user.del) {
+    sql = `delete from team_student where team_id='${user.team_id}' and user_id='${user.user_id}'`
+  }
+  return queryHelper.queryPromise(sql)
+}
+
 
 let teamDao = {
   addTeamUser,
@@ -101,7 +124,8 @@ let teamDao = {
   updateTeam,
   getTeam,
   getAllUsers,
-  getTeamsByUnit
+  getTeamsByUnit,
+  delTeamUser
 }
 
 module.exports = teamDao

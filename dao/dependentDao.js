@@ -13,7 +13,7 @@ let getCount = filter => {
 let getAllDependents = (pageNum, pageSize, filter) => {
   let sql = 'select * from dependent_unit'
   if (pageNum != null) {
-    sql = `select * from (select unit.unit_id as unitId,unit.unit_name as unitName,unit.unit_identity as unitCategory,unit.unit_address as address,user.user_name as leader,user.user_phone as leaderPhone,user.user_mail as email,user.user_id as leaderId from dependent_unit as unit left join user on unit.unit_principal=user.user_id) as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+    sql = `select * from (select unit.unit_state as status,unit.unit_id as unitId,unit.unit_name as unitName,unit.unit_identity as unitCategory,unit.unit_address as address,user.user_name as leader,user.user_phone as leaderPhone,user.user_mail as email,user.user_id as leaderId from dependent_unit as unit left join user on unit.unit_principal=user.user_id) as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   }
   console.log(sql)
   return queryHelper.queryPromise(sql, null)

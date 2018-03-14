@@ -87,7 +87,7 @@ let addAward = (req, res, next) => {
 let deleteAward = (req, res, next) => {
   try {
     let { awardId } = req.body
-    teamDao.deleteAward(awardId)
+    awardDao.deleteAward(awardId)
       .then(values => {
         if (values.code == 200) {
           res.send({
@@ -100,6 +100,7 @@ let deleteAward = (req, res, next) => {
         }
       })
       .catch(err => {
+        console.log(err)
         res.send({
           code: 500,
           msg: '删除获奖信息失败'
@@ -129,7 +130,8 @@ let getAllUsers = async (req, res, next) => {
     let users = await awardDao.getAllUsers(pageNum, pageSize, filter)
     if (users.code == 200) {
       users.data.forEach(user => {
-        user.awardName = `${user.awardTime.toLocaleDateString()} ${user.name} ${user.awardLevel} ${user.awardSecondLevel}`
+        // user.awardName = `${user.awardTime.toLocaleDateString()} ${user.name} ${user.awardLevel} ${user.awardSecondLevel}`
+        user.awardName = ` ${user.name} ${user.awardLevel} ${user.awardSecondLevel}`
         if (user.projectId == '个人') {
           user.projectName = '个人'
         }
@@ -188,8 +190,10 @@ let addUser = async (req, res, next) => {
 // 删除一个获奖成员信息
 let deleteUser = (req, res, next) => {
   const { award } = req.body
+  console.log(award)
   awardDao.deleteUser(award.awardId, award.userId)
     .then(values => {
+      console.log(values)
       res.send({
         code: 200,
         msg: '删除获奖成员成功'

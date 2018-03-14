@@ -204,12 +204,30 @@ let getDependent = async (req, res, next) => {
 }
 
 
+// 删除一个依托单位
+let delDependent = (req, res, next) => {
+  let { unitId, payload } = req.body
+  dependentDao.updateDependent(payload, unitId)
+    .then(values => {
+      res.send(values)
+    })
+    .catch(err => {
+      console.log(err)
+      res.send({
+        code: 500,
+        msg: err.msg || err.message
+      })
+    })
+}
+
+
 let controller = {
   getAllDependents,
   changeDependent,
   changeDependent,
   addDependent,
   getDependent,
-  getSelectors
+  getSelectors,
+  delDependent
 }
 module.exports = controller

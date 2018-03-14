@@ -17,6 +17,6 @@ router.get('/users', controller.getAllUsers)
 // 增加一个获奖成员信息
 router.post('/add/user', controller.addUser)
 // 删除一个获奖成员信息
-router.post('/delete/user', controller.deleteAward)
+router.post('/delete/user', controller.deleteUser)
 
 module.exports = router

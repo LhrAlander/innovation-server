@@ -105,10 +105,7 @@ let addTeam = (req, res, next) => {
 
 // 删除团队
 let deleteTeam = (req, res, next) => {
-  let { teamId } = req.body
-  let payload = {
-    team_state: '不可用'
-  }
+  let { teamId, payload } = req.body
   teamDao.updateTeam(payload, teamId)
     .then(values => {
       res.send(values)
@@ -224,8 +221,8 @@ let getAllUsers = async (req, res, next) => {
 
 // 增加项目成员
 let addTeamUser = (req, res, next) => {
-  let {user} = req.body
-  const {team_id, user_id} = user
+  let { user } = req.body
+  const { team_id, user_id } = user
   Promise.all([userDao.searchUser(user_id), teamDao.getTeam(team_id)])
     .then(values => {
       if (values.every((el, index, array) => {
@@ -250,6 +247,28 @@ let addTeamUser = (req, res, next) => {
     })
 }
 
+// 删除团队成员
+let delTeamUser = async (req, res, next) => {
+  try {
+    const { user } = req.body
+    user.leave_time = new Date().toLocaleDateString()
+    let values = await teamDao.delTeamUser(user)
+    if (values.code == 200) {
+      res.send({
+        code: 200,
+        data: '删除成员成功'
+      })
+    }
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      data: '删除成员失败'
+    })
+  }
+}
+
 let controller = {
   addTeamUser,
   getAllTeams,
@@ -257,7 +276,8 @@ let controller = {
   deleteTeam,
   changeTeam,
   getTeam,
-  getAllUsers
+  getAllUsers,
+  delTeamUser
 }
 
 module.exports = controller

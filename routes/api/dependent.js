@@ -12,5 +12,7 @@ router.post('/change/dependent', controller.changeDependent)
 router.post('/add/dependent', controller.addDependent)
 // 查找一个依托单位信息
 router.post('/dependent', controller.getDependent)
+// 删除一个依托单位
+router.post('/del/dependent', controller.delDependent)
 
 module.exports = router

@@ -58,7 +58,7 @@ let deleteAward = awardId => {
 
 // 获取所有获奖用户
 let getAllUsers = (pageNum, pageSize, filter) => {
-  const sql = `select * from (select award.award_time as awardTime,award.award_name as name,award.award_identity as awardLevel,award.award_level as awardSecondLevel,award_user.award_project as projectId,project.project_name as projectName,user.user_name as username,user.user_phone as contact from award_user left join award on award_user.award_id = award.award_id left join project on award_user.award_project = project.project_id left join user on award_user.user_id = user.user_id) as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const sql = `select * from (select award.award_id as awardId,award.award_time as awardTime,award.award_name as name,award.award_identity as awardLevel,award.award_level as awardSecondLevel,award_user.user_id as userId,award_user.award_project as projectId,project.project_name as projectName,user.user_name as username,user.user_phone as contact from award_user left join award on award_user.award_id = award.award_id left join project on award_user.award_project = project.project_id left join user on award_user.user_id = user.user_id) as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   return queryHelper.queryPromise(sql, null)
 }
 
@@ -77,7 +77,7 @@ let addUser = award => {
  * @param {*用户Id} userId 
  */
 let deleteUser = (awardId, userId) => {
-  const sql = 'delete from award_user where award_id = awardId and user_id = userId'
+  const sql = 'delete from award_user where award_id = ? and user_id = ?'
   return queryHelper.queryPromise(sql, [awardId, userId])
 }
 
