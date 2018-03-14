@@ -4,6 +4,9 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const expressJwt = require("express-jwt");
+const jwt = require("jsonwebtoken");
+
 
 
 // api接口路由所需
@@ -22,6 +25,7 @@ const notification = require('./routes/api/notification')
 const fileSystem = require('./routes/api/fileSystem')
 const uploads = require('./routes/api/uploads')
 const download = require('./routes/api/download')
+const login = require('./routes/api/login')
 
 
 
@@ -44,6 +48,22 @@ app.use('/index', (req, res, next) => {
   res.render('index')
 })
 
+// jwt中间件
+app.use(expressJwt({
+  secret: "secret"//加密密钥，可换
+}).unless({
+  path: ["/api/login", "/index"]//添加不需要token的接口
+}));
+
+// 未携带token请求接口会出错，触发这个
+app.use(function(err, req, res, next) {
+  console.log('解析Token错误', err)
+  if (err.name === "UnauthorizedError") {
+      res.status(401).send(err);
+  }
+});
+
+
 app.use('/api/user', user)
 app.use('/api/baseInfo', baseInfo)
 app.use('/api/student', student)
@@ -59,6 +79,7 @@ app.use('/api/notification', notification)
 app.use('/api/fileSystem', fileSystem)
 app.use('/api/download', download)
 app.use('/api/upload', uploads)
+app.use('/api/login', login)
 
 
 // catch 404 and forward to error handler

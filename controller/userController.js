@@ -2,11 +2,21 @@ const userUtil = require('../modal/user')
 const userDao = require('../dao/userDao')
 const countHelper = require('../utils/DBQuery')
 const utils = require('../utils/util')
+const expressJwt = require("express-jwt");
+const jwt = require("jsonwebtoken");
 
 // 获取所有用户信息
 let getUsers = async (req, res, next) => {
   try {
-    let { param, pageNum, pageSize } = req.query
+    var token = req.user;
+    console.log('获取到token',  token)
+    jwt.verify(token, "secret", function (err, decoded) {
+      if (err) {
+        res.status(200).json(err)
+      } else {
+        console.log(decoded)
+      }
+    })
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
