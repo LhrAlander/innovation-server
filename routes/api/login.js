@@ -14,7 +14,7 @@ router.post('/', async (req, res, next) => {
     return res.status(400).send("请输入用户名和密码");
   }
   try {
-    let values = await db.queryPromise(`select * from user where user_id=${user.id} and user_pwd=${user.password}`)
+    let values = await db.queryPromise(`select * from user where user_id='${user.id}' and user_pwd='${user.password}'`)
     if (values.code == 200 && values.data.length > 0) {
       console.log(values)
       // 加密，获取token

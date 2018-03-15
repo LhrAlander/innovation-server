@@ -7,7 +7,8 @@ const bodyParser = require('body-parser');
 const expressJwt = require("express-jwt");
 const jwt = require("jsonwebtoken");
 
-
+// 中间件鉴权
+const adminAuth = require('./middleware/auth')
 
 // api接口路由所需
 const user = require('./routes/api/user')
@@ -52,7 +53,7 @@ app.use('/index', (req, res, next) => {
 app.use(expressJwt({
   secret: "secret"//加密密钥，可换
 }).unless({
-  path: ["/api/login", "/index"]//添加不需要token的接口
+  path: ["/api/login", "/index", '/api/download', '/api/upload/notification', '/api/upload/fileSystem', '/api/upload/project', '/api/upload/policy']//添加不需要token的接口
 }));
 
 // 未携带token请求接口会出错，触发这个
@@ -63,7 +64,10 @@ app.use(function(err, req, res, next) {
   }
 });
 
-
+app.use('/api/login', login)
+app.use('/api/download', download)
+app.use('/api/upload', uploads)
+app.use(adminAuth.auth)
 app.use('/api/user', user)
 app.use('/api/baseInfo', baseInfo)
 app.use('/api/student', student)
@@ -77,9 +81,6 @@ app.use('/api/policy', policy)
 app.use('/api/dependent', dependent)
 app.use('/api/notification', notification)
 app.use('/api/fileSystem', fileSystem)
-app.use('/api/download', download)
-app.use('/api/upload', uploads)
-app.use('/api/login', login)
 
 
 // catch 404 and forward to error handler
