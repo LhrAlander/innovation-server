@@ -20,7 +20,7 @@ router.post('/', async (req, res, next) => {
       // 加密，获取token
       var authToken = jwt.sign({
         username: values.data[0].user_name,
-        password: values.data[0].user_pwd,
+        userId: values.data[0].user_id,
         type: values.data[0].user_identity
       }, "secret", {
           expiresIn: 60 * 60 * 24 * 7// 授权时效7天

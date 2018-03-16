@@ -28,6 +28,11 @@ const uploads = require('./routes/api/uploads')
 const download = require('./routes/api/download')
 const login = require('./routes/api/login')
 
+const authJudge = require('./routes/api/authJudge')
+
+const studentBaseInfo = require('./routes/api/studentBaseInfo')
+const studentProject = require('./routes/api/studentProject')
+
 
 
 const app = express();
@@ -67,6 +72,7 @@ app.use(function(err, req, res, next) {
 app.use('/api/login', login)
 app.use('/api/download', download)
 app.use('/api/upload', uploads)
+app.use('/api/auth', authJudge)
 app.use(adminAuth.auth)
 app.use('/api/user', user)
 app.use('/api/baseInfo', baseInfo)
@@ -82,6 +88,9 @@ app.use('/api/dependent', dependent)
 app.use('/api/notification', notification)
 app.use('/api/fileSystem', fileSystem)
 
+app.use('/api/st/baseInfo', studentBaseInfo)
+app.use('/api/st/project', studentProject)
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -93,6 +102,7 @@ app.use(function (req, res, next) {
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
+  console.log(err)
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 

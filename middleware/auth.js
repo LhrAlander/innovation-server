@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 
 const adminRouter = ['/api/user', '/api/baseInfo', '/api/student', '/api/teacher', '/api/company', '/api/category', '/api/project', '/api/team', '/api/award', '/api/policy', '/api/dependent', '/api/notification', '/api/fileSystem']
-const studentRouter = []
+const studentRouter = ['/api/st']
 const teacherRouter = []
 const companyRouter = []
 
@@ -37,7 +37,20 @@ const auth = (req, res, next) => {
       next()
     }
     else {
-      res.status(401).send(`非${needAuth}身份`)
+      if (req.headers.authtoken) {
+        console.log('存在 token', req.headers.authtoken)
+        jwt.verify(req.headers.authtoken, 'secret', (err, decoded) => {
+          if (err) {
+            res.status(401)
+          }
+          else {
+            next()
+          }
+        })
+      }
+      else {
+        res.status(401).send('鉴权失败')
+      }
     }
   }
   catch (err) {
@@ -49,7 +62,6 @@ const auth = (req, res, next) => {
 const adminAuth = (req, res, next) => {
   try {
     var token = req.user;
-    console.log(token)
     if (token.type != '管理员') {
       res.status(401).send('非管理员身份')
     }
