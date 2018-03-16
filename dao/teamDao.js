@@ -114,6 +114,23 @@ let delTeamUser = user => {
   return queryHelper.queryPromise(sql)
 }
 
+// 学生团队数目
+let studentTeamCount = (userId, filter) => {
+  const sql = `select count(*) as number from (select st.user_name as leaderName,st.student_major as leaderSpecialty,unit.unit_name as dependentUnit,teacher.user_name as teacher,t.team_name as groupName, t.team_principal as leaderId, t.team_id as teamId from team_student as tst left join team as t on tst.team_id=t.team_id left join user as teacher on teacher.user_id=t.team_teacher left join dependent_unit as unit on unit.unit_id=t.team_dependent_unit left join student as st on st.user_id=t.team_principal where tst.user_id='${userId}') as t  ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql)
+}
+
+// 为学生查询团队
+let getTeamsByStudent = (userId, pageNum, pageSize, filter) => {
+  const sql =`select * from (select st.user_name as leaderName,st.student_major as leaderSpecialty,unit.unit_name as dependentUnit,teacher.user_name as teacher,t.team_name as groupName, t.team_principal as leaderId, t.team_id as teamId from team_student as tst left join team as t on tst.team_id=t.team_id left join user as teacher on teacher.user_id=t.team_teacher left join dependent_unit as unit on unit.unit_id=t.team_dependent_unit left join student as st on st.user_id=t.team_principal where tst.user_id='${userId}') as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  return queryHelper.queryPromise(sql)
+}
+
+// 获取团队展开信息
+let getExpandInfoByTeamId = teamId => {
+  const sql = `select student.student_class as leaderClass,st.user_phone as leaderPhone,th.user_id as theacherId,th.user_phone as teacherPhone,t.team_principal as leaderId,t.team_teacher as teacherId from team as t left join user as th on t.team_teacher=th.user_id left join student on student.user_id=t.team_principal left join user as st on st.user_id=t.team_principal where t.team_id='${teamId}'`
+  return queryHelper.queryPromise(sql)
+}
 
 let teamDao = {
   addTeamUser,
@@ -125,7 +142,10 @@ let teamDao = {
   getTeam,
   getAllUsers,
   getTeamsByUnit,
-  delTeamUser
+  delTeamUser,
+  studentTeamCount,
+  getTeamsByStudent,
+  getExpandInfoByTeamId
 }
 
 module.exports = teamDao

@@ -231,6 +231,18 @@ let getExpandInfoById = projectId => {
   return queryHelper.queryPromise(sql)
 }
 
+// 学生项目成员数目
+let studentProjectUserCount = (userId, filter) => {
+  const sql = `select count(*) as number from (select t.projectName, user.user_id as userId,user.user_name as username,user.user_phone as contact,project_student.add_time as joinTime from project_student right join (select project.project_id as PID,project.project_name as projectName from project_student left join project on project.project_id=project_student.project_id where user_id='${userId}') as t on project_student.project_id=t.PID left join user on project_student.user_id=user.user_id) as t  ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql)
+}
+
+// 为学生查询项目成员
+let getProjectUsersByStudent = (userId, pageNum, pageSize, filter) => {
+  const sql = `select * from (select t.projectName,t.leaderId,t.PID as projectId, user.user_id as userId,user.user_name as username,user.user_phone as contact,project_student.add_time as joinTime from project_student right join (select project.project_id as PID,project.project_principal as leaderId,project.project_name as projectName from project_student left join project on project.project_id=project_student.project_id where user_id='${userId}') as t on project_student.project_id=t.PID left join user on project_student.user_id=user.user_id) as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  return queryHelper.queryPromise(sql)
+}
+
 let dao = {
   addProjectUser,
   getCount,
@@ -244,6 +256,8 @@ let dao = {
   deleteFile,
   delProjectUser,
   getProjectsByStudent,
+  getProjectUsersByStudent,
+  studentProjectUserCount,
   studentProjectCount,
   getExpandInfoById
 }

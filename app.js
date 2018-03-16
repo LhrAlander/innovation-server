@@ -32,6 +32,8 @@ const authJudge = require('./routes/api/authJudge')
 
 const studentBaseInfo = require('./routes/api/studentBaseInfo')
 const studentProject = require('./routes/api/studentProject')
+const studentTeam = require('./routes/api/studentTeam')
+const studentAward = require('./routes/api/studentAward')
 
 
 
@@ -90,6 +92,8 @@ app.use('/api/fileSystem', fileSystem)
 
 app.use('/api/st/baseInfo', studentBaseInfo)
 app.use('/api/st/project', studentProject)
+app.use('/api/st/team', studentTeam)
+app.use('/api/st/award', studentAward)
 
 
 // catch 404 and forward to error handler
