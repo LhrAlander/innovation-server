@@ -12,7 +12,7 @@ let getProjects = async (req, res, next) => {
     let count = await projectDao.studentProjectCount(userId, filter)
     count = count.data[0].number
     let projects = await projectDao.getProjectsByStudent(userId, pageNum, pageSize, filter)
-    if (projects.code == 200 && projects.data.length > 0) {
+    if (projects.code == 200) {
       res.send({
         code: 200,
         data: projects.data,
@@ -34,7 +34,7 @@ let getExpandInfoById = async (req, res, next) => {
   try {
     const { projectId } = req.body
     let values = await projectDao.getExpandInfoById(projectId)
-    if (values.code == 200 && values.data.length > 0) {
+    if (values.code == 200) {
       values.data.projectId = projectId
       utils.formatDate(['applyYear', 'beginYear', 'deadlineYear'], values.data, 'yyyy-MM-dd')
       res.send({
@@ -66,7 +66,7 @@ let getPojrectUsers = async (req, res, next) => {
     count = count.data[0].number
     let users = await projectDao.getProjectUsersByStudent(userId, pageNum, pageSize, filter)
     utils.formatDate(['joinTime'], users.data, 'yyyy-MM-dd')
-    if (users.code == 200 && users.data.length > 0) {
+    if (users.code == 200) {
       res.send({
         code: 200,
         data: users.data,

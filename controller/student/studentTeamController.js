@@ -55,9 +55,44 @@ let getExpandInfoById = async (req, res, next) => {
   }
 }
 
+// 获取学生端团队成员信息
+let getTeamUsers = async (req, res, next) => {
+  try {
+    const userId = req.user.userId
+    let { param, pageNum, pageSize } = req.query
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    let filter = utils.obj2MySql(param)
+    let count = await teamDao.studentTeamUserCount(userId, filter)
+    count = count.data[0].number
+    let users = await teamDao.getTeamUsersByStudent(userId, pageNum, pageSize, filter)
+    utils.formatDate(['joinTime'], users.data, 'yyyy-MM-dd')
+    if (users.code == 200 && users.data.length > 0) {
+      res.send({
+        code: 200,
+        data: users.data,
+        count: count,
+        user: {
+          userId: req.user.userId,
+          userName: req.user.username
+        }
+      })
+    }
+    else {
+      throw new Error('查询失败')
+    }
+  }
+  catch (err) {
+    console.log(err)
+    res.status(500).send('查询失败')
+  }
+}
+
 let controller = {
   getTeams,
-  getExpandInfoById
+  getExpandInfoById,
+  getTeamUsers
 }
 
 module.exports = controller

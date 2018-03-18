@@ -5,5 +5,7 @@ const controller = authJudgeController = require('../../controller/authJudgeCont
 
 router.post('/projectInfo', controller.judgeProjectInfo)
 router.post('/edit/projectInfo', controller.judgeEditProjectInfo)
+router.post('/teamInfo', controller.judgeTeamInfo)
+router.post('/edit/teamInfo', controller.judgeEditTeamInfo)
 
 module.exports = router

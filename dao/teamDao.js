@@ -132,6 +132,18 @@ let getExpandInfoByTeamId = teamId => {
   return queryHelper.queryPromise(sql)
 }
 
+// 学生团队成员数目
+let studentTeamUserCount = (userId, filter) => {
+  const sql = `select count(*) as number from (select team.team_name as groupName,user.user_id as userId,user.user_name as username,user.user_phone as contact,tst.add_time as joinTime from (select team_id as teamId from team_student where user_id='${userId}') as t left join team_student as tst on t.teamId=tst.team_id left join user on tst.user_id=user.user_id left join team on t.teamId=team.team_id where tst.is_in_service=1) as t ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql)
+}
+
+// 为学生查询团队成员
+let getTeamUsersByStudent = (userId, pageNum, pageSize, filter) => {
+  const sql = `select * from (select team.team_name as groupName,team.team_principal as leaderId,user.user_id as userId,user.user_name as username,user.user_phone as contact,tst.add_time as joinTime from (select team_id as teamId from team_student where user_id='${userId}') as t left join team_student as tst on t.teamId=tst.team_id left join user on tst.user_id=user.user_id left join team on t.teamId=team.team_id where tst.is_in_service=1) as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  return queryHelper.queryPromise(sql)
+}
+
 let teamDao = {
   addTeamUser,
   getCount,
@@ -145,7 +157,9 @@ let teamDao = {
   delTeamUser,
   studentTeamCount,
   getTeamsByStudent,
-  getExpandInfoByTeamId
+  getExpandInfoByTeamId,
+  studentTeamUserCount,
+  getTeamUsersByStudent
 }
 
 module.exports = teamDao
