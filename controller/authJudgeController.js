@@ -1,4 +1,5 @@
 const authDao = require('../dao/authJudgeDao')
+const projectDao = require('../dao/projectDao')
 const utils = require('../utils/util')
 
 
@@ -17,7 +18,6 @@ const createAuthToken = flag => {
 // 判断是否又权限进入项目详细信息界面
 let judgeProjectInfo = async (req, res, next) => {
   let projectId = req.body.projectId
-
   switch (req.user.type) {
     case '学生':
       let values = await authDao.judgeProjectInfoByStudent(req.user.userId, projectId)
@@ -30,6 +30,19 @@ let judgeProjectInfo = async (req, res, next) => {
         res.status(401).send('无权访问')
       }
       break;
+    case '教师':
+      let teacher = await authDao.judgeEditProjectInfo(projectId)
+      if (teacher.code == 200 && teacher.data.length > 0) {
+        if (teacher.data[0].project_principal == req.user.userId || teacher.data[0].project_teacher == req.user.userId) {
+          res.send({
+            authToken: createAuthToken(true)
+          })
+        }
+        else {
+          res.status(401).send('无权访问')
+        }
+      }
+      break
   }
 }
 
@@ -55,6 +68,17 @@ let judgeTeamInfo = async (req, res, next) => {
     case '学生':
       let values = await authDao.judgeTeamInfoByStudent(req.user.userId, teamId)
       if (values.code == 200 && values.data.length > 0) {
+        res.send({
+          authToken: createAuthToken(true)
+        })
+      }
+      else {
+        res.status(401).send('无权访问')
+      }
+      break;
+    case '教师':
+      let teacher = await authDao.judgeEditTeamInfo(teamId)
+      if (teacher.code == 200 && teacher.data.length > 0 && (teacher.data[0].team_teacher == req.user.userId || values.data[0].team_principal == req.user.userId)) {
         res.send({
           authToken: createAuthToken(true)
         })

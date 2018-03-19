@@ -225,6 +225,19 @@ let getProjectsByStudent = (userId, pageNum, pageSize, filter) => {
   return queryHelper.queryPromise(sql)
 }
 
+// 教师项目数目
+let teacherProjectCount = (userId, filter) => {
+  const sql = `select count(*) as number from (select team.team_id as teamId,team.team_name as dependentUnit,p.register_year as applyYear,teacher.user_id as guideTeacherName,teacher.user_name as guideTeacher,p.project_id as projectId,p.project_principal as principalName,p.finish_year as deadlineYear,p.project_name as projectName,p.project_identity as projectCategory,p.start_year as beginYear, p.project_level as projectLevel from project as p left join teacher on p.project_teacher=teacher.user_id left join team on team.team_id=p.team_id where p.project_teacher='${userId}') as t  ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql)
+}
+
+// 为教师查询项目
+let getProjectsByTeacher = (userId, pageNum, pageSize, filter) => {
+  const sql = `select * from (select team.team_id as teamId,team.team_name as dependentUnit,p.register_year as applyYear,teacher.user_id as guideTeacherName,teacher.user_name as guideTeacher,p.project_id as projectId,p.project_principal as principalName,p.finish_year as deadlineYear,p.project_name as projectName,p.project_identity as projectCategory,p.start_year as beginYear, p.project_level as projectLevel from project as p left join teacher on p.project_teacher=teacher.user_id left join team on team.team_id=p.team_id where p.project_teacher='${userId}') as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  console.log(sql)
+  return queryHelper.queryPromise(sql)
+}
+
 // 获取项目展开信息
 let getExpandInfoById = projectId => {
   const sql = `select p.register_year as applyYear,p.start_year as beginYear,p.finish_year as deadlineYear,p.project_principal as principalName,p.project_teacher as guideTeacherName,team.team_name as dependentUnit from project as p left join team on p.team_id=team.team_id where p.project_id='${projectId}'`
@@ -243,6 +256,19 @@ let getProjectUsersByStudent = (userId, pageNum, pageSize, filter) => {
   return queryHelper.queryPromise(sql)
 }
 
+// 教师项目成员数目
+let teacherProjectUserCount = (userId, filter) => {
+  const sql = `select count(*) as number from (select t.projectName, user.user_id as userId,user.user_name as username,user.user_phone as contact,project_student.add_time as joinTime from project_student right join (select project_id as PID,project_principal as leaderId,project_name as projectName from project where project_teacher='${userId}') as t on project_student.project_id=t.PID left join user on project_student.user_id=user.user_id) as t  ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql)
+}
+
+// 为教师查询项目成员
+let getProjectUsersByTeacher = (userId, pageNum, pageSize, filter) => {
+  const sql = `select * from (select t.projectName,t.leaderId,t.PID as projectId, user.user_id as userId,user.user_name as username,user.user_phone as contact,project_student.add_time as joinTime from project_student right join (select project_id as PID,project_principal as leaderId,project_name as projectName from project where project_teacher='${userId}') as t on project_student.project_id=t.PID left join user on project_student.user_id=user.user_id) as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  return queryHelper.queryPromise(sql)
+}
+
+
 let dao = {
   addProjectUser,
   getCount,
@@ -259,6 +285,10 @@ let dao = {
   getProjectUsersByStudent,
   studentProjectUserCount,
   studentProjectCount,
+  getProjectUsersByTeacher,
+  getProjectsByTeacher,
+  teacherProjectUserCount,
+  teacherProjectCount,
   getExpandInfoById
 }
 

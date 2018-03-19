@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const adminRouter = ['/api/user', '/api/baseInfo', '/api/student', '/api/teacher', '/api/company', '/api/category', '/api/project', '/api/team', '/api/award', '/api/policy', '/api/dependent', '/api/notification', '/api/fileSystem']
 const studentRouter = ['/api/st']
-const teacherRouter = []
+const teacherRouter = ['/api/th']
 const companyRouter = []
 
 // 对所有路由进行鉴权处理
@@ -33,6 +33,7 @@ const auth = (req, res, next) => {
     })) {
       needAuth = '企业'
     }
+    console.log(needAuth)
     if (needAuth == token.type) {
       next()
     }

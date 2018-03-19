@@ -36,6 +36,12 @@ const studentTeam = require('./routes/api/studentTeam')
 const studentAward = require('./routes/api/studentAward')
 
 
+const teacherBaseInfo = require('./routes/api/teacherBaseInfo')
+const teacherProject = require('./routes/api/teacherProject')
+const teacherTeam = require('./routes/api/teacherTeam')
+const teacherAward = require('./routes/api/teacherAward')
+
+
 
 const app = express();
 
@@ -94,6 +100,11 @@ app.use('/api/st/baseInfo', studentBaseInfo)
 app.use('/api/st/project', studentProject)
 app.use('/api/st/team', studentTeam)
 app.use('/api/st/award', studentAward)
+
+app.use('/api/th/baseInfo', teacherBaseInfo)
+app.use('/api/th/project', teacherProject)
+app.use('/api/th/team', teacherTeam)
+app.use('/api/th/award', teacherAward)
 
 
 // catch 404 and forward to error handler
