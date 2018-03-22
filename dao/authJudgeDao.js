@@ -24,10 +24,17 @@ let judgeEditTeamInfo = teamId => {
   return queryHelper.queryPromise(sql, [teamId])
 }
 
+// 查询是否具有查看依托单位信息的权力
+let judgeUnitInfo = unitId => {
+  const sql = `select * from dependent_unit where unit_id = ?`
+  return queryHelper.queryPromise(sql, unitId)
+}
+
 const dao = {
   judgeProjectInfoByStudent,
   judgeEditProjectInfo,
   judgeTeamInfoByStudent,
-  judgeEditTeamInfo
+  judgeEditTeamInfo,
+  judgeUnitInfo,
 }
 module.exports = dao

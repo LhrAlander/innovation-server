@@ -114,11 +114,33 @@ let judgeEditTeamInfo = async (req, res, next) => {
 
 }
 
+let judgeUnitInfo = async (req, res, next) => {
+  try {
+    let unitId = req.body.unitId
+    console.log('判断依托单位权限', unitId)
+
+    let values = await authDao.judgeUnitInfo(unitId)
+    if (values.code == 200 && values.data.length > 0 && values.data[0].unit_principal == req.user.userId) {
+      res.send({
+        authToken: createAuthToken(true)
+      })
+    }
+    else {
+      throw new Error('无权访问')
+    }
+  }
+  catch (err) {
+    console.log(err)
+    res.status(401).send('无权访问')
+  }
+}
+
 let controller = {
   judgeProjectInfo,
   judgeEditProjectInfo,
   judgeTeamInfo,
-  judgeEditTeamInfo
+  judgeEditTeamInfo,
+  judgeUnitInfo
 }
 
 module.exports = controller

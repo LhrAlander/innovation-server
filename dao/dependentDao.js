@@ -53,11 +53,34 @@ let getDependent = unitId => {
   return queryHelper.queryPromise(sql, unitId)
 }
 
+/**
+ * 教师依托单位数量
+ * @param {*教师工号} userId 
+ * @param {*匹配条件} filter 
+ */
+const teacherUnitCount = (userId, filter) => {
+  const sql = `select count(*) as number from (select unit.unit_address as address,unit.unit_id as unitId,unit.unit_name as unitName, unit.unit_identity as unitCategory, user.user_id as leaderId,user.user_name as leader,user.user_mail as email, user.user_phone as leaderPhone from dependent_unit as unit left join user on user.user_id=unit.unit_principal where unit.unit_principal='${userId}') as t ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql)
+}
+
+
+/**
+ * 为教师查询依托单位
+ * @param {*教师工号} userId 
+ */
+const getUnitsByTeacher = (userId, pageNum, pageSize, filter) => {
+  const sql = `select * from (select unit.unit_address as address,unit.unit_id as unitId,unit.unit_name as unitName, unit.unit_identity as unitCategory, user.user_id as leaderId,user.user_name as leader,user.user_mail as email, user.user_phone as leaderPhone from dependent_unit as unit left join user on user.user_id=unit.unit_principal where unit.unit_principal='${userId}') as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  return queryHelper.queryPromise(sql)
+}
+
+
 let dao = {
   getCount,
   getAllDependents,
   updateDependent,
   addDependent,
-  getDependent
+  getDependent,
+  teacherUnitCount,
+  getUnitsByTeacher
 }
 module.exports = dao

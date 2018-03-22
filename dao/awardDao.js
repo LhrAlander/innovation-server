@@ -95,13 +95,13 @@ let getAwardsByStudent = (userId, pageNum, pageSize, filter) => {
 
 // 教师获奖数目
 let teacherAwardCount = (userId, filter) => {
-  const sql = `select count(*) as number from (select user.user_name as username,project.project_name,award.award_name as awardName, award.award_identity as awardCategory,award.award_level as awardLevel, award.award_time as awardTime from award_user left join award on award_user.award_id=award.award_id left join user on award_user.user_id=user.user_id left join project on project.project_id=award_user.award_project where award_user.user_id='${userId}') as t  ${filter ? 'where ' + filter : ''}`
+  const sql = `select count(*) as number from (select user.user_name as username,award.award_name as awardName,award.award_time as awardTime,award.award_identity as awardCategory,award.award_level as awardLevel,p.project_name as projectName,user.user_id as userId, user.user_phone as contact from (select distinct pst.user_id as userId from project as p left join project_student as pst on pst.project_id=p.project_id where p.project_teacher='${userId}') as t inner join award_user on award_user.user_id=t.userId left join award on award.award_id=award_user.award_id left join project as p on p.project_id=award_user.award_project left join user on user.user_id=award_user.user_id) as t  ${filter ? 'where ' + filter : ''}`
   return queryHelper.queryPromise(sql)
 }
 
 // 为教师查询获奖信息
 let getAwardsByTeacher = (userId, pageNum, pageSize, filter) => {
-  const sql = `select * from (select user.user_name as username,project.project_name as projectName,award.award_name as awardName, award.award_identity as awardCategory,award.award_level as awardLevel, award.award_time as awardTime from award_user left join award on award_user.award_id=award.award_id left join user on award_user.user_id=user.user_id left join project on project.project_id=award_user.award_project where award_user.user_id='${userId}') as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const sql = `select * from (select user.user_name as username,award.award_name as awardName,award.award_time as awardTime,award.award_identity as awardCategory,award.award_level as awardLevel,p.project_name as projectName,user.user_id as userId, user.user_phone as contact from (select distinct pst.user_id as userId from project as p left join project_student as pst on pst.project_id=p.project_id where p.project_teacher='${userId}') as t inner join award_user on award_user.user_id=t.userId left join award on award.award_id=award_user.award_id left join project as p on p.project_id=award_user.award_project left join user on user.user_id=award_user.user_id) as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   return queryHelper.queryPromise(sql)
 }
 

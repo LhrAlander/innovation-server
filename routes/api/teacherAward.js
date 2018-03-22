@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const controller = require('../../controller/student/studentAwardController')
+const controller = require('../../controller/teacher/teacherAwardController')
 
 
 // 查询学生获奖信息路由

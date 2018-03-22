@@ -40,6 +40,7 @@ const teacherBaseInfo = require('./routes/api/teacherBaseInfo')
 const teacherProject = require('./routes/api/teacherProject')
 const teacherTeam = require('./routes/api/teacherTeam')
 const teacherAward = require('./routes/api/teacherAward')
+const teacherUnit = require('./routes/api/teacherUnit')
 
 
 
@@ -105,6 +106,7 @@ app.use('/api/th/baseInfo', teacherBaseInfo)
 app.use('/api/th/project', teacherProject)
 app.use('/api/th/team', teacherTeam)
 app.use('/api/th/award', teacherAward)
+app.use('/api/th/unit', teacherUnit)
 
 
 // catch 404 and forward to error handler

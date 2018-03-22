@@ -1,7 +1,7 @@
-const awardDao = require('../../dao/awardDao')
+const unitDao = require('../../dao/dependentDao')
 const utils = require('../../utils/util')
-// 获取教师端获奖信息
-let getAwards = async (req, res, next) => {
+
+const getUnits = async (req, res, next) => {
   try {
     const userId = req.user.userId
     let { param, pageNum, pageSize } = req.query
@@ -9,18 +9,14 @@ let getAwards = async (req, res, next) => {
       param = JSON.parse(param)
     }
     let filter = utils.obj2MySql(param)
-    let count = await awardDao.teacherAwardCount(userId, filter)
+    let count = await unitDao.teacherUnitCount(userId, filter)
     console.log(count)
     count = count.data[0].number
-    let awards = await awardDao.getAwardsByTeacher(userId, pageNum, pageSize, filter)
-    utils.formatDate(['awardTime'], awards.data, 'yyyy-MM-dd')
-    if (awards.code == 200) {
-      awards.data.forEach(award => {
-        award.projectName = award.projectName || '个人'
-      })
+    let units = await unitDao.getUnitsByTeacher(userId, pageNum, pageSize, filter)
+    if (units.code == 200) {
       res.send({
         code: 200,
-        data: awards.data,
+        data: units.data,
         count: count
       })
     }
@@ -33,7 +29,9 @@ let getAwards = async (req, res, next) => {
     res.status(500).send('查询失败')
   }
 }
+
 let controller = {
-  getAwards
+  getUnits
 }
+
 module.exports = controller
