@@ -12,7 +12,7 @@ const auth = (req, res, next) => {
   try {
     const token = req.user
     const url = req.path
-    let needAuth = ''
+    let needAuth = null
     if (adminRouter.some(rt => {
       return url.startsWith(rt)
     })) {
@@ -34,7 +34,7 @@ const auth = (req, res, next) => {
       needAuth = '企业'
     }
     console.log(needAuth)
-    if (needAuth == token.type) {
+    if (!needAuth || needAuth == token.type) {
       next()
     }
     else {

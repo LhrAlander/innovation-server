@@ -172,6 +172,13 @@ let getTeamUsersByTeacher = (userId, pageNum, pageSize, filter) => {
   return queryHelper.queryPromise(sql)
 }
 
+
+// 为主页查询所有团队
+let getTeamsForIndex = () => {
+  const sql = `select * from team limit 0, 6`
+  return queryHelper.queryPromise(sql)
+}
+
 let teamDao = {
   addTeamUser,
   getCount,
@@ -192,6 +199,8 @@ let teamDao = {
   getTeamsByTeacher,
   teacherTeamUserCount,
   getTeamUsersByTeacher,
+  
+  getTeamsForIndex,
 }
 
 module.exports = teamDao

@@ -42,6 +42,8 @@ const teacherTeam = require('./routes/api/teacherTeam')
 const teacherAward = require('./routes/api/teacherAward')
 const teacherUnit = require('./routes/api/teacherUnit')
 
+const frontIndex = require('./routes/api/frontIndex')
+
 
 
 const app = express();
@@ -63,11 +65,15 @@ app.use('/index', (req, res, next) => {
   res.render('index')
 })
 
+app.use('/api/front/index', frontIndex)
+
 // jwt中间件
 app.use(expressJwt({
   secret: "secret"//加密密钥，可换
 }).unless({
-  path: ["/api/login", "/index", '/api/download', '/api/upload/notification', '/api/upload/fileSystem', '/api/upload/project', '/api/upload/policy']//添加不需要token的接口
+  path: ["/api/login", "/index", '/api/download', '/api/upload/notification', 
+  '/api/upload/fileSystem', '/api/upload/project', '/api/upload/policy',
+"/api/front/index"]//添加不需要token的接口
 }));
 
 // 未携带token请求接口会出错，触发这个

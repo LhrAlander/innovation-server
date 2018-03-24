@@ -14,7 +14,7 @@ let getCount = filter => {
 
 // 获取所有的通知公告信息
 let getAllNotifications = (pageNum, pageSize, filter) => {
-  let sql = `select * from notification where ${ filter ? filter + ' and ' : ''} state not like "%删除%" limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  let sql = `select * from notification where ${ filter ? filter + ' and ' : ''} state not like "%删除%" order by publish_time desc limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   console.log(sql)
   return queryHelper.queryPromise(sql, null)
 }
