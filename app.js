@@ -43,6 +43,11 @@ const teacherAward = require('./routes/api/teacherAward')
 const teacherUnit = require('./routes/api/teacherUnit')
 
 const frontIndex = require('./routes/api/frontIndex')
+const frontProjects = require('./routes/api/frontProjects')
+const frontPolicys = require('./routes/api/frontPolicys')
+const frontFiles = require('./routes/api/frontFiles')
+const frontNotifications = require('./routes/api/frontNotifications')
+const frontTeams = require('./routes/api/frontTeams')
 
 
 
@@ -66,7 +71,11 @@ app.use('/index', (req, res, next) => {
 })
 
 app.use('/api/front/index', frontIndex)
-
+app.use('/api/front/projects', frontProjects)
+app.use('/api/front/policys', frontPolicys)
+app.use('/api/front/fileSystems', frontFiles)
+app.use('/api/front/notifications', frontNotifications)
+app.use('/api/front/teams', frontTeams)
 // jwt中间件
 app.use(expressJwt({
   secret: "secret"//加密密钥，可换
