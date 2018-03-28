@@ -4,7 +4,13 @@ const getAllProjects = (pageNum, pageSize) => {
   return queryHelper.queryPromise(sql)
 }
 
+const getProjectByProjectId = projectId => {
+  const sql = `select project_name as projectName,project_id as projectId,project_introduce as projectIntroduction,start_year as projectTime from project where project_id='${projectId}'`
+  return queryHelper.queryPromise(sql)
+}
+
 const dao = {
-  getAllProjects
+  getAllProjects,
+  getProjectByProjectId
 }
 module.exports = dao

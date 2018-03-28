@@ -24,6 +24,17 @@ const getProjects = async (req, res, next) => {
 }
 
 const getProject = async (req, res, next) => {
+  try {
+    const projectId = req.body.projectId
+    let project = await projectDao.getProjectByProjectId(projectId)
+    project = project.data[0]
+    project.projectIntroduction = project.projectIntroduction || '<h1>暂无项目简介</h1>'
+    utils.formatDate('projectTime', [project], 'yyyy-MM-dd')
+    res.send(project)
+  }
+  catch (err) {
+    console.log(err)
+  }
 
 }
 
