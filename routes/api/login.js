@@ -27,7 +27,12 @@ router.post('/', async (req, res, next) => {
         });
       // 发送给前端，存在浏览器里
       res.status(200).json({
-        token: authToken
+        token: authToken,
+        user: {
+          username: values.data[0].user_name,
+          userId: values.data[0].user_id,
+          type: values.data[0].user_identity
+        }
       });
     }
     else {

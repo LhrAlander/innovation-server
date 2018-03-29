@@ -4,7 +4,13 @@ const getAllFileSystems = (pageNum, pageSize) => {
   return queryHelper.queryPromise(sql)
 }
 
+const getFileSystemById = fileSystemId => {
+  const sql = `select title,publish_user as author,publish_time as publishTime,introduction from file_system where file_system_id=? and state='可用'`
+  return queryHelper.queryPromise(sql, fileSystemId)
+}
+
 const dao = {
-  getAllFileSystems
+  getAllFileSystems,
+  getFileSystemById
 }
 module.exports = dao

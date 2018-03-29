@@ -33,7 +33,18 @@ const getNotifications = async (req, res, next) => {
 }
 
 const getNotification = async (req, res, next) => {
-
+  try {
+    const notificationId = req.body.notificationId
+    let notification = await notificationDao.getNotificationById(notificationId)
+    utils.formatDate('publishTime', notification.data, 'yyyy-MM-dd')
+    notification = notification.data[0]
+    console.log(notification)
+    res.send(notification)
+  } 
+  catch (err) {
+    console.log(err)
+    res.status(500).send('查询失败')
+  }
 }
 
 

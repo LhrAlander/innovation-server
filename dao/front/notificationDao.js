@@ -4,7 +4,13 @@ const getAllNotifications = (pageNum, pageSize) => {
   return queryHelper.queryPromise(sql)
 }
 
+const getNotificationById = notificationId => {
+  const sql = `select notification_title as title,notification_introduction as introduction,publish_time as publishTime, publish_user as author from notification where notification_id = ? and state='可用'`
+  return queryHelper.queryPromise(sql, notificationId)
+}
+
 const dao = {
-  getAllNotifications
+  getAllNotifications,
+  getNotificationById
 }
 module.exports = dao

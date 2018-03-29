@@ -4,7 +4,13 @@ const getAllPolicys = (pageNum, pageSize) => {
   return queryHelper.queryPromise(sql)
 }
 
+const getPolicyById = policyId => {
+  const sql = `select publish_time as publishTime,publish_user as author,policy_introduction as introduction,policy_title as title from policy where policy_id=? and state='可用'`
+  return queryHelper.queryPromise(sql, policyId)
+}
+
 const dao = {
-  getAllPolicys
+  getAllPolicys,
+  getPolicyById
 }
 module.exports = dao

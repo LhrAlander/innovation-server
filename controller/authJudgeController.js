@@ -43,22 +43,33 @@ let judgeProjectInfo = async (req, res, next) => {
         }
       }
       break
+    default:
+      res.send({
+        authToken: createAuthToken(true)
+      })
   }
 }
 
 // 判断是否又权限进入修改项目详细信息界面
 let judgeEditProjectInfo = async (req, res, next) => {
-  let projectId = req.body.projectId
-  console.log(req.user, projectId)
-  let values = await authDao.judgeEditProjectInfo(projectId)
-  if (values.code == 200 && values.data.length > 0 && (values.data[0].project_teacher == req.user.userId || values.data[0].project_principal == req.user.userId)) {
-    res.send({
-      authToken: createAuthToken(true)
-    })
+  try {
+    let projectId = req.body.projectId
+    console.log(req.user, projectId)
+    let values = await authDao.judgeEditProjectInfo(projectId)
+    console.log(values)
+    if (req.user.type == '管理员' || values.code == 200 && values.data.length > 0 && (values.data[0].project_teacher == req.user.userId || values.data[0].project_principal == req.user.userId)) {
+      res.send({
+        authToken: createAuthToken(true)
+      })
+    }
+    else {
+      res.status(401).send('无权访问')
+    }
   }
-  else {
-    res.status(401).send('无权访问')
+  catch (err) {
+    console.log(err)
   }
+
 }
 
 // 判断是否又权限进入项目详细信息界面

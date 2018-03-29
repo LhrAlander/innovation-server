@@ -33,7 +33,18 @@ const getPolicys = async (req, res, next) => {
 }
 
 const getPolicy = async (req, res, next) => {
-
+  try {
+    const policyId = req.body.policyId
+    let policy = await policyDao.getPolicyById(policyId)
+    utils.formatDate('publishTime', policy.data, 'yyyy-MM-dd')
+    policy = policy.data[0]
+    policy.introduction = policy.introduction == '' ? '暂无政策简介信息' : policy.introduction
+    res.send(policy)
+  } 
+  catch (err) {
+    console.log(err)
+    res.status(500).send('查询失败')
+  }
 }
 
 

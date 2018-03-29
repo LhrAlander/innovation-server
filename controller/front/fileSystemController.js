@@ -33,7 +33,17 @@ const getFileSystems = async (req, res, next) => {
 }
 
 const getFileSystem = async (req, res, next) => {
-
+  try {
+    const fileSystemId = req.body.fileSystemId
+    let file = await fileSystemDao.getFileSystemById(fileSystemId)
+    utils.formatDate('publishTime', file.data, 'yyyy-MM-dd')
+    console.log(file)
+    res.send(file.data[0])
+  } 
+  catch (err) {
+    console.log(err)
+    res.status(500).send('查询失败')
+  }
 }
 
 
