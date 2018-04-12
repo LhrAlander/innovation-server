@@ -10,7 +10,7 @@ const createAuthToken = flag => {
     auth: flag,
     secret: new Date()
   }, "secret", {
-      expiresIn: 60// 授权时效5min
+      expiresIn: 60 * 5 // 授权时效5min
     });
   return authToken
 }
@@ -72,7 +72,7 @@ let judgeEditProjectInfo = async (req, res, next) => {
 
 }
 
-// 判断是否又权限进入项目详细信息界面
+// 判断是否又权限进入团队详细信息界面
 let judgeTeamInfo = async (req, res, next) => {
   let teamId = req.body.teamId
   switch (req.user.type) {

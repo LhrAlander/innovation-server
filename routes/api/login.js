@@ -26,7 +26,7 @@ router.post('/', async (req, res, next) => {
           expiresIn: 60 * 60 * 24 * 7// 授权时效7天
         });
       // 发送给前端，存在浏览器里
-      res.status(200).json({
+      res.status(200).send({
         token: authToken,
         user: {
           username: values.data[0].user_name,

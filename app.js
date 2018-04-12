@@ -96,7 +96,14 @@ app.use(function(err, req, res, next) {
 app.use('/api/login', login)
 app.use('/api/download', download)
 app.use('/api/upload', uploads)
-app.use('/api/auth', authJudge)
+app.use('/api/auth', (req, res, next) => {
+  if (req.user.type == '管理员') {
+    res.send(200)
+  }
+  else {
+    next()
+  }
+}, authJudge)
 app.use(adminAuth.auth)
 app.use('/api/user', user)
 app.use('/api/baseInfo', baseInfo)

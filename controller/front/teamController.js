@@ -29,7 +29,26 @@ const getTeams = async (req, res, next) => {
 }
 
 const getTeam = async (req, res, next) => {
-
+  try {
+    const teamId = req.body.teamId
+    let team = await teamDao.getTeamById(teamId)  
+    let sts = await teamDao.getStudentsByTeam(teamId)
+    if (sts.data.length == 0) {
+      sts.data.push({userName: team.data[0].leaderName})
+    }
+    team = team.data[0]
+    if (team.introduction == '' || !team.introduction) {
+      team.introduction = '<h2>暂无团队简介</h2>'
+    }
+    console.log(sts.data)
+    team.students = sts.data.map(st => {
+      return st.userName
+    })
+    res.send(team)
+  } 
+  catch (err) {
+    console.log(err)
+  }
 }
 
 
