@@ -13,46 +13,79 @@ const auth = (req, res, next) => {
     const token = req.user
     const url = req.path
     let needAuth = null
-    if (adminRouter.some(rt => {
+    let judgeRt = []
+    // 判断发送请求的用户类型
+    switch (token.type) {
+      case '管理员':
+        judgeRt = adminRouter
+        break
+      case '学生':
+        judgeRt = studentRouter
+        break
+      case '教师':
+        judgeRt = teacherRouter
+        break
+      case '企业':
+        judgeRt = companyRouter
+        break
+    }
+    if (judgeRt.some(rt => {
       return url.startsWith(rt)
     })) {
-      needAuth = '管理员'
-    }
-    else if (studentRouter.some(rt => {
-      return url.startsWith(rt)
-    })) {
-      needAuth = '学生'
-    }
-    else if (teacherRouter.some(rt => {
-      return url.startsWith(rt)
-    })) {
-      needAuth = '教师'
-    }
-    else if (companyRouter.some(rt => {
-      return url.startsWith(rt)
-    })) {
-      needAuth = '企业'
-    }
-    console.log(needAuth)
-    if (!needAuth || needAuth == token.type) {
       next()
     }
-    else {
-      if (req.headers.authtoken) {
-        console.log('存在 token', req.headers.authtoken)
-        jwt.verify(req.headers.authtoken, 'secret', (err, decoded) => {
-          if (err) {
-            res.status(401)
-          }
-          else {
-            next()
-          }
-        })
-      }
-      else {
-        res.status(401).send('鉴权失败')
-      }
+    else if (req.headers.authtoken) {
+      jwt.verify(req.headers.authtoken, 'secret', (err, decoded) => {
+        if (err) {
+          res.status(401).send('身份过期')
+        }
+        else {
+          next()
+        }
+      })
     }
+    else {
+      res.status(401).send('鉴权失败')
+    }
+    // if (adminRouter.some(rt => {
+    //   return url.startsWith(rt)
+    // })) {
+    //   needAuth = '管理员'
+    // }
+    // else if (studentRouter.some(rt => {
+    //   return url.startsWith(rt)
+    // })) {
+    //   needAuth = '学生'
+    // }
+    // else if (teacherRouter.some(rt => {
+    //   return url.startsWith(rt)
+    // })) {
+    //   needAuth = '教师'
+    // }
+    // else if (companyRouter.some(rt => {
+    //   return url.startsWith(rt)
+    // })) {
+    //   needAuth = '企业'
+    // }
+    // if (!needAuth || needAuth == token.type) {
+    //   next()
+    // }
+    // else {
+    //   if (req.headers.authtoken) {
+    //     console.log('存在 token', req.headers.authtoken)
+    //     jwt.verify(req.headers.authtoken, 'secret', (err, decoded) => {
+    //       if (err) {
+    //         res.status(401)
+    //       }
+    //       else {
+    //         next()
+    //       }
+    //     })
+    //   }
+    //   else {
+    //     res.status(401).send('鉴权失败')
+    //   }
+    // }
   }
   catch (err) {
     console.log(err)

@@ -78,6 +78,7 @@ let getAllTeams = async (req, res, next) => {
 let addTeam = (req, res, next) => {
   let teamId = utils.getId('team')
   let team = req.body.team
+  console.log(team)
   team.team_id = teamId
   const teacherId = team.team_teacher
   const studentId = team.team_principal
@@ -90,6 +91,16 @@ let addTeam = (req, res, next) => {
       else {
         throw new Error('无效负责人或者无效指导老师')
       }
+    })
+    .then(values => {
+      let addTime = new Date()
+      addTime = `${addTime.getFullYear()}-${addTime.getMonth() + 1}-${addTime.getDate()}`
+      return teamDao.addTeamUser({
+        team_id: team.team_id,
+        user_id: team.team_principal,
+        add_time: addTime,
+        is_in_service: 1
+      })
     })
     .then(values => {
       res.send(values)

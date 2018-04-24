@@ -1,4 +1,5 @@
 const projectDao = require('../dao/projectDao')
+const teamDao = require('../dao/teamDao')
 const userDao = require('../dao/userDao')
 const utils = require('../utils/util')
 const countHelper = require('../utils/DBQuery')
@@ -57,6 +58,9 @@ let getAllProjects = async (req, res, next) => {
 let addProject = (req, res, next) => {
   let projectId = utils.getId('project')
   let project = req.body.project
+  console.log(project)
+  let addTime = new Date()
+  addTime = `${addTime.getFullYear()}-${addTime.getMonth() + 1}-${addTime.getDate()}`
   project.project_id = projectId
   const teacherId = project.project_teacher
   const studentId = project.project_principal
@@ -69,6 +73,23 @@ let addProject = (req, res, next) => {
       else {
         throw new Error('无效负责人或者无效指导老师')
       }
+    })
+    .then(values => {
+
+      return projectDao.addProjectUser({
+        project_id: projectId,
+        user_id: studentId,
+        add_time: addTime,
+        is_in_service: 1
+      })
+    })
+    .then(values => {
+      return teamDao.addTeamUser({
+        team_id: project.team_id,
+        user_id: studentId,
+        add_time: addTime,
+        is_in_service: 1
+      })
     })
     .then(values => {
       res.send(values)
@@ -85,7 +106,10 @@ let addProject = (req, res, next) => {
 // 增加项目成员
 let addProjectUser = (req, res, next) => {
   let { user } = req.body
+  console.log(user)
   const { project_id, user_id } = user
+  let teamId = user.teamId
+  delete user.teamId
   Promise.all([userDao.searchUser(user_id), projectDao.getProject(project_id)])
     .then(values => {
       if (values.every((el, index, array) => {
@@ -96,6 +120,14 @@ let addProjectUser = (req, res, next) => {
       else {
         throw new Error('无效用户或者无效项目')
       }
+    })
+    .then(values => {
+      return teamDao.addTeamUser({
+        team_id: teamId,
+        user_id: user.user_id,
+        add_time: user.add_time,
+        is_in_service: 1
+      })
     })
     .then(values => {
       res.send(values)
@@ -222,8 +254,14 @@ let deleteFiles = async (req, res, next) => {
 let delProjectUser = async (req, res, next) => {
   try {
     const { user } = req.body
+    console.log(user)
     user.leaveTime = new Date().toLocaleDateString()
     let values = await projectDao.delProjectUser(user)
+    await teamDao.delTeamUser({
+      team_id: user.teamId,
+      user_id: user.userId,
+      del: true
+    })
     if (values.code == 200) {
       res.send({
         code: 200,

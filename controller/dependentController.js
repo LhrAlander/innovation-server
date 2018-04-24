@@ -121,6 +121,7 @@ let addDependent = async (req, res, next) => {
     let unitId = utils.getId('dependent')
     let { dependent } = req.body
     dependent.unit_id = unitId
+    dependent.unit_state = '可用'
     const userId = dependent.unit_principal
     let user = await userDao.searchUser(userId)
     if (user.code == 200 && user.data.length > 0) {
@@ -129,6 +130,8 @@ let addDependent = async (req, res, next) => {
           res.send(values)
         })
         .catch(err => {
+          console.log(err)
+          res.send(err)
           throw new Error(err)
         })
     }

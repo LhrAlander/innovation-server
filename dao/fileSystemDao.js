@@ -20,6 +20,12 @@ let getAllFiles = (pageNum, pageSize, filter) => {
   return queryHelper.queryPromise(sql, null)
 }
 
+// 为首页获取政策制度
+let getFilesForIndex = () => {
+  let sql = `select * from file_system where state = '可用' order by publish_time desc limit 0, 10`
+  return queryHelper.queryPromise(sql, null)
+}
+
 // 获取一个政策制度
 let getFileSystem = fileSystemId => {
   const sql =  `select * from file_system where file_system_id = ? and state not like '%删除%'`
@@ -71,6 +77,7 @@ let addFileSystem = info => {
 let dao = {
   getCount,
   getAllFiles,
+  getFilesForIndex,
   getFileSystem,
   getFilesByFileSystem,
   updateFileSystem,

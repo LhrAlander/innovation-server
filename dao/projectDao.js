@@ -88,7 +88,10 @@ let updateProject = (payload, projectId) => {
 let getProject = async projectId => {
   try {
     const sql = 'select * from project where project_id = ?'
+    const memberSql = `select user.user_id as userId,user.user_name as name,user.user_phone as userPhone from project_student left join user on user.user_id=project_student.user_id where project_id=?`
     let project = await queryHelper.queryPromise(sql, projectId)
+    let members = await queryHelper.queryPromise(memberSql, projectId)
+    console.log(members)
     if (project.code == 200 && project.data.length > 0) {
       utils.formatDate(['register_year', 'start_year', 'finish_year'], project.data, 'yyyy-MM-dd')
       const studentId = project.data[0].project_principal
@@ -137,7 +140,8 @@ let getProject = async projectId => {
           userId: teacher.data[0].user_id,
           name: teacher.data[0].user_name,
           userPhone: teacher.data[0].user_phone,
-        }
+        },
+        members: members.data
       }
     }
     else {

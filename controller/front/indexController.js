@@ -81,7 +81,8 @@ const getPolicys = async (req, res, next) => {
 
 const getFileSystems = async (req, res, next) => {
   try {
-    const files = await fileDao.getAllFiles(1, 9)
+    const files = await fileDao.getFilesForIndex()
+    console.log(files)
     res.send(files)
   }
   catch (err) {
