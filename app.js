@@ -48,6 +48,7 @@ const frontPolicys = require('./routes/api/frontPolicys')
 const frontFiles = require('./routes/api/frontFiles')
 const frontNotifications = require('./routes/api/frontNotifications')
 const frontTeams = require('./routes/api/frontTeams')
+const frontAwards = require('./routes/api/frontAwards')
 
 
 
@@ -76,6 +77,7 @@ app.use('/api/front/policys', frontPolicys)
 app.use('/api/front/fileSystems', frontFiles)
 app.use('/api/front/notifications', frontNotifications)
 app.use('/api/front/teams', frontTeams)
+app.use('/api/front/awards', frontAwards)
 // jwt中间件
 app.use(expressJwt({
   secret: "secret"//加密密钥，可换
