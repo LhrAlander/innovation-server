@@ -34,6 +34,8 @@ const policyUpload = getUpload('policy', 'uploadFile')
 const notificationUpload = getUpload('notification', 'uploadFile')
 // 获取政策制度上传中间件
 const fileSystemUpload = getUpload('fileSystem', 'uploadFile')
+// 获取招募信息上传中间件
+const recruitmentUpload = getUpload('recruitment', 'uploadFile')
 
 
 // 上传项目材料
@@ -44,5 +46,7 @@ router.post('/policy', policyUpload, controller.uploadPolicyFiles)
 router.post('/notification', notificationUpload, controller.uploadNotificationFiles)
 // 上传政策制度材料
 router.post('/fileSystem', fileSystemUpload, controller.uploadfileSystemFiles)
+// 上传招募信息材料
+router.post('/recruitment', recruitmentUpload, controller.uploadRecruitmentFiles)
 
 module.exports = router

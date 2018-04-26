@@ -2,7 +2,7 @@ const expressJwt = require("express-jwt");
 const jwt = require("jsonwebtoken");
 
 
-const adminRouter = ['/api/user', '/api/baseInfo', '/api/student', '/api/teacher', '/api/company', '/api/category', '/api/project', '/api/team', '/api/award', '/api/policy', '/api/dependent', '/api/notification', '/api/fileSystem']
+const adminRouter = ['/api/user', '/api/baseInfo', '/api/student', '/api/teacher', '/api/company', '/api/category', '/api/project', '/api/team', '/api/award', '/api/policy', '/api/dependent', '/api/notification', '/api/fileSystem', '/api/recruitment']
 const studentRouter = ['/api/st']
 const teacherRouter = ['/api/th']
 const companyRouter = []

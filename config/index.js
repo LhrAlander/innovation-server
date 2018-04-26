@@ -3,7 +3,8 @@ const config = {
     project: './public/uploads/project',
     policy: './public/uploads/policy',
     notification: './public/uploads/notification',
-    fileSystem: './public/uploads/fileSystem'
+    fileSystem: './public/uploads/fileSystem',
+    recruitment: './public/uploads/recruitment'
   },
   projectFile: {
     REG_FILE: 1,

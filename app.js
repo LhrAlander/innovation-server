@@ -24,6 +24,7 @@ const policy = require('./routes/api/policy')
 const dependent = require('./routes/api/dependent')
 const notification = require('./routes/api/notification')
 const fileSystem = require('./routes/api/fileSystem')
+const recruitment = require('./routes/api/recruitment')
 const uploads = require('./routes/api/uploads')
 const download = require('./routes/api/download')
 const login = require('./routes/api/login')
@@ -47,6 +48,7 @@ const frontProjects = require('./routes/api/frontProjects')
 const frontPolicys = require('./routes/api/frontPolicys')
 const frontFiles = require('./routes/api/frontFiles')
 const frontNotifications = require('./routes/api/frontNotifications')
+const frontRecruitments = require('./routes/api/frontRecruitments')
 const frontTeams = require('./routes/api/frontTeams')
 const frontAwards = require('./routes/api/frontAwards')
 
@@ -76,6 +78,7 @@ app.use('/api/front/projects', frontProjects)
 app.use('/api/front/policys', frontPolicys)
 app.use('/api/front/fileSystems', frontFiles)
 app.use('/api/front/notifications', frontNotifications)
+app.use('/api/front/recruitments', frontRecruitments)
 app.use('/api/front/teams', frontTeams)
 app.use('/api/front/awards', frontAwards)
 // jwt中间件
@@ -83,7 +86,7 @@ app.use(expressJwt({
   secret: "secret"//加密密钥，可换
 }).unless({
   path: ["/api/login", "/index", '/api/download', '/api/upload/notification', 
-  '/api/upload/fileSystem', '/api/upload/project', '/api/upload/policy',
+  '/api/upload/fileSystem', '/api/upload/project', '/api/upload/policy', '/api/upload/recruitment',
 "/api/front/index"]//添加不需要token的接口
 }));
 
@@ -120,6 +123,7 @@ app.use('/api/policy', policy)
 app.use('/api/dependent', dependent)
 app.use('/api/notification', notification)
 app.use('/api/fileSystem', fileSystem)
+app.use('/api/recruitment', recruitment)
 
 app.use('/api/st/baseInfo', studentBaseInfo)
 app.use('/api/st/project', studentProject)
