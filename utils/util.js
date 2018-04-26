@@ -10,7 +10,8 @@ const id = {
   dependent: '05',
   notification: '06',
   fileSystem: '07',
-  recruitment: '08'
+  recruitment: '08',
+  signup: '09'
 }
 
 //格式化日期
@@ -195,7 +196,6 @@ let rmFile = (files, cb) => {
   if (files instanceof Array) {
     let promises = []
     for (let i = 0; i < files.length; i++) {
-      console.log(files[i])
       promises.push(createPromise(files[i].filePath))
     }
     return Promise.all(promises)

@@ -35,6 +35,7 @@ const studentBaseInfo = require('./routes/api/studentBaseInfo')
 const studentProject = require('./routes/api/studentProject')
 const studentTeam = require('./routes/api/studentTeam')
 const studentAward = require('./routes/api/studentAward')
+const studentRecruitment = require('./routes/api/studentRecruitment')
 
 
 const teacherBaseInfo = require('./routes/api/teacherBaseInfo')
@@ -86,7 +87,7 @@ app.use(expressJwt({
   secret: "secret"//加密密钥，可换
 }).unless({
   path: ["/api/login", "/index", '/api/download', '/api/upload/notification', 
-  '/api/upload/fileSystem', '/api/upload/project', '/api/upload/policy', '/api/upload/recruitment',
+  '/api/upload/fileSystem', '/api/upload/project', '/api/upload/policy', '/api/upload/recruitment', '/api/upload/signup',
 "/api/front/index"]//添加不需要token的接口
 }));
 
@@ -129,6 +130,7 @@ app.use('/api/st/baseInfo', studentBaseInfo)
 app.use('/api/st/project', studentProject)
 app.use('/api/st/team', studentTeam)
 app.use('/api/st/award', studentAward)
+app.use('/api/st/recruitment', studentRecruitment)
 
 app.use('/api/th/baseInfo', teacherBaseInfo)
 app.use('/api/th/project', teacherProject)

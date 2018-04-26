@@ -11,7 +11,7 @@ const getRecruitmentById = async (req, res, next) => {
 		const recruitmentId = req.body.recruitmentId
 		let recruitment = await recruitmentDao.getRecruitmentById(recruitmentId)
 		recruitment = utils.transformRes(recruitment.data)
-		utils.formatDate("publishTime", recruitment, "yyyy-MM-dd")
+		utils.formatDate(["publishTime", "endTime"], recruitment, "yyyy-MM-dd")
 		let files = await recruitmentDao.getRecruitmentFilesById(recruitmentId)
 		files = utils.transformRes(files.data)
 		files.forEach(file => {

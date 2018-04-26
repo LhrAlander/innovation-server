@@ -4,7 +4,8 @@ const config = {
     policy: './public/uploads/policy',
     notification: './public/uploads/notification',
     fileSystem: './public/uploads/fileSystem',
-    recruitment: './public/uploads/recruitment'
+    recruitment: './public/uploads/recruitment',
+    signup: './public/uploads/signup'
   },
   projectFile: {
     REG_FILE: 1,

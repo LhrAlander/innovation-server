@@ -211,12 +211,55 @@ let uploadRecruitmentFiles = (req, res, next) => {
   }
 }
 
+// 上传报名信息材料
+let uploadSignupFiles = (req, res, next) => {
+  try {
+    const file = req.file
+    console.log(req.body)
+    // 上传成功
+    if (file != null) {
+      // 构建数据库表对象
+      const sqlValue = {
+        sign_up_id: req.body.id,
+        file_path: `./${file.path}`,
+        file_name: file.originalname
+      }
+      console.log(sqlValue)
+      recruitmentDao.uploadSignupFile(sqlValue)
+        .then(values => {
+          console.log(values)
+          res.send({
+            code: 200,
+            fileName: file.originalname,
+            filePath: sqlValue.file_path
+          })
+        })
+        .catch(err => {
+          console.log(err)
+          throw new Error('上传文件失败!')
+        })
+
+    }
+    else {
+      throw new Error('上传文件失败!')
+    }
+  }
+  catch (err) {
+    console.log('shangchuan err', err)
+    res.send({
+      code: 500,
+      msg: '上传文件失败!'
+    })
+  }
+}
+
 let controller = {
   uploadProjectFiles,
   uploadPolicyFiles,
   uploadNotificationFiles,
   uploadfileSystemFiles,
-  uploadRecruitmentFiles
+  uploadRecruitmentFiles,
+  uploadSignupFiles
 }
 
 module.exports = controller

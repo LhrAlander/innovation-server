@@ -41,8 +41,28 @@ const uploadFile = file => {
 	}
 }
 
+const uploadSignupFile = file => {
+	try {
+    const sql = `insert into recruitment_sign_up_files set ?`
+    return queryHelper.queryPromise(sql, file)  
+  } 
+  catch (err) {
+		console.log('上传招募信息材料失败',  err)
+		return {
+			code: 500,
+			msg: '上传材料失败'
+		}
+	}
+}
+
 const deleteFile = path => {
 	const sql = `delete from recruitment_files where file_path = ?`
+	console.log(sql)
+  return queryHelper.queryPromise(sql, path)
+}
+const deleteSignupFile = path => {
+	const sql = `delete from recruitment_sign_up_files where file_path = ?`
+	console.log(sql)
   return queryHelper.queryPromise(sql, path)
 }
 
@@ -51,14 +71,50 @@ const addRecruitment = info => {
   return queryHelper.queryPromise(sql, info)
 }
 
+const getSignupById = id => {
+	const sql = `select user.user_id,title,recruitment.end_time,recruitment_sign_up.state,recruitment_sign_up.introduction,recruitment_sign_up.sign_up_time, user.user_name from recruitment_sign_up left join recruitment on recruitment.id=recruitment_sign_up.recruitment_id left join user on user.user_id=recruitment_sign_up.user_id where recruitment_sign_up.id=?`
+	return queryHelper.queryPromise(sql, id)
+}
 
+const getSignupFiles = id => {
+	const sql =`select * from recruitment_sign_up_files where sign_up_id=?`
+	return queryHelper.queryPromise(sql, id)
+}
+
+const getRecruitmentBySignup = id => {
+	const sql = `select recruitment.end_time from recruitment_sign_up left join recruitment on recruitment.id=recruitment_sign_up.recruitment_id where recruitment_sign_up.id=?`
+	return queryHelper.queryPromise(sql, id)
+}
+
+const changeRecruitmentSignup = (id, info) => {
+	const sql = `update recruitment_sign_up set ? where id = ?`
+	return queryHelper.queryPromise(sql, [info, id])
+}
+
+const getOptions = today => {
+	const sql = `select * from recruitment where end_time > ? and state='可用'`
+	return queryHelper.queryPromise(sql, today)
+}
+
+const addSignup = info => {
+	const sql = `insert into recruitment_sign_up set ?`
+	return queryHelper.queryPromise(sql, info)
+}
 
 let dao = {
 	getRecruitmentById,
 	getRecruitmentFilesById,
 	changeRecruitment,
 	uploadFile,
+	uploadSignupFile,
 	deleteFile,
-	addRecruitment
+	deleteSignupFile,
+	addRecruitment,
+	getSignupById,
+	getSignupFiles,
+	getRecruitmentBySignup,
+	changeRecruitmentSignup,
+	getOptions,
+	addSignup
 }
 module.exports = dao

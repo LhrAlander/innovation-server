@@ -36,6 +36,8 @@ const notificationUpload = getUpload('notification', 'uploadFile')
 const fileSystemUpload = getUpload('fileSystem', 'uploadFile')
 // 获取招募信息上传中间件
 const recruitmentUpload = getUpload('recruitment', 'uploadFile')
+// 获取报名信息上传中间件
+const signupUpload = getUpload('signup', 'uploadFile')
 
 
 // 上传项目材料
@@ -48,5 +50,7 @@ router.post('/notification', notificationUpload, controller.uploadNotificationFi
 router.post('/fileSystem', fileSystemUpload, controller.uploadfileSystemFiles)
 // 上传招募信息材料
 router.post('/recruitment', recruitmentUpload, controller.uploadRecruitmentFiles)
+// 上传报名信息材料
+router.post('/signup', signupUpload, controller.uploadSignupFiles)
 
 module.exports = router
