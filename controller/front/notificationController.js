@@ -38,8 +38,14 @@ const getNotification = async (req, res, next) => {
     let notification = await notificationDao.getNotificationById(notificationId)
     utils.formatDate('publishTime', notification.data, 'yyyy-MM-dd')
     notification = notification.data[0]
+    let files = await countDao.getFilesByNotification(notificationId)
+    files = utils.transformRes(files.data)
     console.log(notification)
-    res.send(notification)
+    res.send({
+      code: 200,
+      notification,
+      files
+    })
   } 
   catch (err) {
     console.log(err)

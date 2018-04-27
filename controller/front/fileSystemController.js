@@ -37,8 +37,14 @@ const getFileSystem = async (req, res, next) => {
     const fileSystemId = req.body.fileSystemId
     let file = await fileSystemDao.getFileSystemById(fileSystemId)
     utils.formatDate('publishTime', file.data, 'yyyy-MM-dd')
+    let files = await countDao.getFilesByFileSystem(fileSystemId)
+    files = utils.transformRes(files.data)
     console.log(file)
-    res.send(file.data[0])
+    res.send({
+      code: 200,
+      file: file.data[0],
+      files
+    })
   } 
   catch (err) {
     console.log(err)

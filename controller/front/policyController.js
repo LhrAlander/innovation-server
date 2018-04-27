@@ -39,7 +39,13 @@ const getPolicy = async (req, res, next) => {
     utils.formatDate('publishTime', policy.data, 'yyyy-MM-dd')
     policy = policy.data[0]
     policy.introduction = policy.introduction == '' ? '暂无政策简介信息' : policy.introduction
-    res.send(policy)
+    let files = await countDao.getFile(policyId)
+    files = utils.transformRes(files.data)
+    console.log(files)
+    res.send({
+      policy,
+      files
+    })
   } 
   catch (err) {
     console.log(err)
