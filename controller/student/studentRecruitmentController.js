@@ -1,6 +1,32 @@
 const recruitmentDao = require('../../dao/recruitmentDao')
 const utils = require('../../utils/util')
 
+const getSignups = async (req, res, next) => {
+	try {
+		let { filter, pageNum, pageSize, userId } = req.body
+		filter = utils.camel2_(filter)
+		filter['user.user_id'] = userId
+		if ("state" in filter) {
+			filter["recruitment_sign_up.state"] = filter.state
+			delete filter.state
+		}
+		filter = utils.obj2MySql(filter)
+		console.log(filter)
+		let count = await recruitmentDao.getSignupCount(filter)
+		count = count.data[0].number
+		let signups = await recruitmentDao.getSingUps(filter, pageNum, pageSize)
+		signups = utils.transformRes(signups.data)
+		utils.formatDate('signUpTime', signups, 'yyyy-MM-dd')
+		res.send({
+			data: signups,
+			count
+		})
+	} 
+	catch (err) {
+		
+	}
+}
+
 const getSignupById = async (req, res, next) => {
 	try {
 		const { id } = req.body
@@ -131,6 +157,7 @@ const addSignup = async (req, res, next) => {
 
 let controller = {
 	getSignupById,
+	getSignups,
 	changeSingnupById,
 	deleteFiles,
 	getOptions,

@@ -82,6 +82,7 @@ let transformRes = obj => {
  * @param {*需要转换的对象数组} obj 
  */
 let camel2_ = obj => {
+  console.log(obj)
   const transformObj = obj => {
     let tmp = {}
     for (let key in obj) {
@@ -154,8 +155,7 @@ let obj2MySql = filter => {
   let first = true
   for (let key in filter) {
     if (filter[key] != null && filter[key] != undefined && filter[key] != '') {
-    console.log(key, filter[key])
-      
+      console.log(key, filter[key])
       if (first) {
         str = ''
       }
@@ -165,7 +165,7 @@ let obj2MySql = filter => {
       str += `${key} = '${filter[key].trim()}'`
       first = false
     }
-    
+
   }
   return str
 }

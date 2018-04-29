@@ -1,6 +1,50 @@
 const recruitmentDao = require('../dao/recruitmentDao')
 const utils = require('../utils/util')
 
+const getRecruitments = async (req, res, next) => {
+	try {
+		let { filter, pageNum, pageSize } = req.body
+		filter = utils.camel2_(filter)
+		filter = utils.obj2MySql(filter)
+		let count = await recruitmentDao.getCount(filter)
+		let recruitments = await recruitmentDao.getRecruitments(filter, pageNum, pageSize)
+		recruitments = utils.transformRes(recruitments.data)
+		utils.formatDate(['publishTime', 'endTime'], recruitments, 'yyyy-MM-dd')
+		count = count.data[0].number
+		res.send({
+			data: recruitments,
+			count
+		})
+	} 
+	catch (err) {
+		console.log(err)
+	}
+}
+
+const getSingUps = async (req, res, next) => {
+	try {
+		let { filter, pageNum, pageSize } = req.body
+		filter = utils.camel2_(filter)
+		if ("state" in filter) {
+			filter["recruitment_sign_up.state"] = filter.state
+			delete filter.state
+		}
+		filter = utils.obj2MySql(filter)
+		let count = await recruitmentDao.getSignupCount(filter)
+		count = count.data[0].number
+		let signups = await recruitmentDao.getSingUps(filter, pageNum, pageSize)
+		signups = utils.transformRes(signups.data)
+		utils.formatDate('signUpTime', signups, 'yyyy-MM-dd')
+		res.send({
+			data: signups,
+			count
+		})
+	} 
+	catch (err) {
+		console.log(err)
+	}
+}
+
 /**
  * 获取特定招募信息详情
  * 1、获取招募基本信息
@@ -54,6 +98,26 @@ const changeRecruitment = async (req, res, next) => {
 
 }
 
+const changeSignup = async (req, res, next) => {
+	try {
+		let info = req.body.info
+		let id = info.id
+		delete info.id
+		let values = await recruitmentDao.changeSignup(id, info)
+		res.send({
+			code: 200,
+			msg: '操作成功'
+		})	
+	} 
+	catch (err) {
+		console.log(err)
+		res.send({
+			code: 500,
+			msg: '操作失败，稍后重试'
+		})
+	}
+}
+
 const deleteFiles = async (req, res, next) => {
 	let files = req.body.files
   try {
@@ -101,8 +165,11 @@ const addRecruitment = async (req, res, next) => {
 
 
 let controller = {
+	getRecruitments,
+	getSingUps,
 	getRecruitmentById,
 	changeRecruitment,
+	changeSignup,
 	deleteFiles,
 	addRecruitment
 }

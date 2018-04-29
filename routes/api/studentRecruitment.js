@@ -4,6 +4,7 @@ const controller = require('../../controller/student/studentRecruitmentControlle
 
 // 获取项目扩展信息
 router.post('/signup', controller.getSignupById)
+router.post('/signups', controller.getSignups)
 router.post('/change/signup', controller.changeSingnupById)
 
 router.post('/add/signup', controller.addSignup)
