@@ -7,6 +7,42 @@ let getAllAcademy = function () {
   return queryHelper.queryPromise(sql, null)
 }
 
+// 查询学院
+let getAcademy = academy => {
+  const sql = `select count(*) as number from academy where academy=?`
+  return queryHelper.queryPromise(sql, academy)
+}
+
+// 查询专业
+let getMajor = major => {
+  const sql = `select count(*) as number from major where major=?`
+  return queryHelper.queryPromise(sql, major)
+}
+
+// 更改专业中学院名称
+let changeAcademyForMajor = (old, _new) => {
+  const sql = `update major set academy = ? where academy = ?`
+  return queryHelper.queryPromise(sql, [_new, old])
+}
+
+// 更改班级中专业名称
+let changeMajorForClass = (old, _new) => {
+  const sql = `update class_table set major = ? where major = ?`
+  return queryHelper.queryPromise(sql, [_new, old])
+}
+
+// 更改学院名称
+let changeAcademy = (old, _new) => {
+  const sql = `update academy set academy = ? where academy = ?`
+  return queryHelper.queryPromise(sql, [_new, old])
+}
+
+// 更改专业名称
+let changeMajor = (old, _new) => {
+  const sql = `update major set major = ? where major = ?`
+  return queryHelper.queryPromise(sql, [_new, old])
+}
+
 // 获取学院下特定专业
 let getMajorByAcademy = function (academy) {
   const sql = `select major from major where academy = '${academy}' and status = "可用"`
@@ -73,6 +109,12 @@ let addAcademy = function (academy) {
   return queryHelper.queryPromise(addSql, academy)
 }
 
+// 新增加就学院
+let changeMajorForAcademy = academy => {
+  const sql = `update major set status='可用' where academy=?`
+  return queryHelper.queryPromise(sql, academy)
+}
+
 // 增加专业
 let addMajor = function (academy, major) {
   const object = {
@@ -112,6 +154,12 @@ let delStatus = status => {
 
 let baseInfoDao = {
   getAllAcademy,
+  getAcademy,
+  getMajor,
+  changeAcademy,
+  changeMajor,
+  changeAcademyForMajor,
+  changeMajorForClass,
   getMajorByAcademy,
   getClassByMajor,
   deleteClass,
@@ -125,7 +173,8 @@ let baseInfoDao = {
   addClass,
   getAllStatus,
   addStatus,
-  delStatus
+  delStatus,
+  changeMajorForAcademy
 }
 
 module.exports = baseInfoDao

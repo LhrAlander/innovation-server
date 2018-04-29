@@ -4,8 +4,12 @@ const baseInfoController = require('../../controller/baseInfoController')
 
 // 查询所有学院
 router.get('/academys', baseInfoController.getAllAcademy)
+// 更改学院名称
+router.post('/change/academy', baseInfoController.changeAcademy)
 // 查询学院下的专业
 router.post('/majors', baseInfoController.getMajorByAcademy)
+// 更改专业名称
+router.post('/change/major', baseInfoController.changeMajor)
 // 查询专业下的所有班级
 router.post('/classes', baseInfoController.getClassByMajor)
 // 删除班级
