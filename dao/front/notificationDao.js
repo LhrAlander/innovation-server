@@ -9,8 +9,14 @@ const getNotificationById = notificationId => {
   return queryHelper.queryPromise(sql, notificationId)
 }
 
+const getSideItems = () => {
+  const sql = `select notification_id, notification_title, publish_time from notification where state='可用' order by publish_time desc limit 0, 3`
+  return queryHelper.queryPromise(sql, null)
+}
+
 const dao = {
   getAllNotifications,
-  getNotificationById
+  getNotificationById,
+  getSideItems
 }
 module.exports = dao

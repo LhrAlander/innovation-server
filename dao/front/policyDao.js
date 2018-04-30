@@ -9,8 +9,13 @@ const getPolicyById = policyId => {
   return queryHelper.queryPromise(sql, policyId)
 }
 
+const getSideItems = () => {
+  const sql = `select policy_id, policy_title, publish_time from policy where state='可用' order by publish_time desc limit 0, 3`
+  return queryHelper.queryPromise(sql, null) 
+}
 const dao = {
   getAllPolicys,
-  getPolicyById
+  getPolicyById,
+  getSideItems
 }
 module.exports = dao

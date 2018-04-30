@@ -51,10 +51,25 @@ const getTeam = async (req, res, next) => {
   }
 }
 
+const getSideTeams = async (req, res, next) => {
+  try {
+    let teams = await teamDao.getSideTeams()
+    teams = utils.transformRes(teams.data)
+    res.send({
+      code: 200,
+      data: teams
+    })
+  } 
+  catch (err) {
+    console.log(err)
+  }
+}
+
 
 let controller = {
   getTeams,
-  getTeam
+  getTeam,
+  getSideTeams
 }
 
 module.exports = controller

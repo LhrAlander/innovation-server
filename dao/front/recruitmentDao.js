@@ -13,10 +13,15 @@ const getRecruitmentById = teamId => {
   return queryHelper.queryPromise(sql, teamId)
 }
 
+const getSideItems = () => {
+  const sql = `select id, title, publish_time from recruitment where state='可用' order by publish_time desc limit 0, 3`
+  return queryHelper.queryPromise(sql, null)
+}
 
 const dao = {
 	getAllRecruitments,
 	getAllRecruitmentsCount,
   getRecruitmentById,
+  getSideItems
 }
 module.exports = dao

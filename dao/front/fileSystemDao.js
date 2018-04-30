@@ -9,8 +9,14 @@ const getFileSystemById = fileSystemId => {
   return queryHelper.queryPromise(sql, fileSystemId)
 }
 
+const getSideItems = () => {
+  const sql =`select file_system_id, title, publish_time from file_system where state='可用' order by publish_time desc limit 0, 3`
+  return queryHelper.queryPromise(sql, null)
+}
+
 const dao = {
   getAllFileSystems,
-  getFileSystemById
+  getFileSystemById,
+  getSideItems
 }
 module.exports = dao

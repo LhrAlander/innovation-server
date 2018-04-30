@@ -73,10 +73,25 @@ const getRecruitment = async (req, res, next) => {
   }
 }
 
+const getSideItems = async (req, res, next) => {
+  try {
+    let sides = await recruitmentDao.getSideItems()
+    sides = utils.transformRes(sides.data)
+    utils.formatDate('publishTime', sides, 'yyyy.MM.dd')
+    res.send({
+      code: 200,
+      data: sides
+    })  
+  } 
+  catch (err) {
+    console.log()
+  }
+}
 
 let controller = {
   getRecruitments,
   getRecruitment,
+  getSideItems
 }
 
 module.exports = controller

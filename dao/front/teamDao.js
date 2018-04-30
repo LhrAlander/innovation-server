@@ -15,9 +15,16 @@ const getStudentsByTeam = teamId => {
   return queryHelper.queryPromise(sql, teamId)
 }
 
+const getSideTeams = () => {
+  const sql = `select team_id, team_name from team where team_state='可用' order by team_name limit 0, 4`
+  return queryHelper.queryPromise(sql, null)
+}
+
+
 const dao = {
   getAllTeams,
   getTeamById,
-  getStudentsByTeam
+  getStudentsByTeam,
+  getSideTeams
 }
 module.exports = dao
