@@ -31,12 +31,19 @@ let getStudent = userId => {
   return queryHelper.queryPromise(sql, userId)
 }
 
+// 更改个人信息
+let changeInfo = (userId, user) => {
+  const sql = `update user set ? where user_id = ?`
+  return queryHelper.queryPromise(sql, [user, userId])
+}
+
 let dao = {
   getAllStudents,
   addStudent,
   changeStudent,
   getStudent,
-  getCount
+  getCount,
+  changeInfo
 }
 
 module.exports = dao
