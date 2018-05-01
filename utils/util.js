@@ -170,6 +170,26 @@ let obj2MySql = filter => {
   return str
 }
 
+let yearMysql = (years, filter) => {
+  try {
+    years.forEach(y => {
+      console.log(y)
+      for (k in y) {
+        let v = y[k]
+        if (filter == null) {
+          filter = `${k} >= '${v}' and ${k} < '${parseInt(v) + 1}'`
+        }
+        else {
+        filter += `and ${k} >= '${v}' and ${k} < '${parseInt(v) + 1}'`
+      }
+      }
+    })
+    return filter
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 /**
  * 删除文件
  * @param {*文件数组} files 
@@ -209,6 +229,7 @@ let utils = {
   camel2_,
   formatDate,
   obj2MySql,
+  yearMysql,
   rmFile
 }
 

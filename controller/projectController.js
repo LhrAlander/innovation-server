@@ -11,7 +11,35 @@ let getAllProjects = async (req, res, next) => {
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
+    console.log(param)
+    let rgy = null
+    let sty = null
+    let finy = null
+    let y = []
+    if ('register_year' in param) {
+      rgy = param['register_year']
+      y.push({
+        register_year: rgy
+      })
+      delete param['register_year']
+    }
+    if ('start_year' in param) {
+      sty = param['start_year']
+      y.push({
+        start_year: sty
+      })
+      delete param['start_year']
+    }
+    if ('finish_year' in param) {
+      finy = param['finish_year']
+      y.push({
+        finish_year: finy
+      })
+      delete param['finish_year']
+    }
     let filter = utils.obj2MySql(param)
+    filter = utils.yearMysql(y, filter)
+    console.log(filter)
     let count = await projectDao.getCount(filter)
     count = count.data[0].number
     let responseData = []

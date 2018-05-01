@@ -35,6 +35,7 @@ let getUserCount = filter => {
  */
 let getAllProjects = (pageNum, pageSize, filter) => {
   const projectSql = `select * from (select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName,team.team_name from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id left join team on project.team_id = team.team_id) as t  where ${filter ? filter + ' and ' : ''} project_status not like "%删除%" limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  console.log(projectSql)
   return queryHelper.queryPromise(projectSql)
 }
 
@@ -219,19 +220,20 @@ let delProjectUser = user => {
 
 // 学生项目数目
 let studentProjectCount = (userId, filter) => {
-  const sql = `select count(*) as number from (select p.project_id as projectId,p.project_name as projectName,p.project_identity as projectCategory,p.project_level as projectLevel,user.user_name as guideTeacher from project as p left join user on p.project_teacher=user.user_id left join project_student on project_student.project_id=p.project_id where project_student.user_id='${userId}') as t  ${filter ? 'where ' + filter : ''}`
+  const sql = `select count(*) as number from (select p.team_id, register_year, start_year, finish_year, p.project_id as projectId,p.project_name as projectName,p.project_identity as projectCategory,p.project_level as projectLevel,user.user_name as guideTeacher from project as p left join user on p.project_teacher=user.user_id left join project_student on project_student.project_id=p.project_id left join team on team.team_id=p.team_id where project_student.user_id='${userId}') as t  ${filter ? 'where ' + filter : ''}`
   return queryHelper.queryPromise(sql)
 }
 
 // 为学生查询项目
 let getProjectsByStudent = (userId, pageNum, pageSize, filter) => {
-  const sql = `select * from (select p.project_id as projectId,p.project_name as projectName,p.project_identity as projectCategory,p.project_level as projectLevel,user.user_name as guideTeacher from project as p left join user on p.project_teacher=user.user_id left join project_student on project_student.project_id=p.project_id where project_student.user_id='${userId}') as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const sql = `select * from (select p.team_id, register_year, start_year, finish_year, p.project_id as projectId,p.project_name as projectName,p.project_identity as projectCategory,p.project_level as projectLevel,user.user_name as guideTeacher from project as p left join user on p.project_teacher=user.user_id left join project_student on project_student.project_id=p.project_id left join team on team.team_id=p.team_id where project_student.user_id='${userId}') as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  console.log(sql)
   return queryHelper.queryPromise(sql)
 }
 
 // 教师项目数目
 let teacherProjectCount = (userId, filter) => {
-  const sql = `select count(*) as number from (select team.team_id as teamId,team.team_name as dependentUnit,p.register_year as applyYear,teacher.user_id as guideTeacherName,teacher.user_name as guideTeacher,p.project_id as projectId,p.project_principal as principalName,p.finish_year as deadlineYear,p.project_name as projectName,p.project_identity as projectCategory,p.start_year as beginYear, p.project_level as projectLevel from project as p left join teacher on p.project_teacher=teacher.user_id left join team on team.team_id=p.team_id where p.project_teacher='${userId}') as t  ${filter ? 'where ' + filter : ''}`
+  const sql = `select count(*) as number from (select register_year, start_year, finish_year, team.team_id as teamId,team.team_name as dependentUnit,p.register_year as applyYear,teacher.user_id as guideTeacherName,teacher.user_name as guideTeacher,p.project_id as projectId,p.project_principal as principalName,p.finish_year as deadlineYear,p.project_name as projectName,p.project_identity as projectCategory,p.start_year as beginYear, p.project_level as projectLevel from project as p left join teacher on p.project_teacher=teacher.user_id left join team on team.team_id=p.team_id where p.project_teacher='${userId}') as t  ${filter ? 'where ' + filter : ''}`
   return queryHelper.queryPromise(sql)
 }
 

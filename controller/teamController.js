@@ -45,7 +45,9 @@ let getAllTeams = async (req, res, next) => {
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
+   
     let filter = utils.obj2MySql(param)
+    
     let count = await teamDao.getCount(filter)
     count = count.data[0].number
     let team = await teamDao.getAllTeams(pageNum, pageSize, filter)

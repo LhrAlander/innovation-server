@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 
 const adminRouter = ['/api/user', '/api/baseInfo', '/api/student', '/api/teacher', '/api/company', '/api/category', '/api/project', '/api/team', '/api/award', '/api/policy', '/api/dependent', '/api/notification', '/api/fileSystem', '/api/recruitment']
-const studentRouter = ['/api/st']
+const studentRouter = ['/api/st', '/api/category', '/api/dependent/choices']
 const teacherRouter = ['/api/th']
 const companyRouter = []
 
@@ -29,6 +29,7 @@ const auth = (req, res, next) => {
         judgeRt = companyRouter
         break
     }
+    console.log('判断权限', url)
     if (judgeRt.some(rt => {
       return url.startsWith(rt)
     })) {
