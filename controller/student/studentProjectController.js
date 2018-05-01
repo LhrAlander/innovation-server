@@ -8,7 +8,6 @@ let getProjects = async (req, res, next) => {
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
-    console.log(param)
     let rgy = null
     let sty = null
     let finy = null

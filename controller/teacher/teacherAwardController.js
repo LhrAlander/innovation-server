@@ -8,6 +8,18 @@ let getAwards = async (req, res, next) => {
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
+    if ("name" in param) {
+      param.awardName = param.name
+      delete param.name
+    }
+    if ("awardLevel" in param) {
+      param.awardCategory = param.awardLevel
+      delete param.awardLevel
+    }
+    if ("awardSecondLevel" in param) {
+      param.awardLevel = param.awardSecondLevel
+      delete param.awardSecondLevel
+    }
     let filter = utils.obj2MySql(param)
     let count = await awardDao.teacherAwardCount(userId, filter)
     console.log(count)

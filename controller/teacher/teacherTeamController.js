@@ -10,6 +10,9 @@ let getTeams = async (req, res, next) => {
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
+    if ("teamId" in param) {
+      param.teamId = param.teamId[1]
+    }
     let filter = utils.obj2MySql(param)
     let count = await teamDao.teacherTeamCount(userId, filter)
     count = count.data[0].number
@@ -42,12 +45,15 @@ let getTeamUsers = async (req, res, next) => {
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
+    if ("teamId" in param) {
+      param.teamId = param.teamId[1]
+    }
     let filter = utils.obj2MySql(param)
     let count = await teamDao.teacherTeamUserCount(userId, filter)
     count = count.data[0].number
     let users = await teamDao.getTeamUsersByTeacher(userId, pageNum, pageSize, filter)
     utils.formatDate(['joinTime'], users.data, 'yyyy-MM-dd')
-    if (users.code == 200 && users.data.length > 0) {
+    if (users.code == 200) {
       res.send({
         code: 200,
         data: users.data,
