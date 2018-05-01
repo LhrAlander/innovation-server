@@ -103,7 +103,6 @@ let addProject = (req, res, next) => {
       }
     })
     .then(values => {
-
       return projectDao.addProjectUser({
         project_id: projectId,
         user_id: studentId,

@@ -116,13 +116,13 @@ let delTeamUser = user => {
 
 // 学生团队数目
 let studentTeamCount = (userId, filter) => {
-  const sql = `select count(*) as number from (select st.user_name as leaderName,st.student_major as leaderSpecialty,unit.unit_name as dependentUnit,teacher.user_name as teacher,t.team_name as groupName, t.team_principal as leaderId, t.team_id as teamId from team_student as tst left join team as t on tst.team_id=t.team_id left join user as teacher on teacher.user_id=t.team_teacher left join dependent_unit as unit on unit.unit_id=t.team_dependent_unit left join student as st on st.user_id=t.team_principal where tst.user_id='${userId}') as t  ${filter ? 'where ' + filter : ''}`
+  const sql = `select count(*) as number from (select st.user_name as leaderName,st.student_major as leaderSpecialty,unit.unit_id as unitId,unit.unit_name as dependentUnit,teacher.user_name as teacher,teacher.user_id as teacherId,t.team_name as groupName, t.team_principal as leaderId, t.team_id as teamId from team_student as tst left join team as t on tst.team_id=t.team_id left join user as teacher on teacher.user_id=t.team_teacher left join dependent_unit as unit on unit.unit_id=t.team_dependent_unit left join student as st on st.user_id=t.team_principal where tst.user_id='${userId}') as t  ${filter ? 'where ' + filter : ''}`
   return queryHelper.queryPromise(sql)
 }
 
 // 为学生查询团队
 let getTeamsByStudent = (userId, pageNum, pageSize, filter) => {
-  const sql =`select * from (select st.user_name as leaderName,st.student_major as leaderSpecialty,unit.unit_name as dependentUnit,teacher.user_name as teacher,t.team_name as groupName, t.team_principal as leaderId, t.team_id as teamId from team_student as tst left join team as t on tst.team_id=t.team_id left join user as teacher on teacher.user_id=t.team_teacher left join dependent_unit as unit on unit.unit_id=t.team_dependent_unit left join student as st on st.user_id=t.team_principal where tst.user_id='${userId}') as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const sql =`select * from (select st.user_name as leaderName,st.student_major as leaderSpecialty,unit.unit_name as dependentUnit,unit.unit_id as unitId,teacher.user_name as teacher,teacher.user_id as teacherId,t.team_name as groupName, t.team_principal as leaderId, t.team_id as teamId from team_student as tst left join team as t on tst.team_id=t.team_id left join user as teacher on teacher.user_id=t.team_teacher left join dependent_unit as unit on unit.unit_id=t.team_dependent_unit left join student as st on st.user_id=t.team_principal where tst.user_id='${userId}') as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   console.log(sql)
   return queryHelper.queryPromise(sql)
 }
@@ -151,13 +151,14 @@ let getExpandInfoByTeamId = teamId => {
 
 // 学生团队成员数目
 let studentTeamUserCount = (userId, filter) => {
-  const sql = `select count(*) as number from (select team.team_name as groupName,user.user_id as userId,user.user_name as username,user.user_phone as contact,tst.add_time as joinTime from (select team_id as teamId from team_student where user_id='${userId}') as t left join team_student as tst on t.teamId=tst.team_id left join user on tst.user_id=user.user_id left join team on t.teamId=team.team_id where tst.is_in_service=1) as t ${filter ? 'where ' + filter : ''}`
+  const sql = `select count(*) as number from (select team.team_id as teamId, team.team_name as groupName,user.user_id as userId,user.user_name as username,user.user_phone as contact,tst.add_time as joinTime from (select team_id as teamId from team_student where user_id='${userId}') as t left join team_student as tst on t.teamId=tst.team_id left join user on tst.user_id=user.user_id left join team on t.teamId=team.team_id where tst.is_in_service=1) as t ${filter ? 'where ' + filter : ''}`
   return queryHelper.queryPromise(sql)
 }
 
 // 为学生查询团队成员
 let getTeamUsersByStudent = (userId, pageNum, pageSize, filter) => {
-  const sql = `select * from (select team.team_name as groupName,team.team_principal as leaderId,user.user_id as userId,user.user_name as username,user.user_phone as contact,tst.add_time as joinTime from (select team_id as teamId from team_student where user_id='${userId}') as t left join team_student as tst on t.teamId=tst.team_id left join user on tst.user_id=user.user_id left join team on t.teamId=team.team_id where tst.is_in_service=1) as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const sql = `select * from (select team.team_id as teamId, team.team_name as groupName,team.team_principal as leaderId,user.user_id as userId,user.user_name as username,user.user_phone as contact,tst.add_time as joinTime from (select team_id as teamId from team_student where user_id='${userId}') as t left join team_student as tst on t.teamId=tst.team_id left join user on tst.user_id=user.user_id left join team on t.teamId=team.team_id where tst.is_in_service=1) as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  console.log(sql)
   return queryHelper.queryPromise(sql)
 }
 

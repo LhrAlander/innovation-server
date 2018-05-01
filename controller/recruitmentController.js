@@ -5,6 +5,8 @@ const getRecruitments = async (req, res, next) => {
 	try {
 		let { filter, pageNum, pageSize } = req.body
 		filter = utils.camel2_(filter)
+		console.log(filter)
+		
 		filter = utils.obj2MySql(filter)
 		let count = await recruitmentDao.getCount(filter)
 		let recruitments = await recruitmentDao.getRecruitments(filter, pageNum, pageSize)

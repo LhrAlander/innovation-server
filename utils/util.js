@@ -222,6 +222,18 @@ let rmFile = (files, cb) => {
   }
 }
 
+let transforKey = (keys, param) => {
+  let res = {}
+  for (k in keys) {
+    let v = keys[k]
+    console.log(k, v)
+    if (k in param) {
+      res[v] = param[k]
+    }
+  }
+  return res
+}
+
 
 let utils = {
   getId,
@@ -230,7 +242,8 @@ let utils = {
   formatDate,
   obj2MySql,
   yearMysql,
-  rmFile
+  rmFile,
+  transforKey
 }
 
 module.exports = utils

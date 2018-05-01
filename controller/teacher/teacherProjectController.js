@@ -39,6 +39,10 @@ let getPojrectUsers = async (req, res, next) => {
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
+    if ('projectName' in param) {
+      param.porojectId = param.projectName[2]
+    }
+    console.log(param)
     let filter = utils.obj2MySql(param)
     let count = await projectDao.teacherProjectCount(userId, filter)
     count = count.data[0].number

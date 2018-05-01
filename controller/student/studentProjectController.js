@@ -34,6 +34,9 @@ let getProjects = async (req, res, next) => {
       })
       delete param['finish_year']
     }
+    if ('team_id' in param) {
+      param.team_id = param.team_id.split(',')[1]
+    }
     let filter = utils.obj2MySql(param)
     filter = utils.yearMysql(y, filter)
     let count = await projectDao.studentProjectCount(userId, filter)
@@ -88,6 +91,11 @@ let getPojrectUsers = async (req, res, next) => {
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
+    if ('projectName' in param) {
+      param.projectId = param.projectName[2]
+      delete param.projectName
+    }
+    console.log(param)
     let filter = utils.obj2MySql(param)
     let count = await projectDao.studentProjectUserCount(userId, filter)
     count = count.data[0].number

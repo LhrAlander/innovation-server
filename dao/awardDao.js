@@ -83,7 +83,7 @@ let deleteUser = (awardId, userId) => {
 
 // 学生获奖数目
 let studentAwardCount = (userId, filter) => {
-  const sql = `select count(*) as number from (select user.user_name as username,project.project_name,award.award_name as awardName, award.award_identity as awardCategory,award.award_level as awardLevel, award.award_time as awardTime from award_user left join award on award_user.award_id=award.award_id left join user on award_user.user_id=user.user_id left join project on project.project_id=award_user.award_project where award_user.user_id='${userId}') as t  ${filter ? 'where ' + filter : ''}`
+  const sql = `select count(*) as number from (select user.user_name as username,project.project_name as projectName,award.award_name as awardName, award.award_identity as awardCategory,award.award_level as awardLevel, award.award_time as awardTime from award_user left join award on award_user.award_id=award.award_id left join user on award_user.user_id=user.user_id left join project on project.project_id=award_user.award_project where award_user.user_id='${userId}') as t  ${filter ? 'where ' + filter : ''}`
   return queryHelper.queryPromise(sql)
 }
 

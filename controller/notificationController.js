@@ -9,7 +9,14 @@ let getAllNotifications = async (req, res, next) => {
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
-    let filter = utils.obj2MySql(param)
+    let _filter = utils.transforKey({
+      category: 'notification_identity',
+      title: 'notification_title',
+      status: 'state',
+      publisherName: 'publish_user',
+      publishTime: 'publish_time'
+    }, param)
+    let filter = utils.obj2MySql(_filter)
     let count = await notificationDao.getCount(filter)
     count = count.data[0].number
     let responseData = []

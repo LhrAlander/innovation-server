@@ -8,7 +8,15 @@ let getAllFiles = async (req, res, next) => {
     if (typeof param == 'string') {
       param = JSON.parse(param)
     }
-    let filter = utils.obj2MySql(param)
+    let _filter = utils.transforKey({
+      category: 'file_type',
+      title: 'title',
+      status: 'state',
+      publisherName: 'publish_user',
+      publishTime: 'publish_time',
+      effectiveDate: 'effective_time'
+    }, param)
+    let filter = utils.obj2MySql(_filter)
     let count = await fileSystemDao.getCount(filter)
     count = count.data[0].number
     let responseData = []
