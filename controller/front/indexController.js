@@ -3,6 +3,8 @@ const notificationDao = require('../../dao/notificationDao')
 const teamDao = require('../../dao/teamDao')
 const policyDao = require('../../dao/policyDao')
 const fileDao = require('../../dao/fileSystemDao')
+const userDao = require('../../dao/userDao')
+const studentDao = require('../../dao/studentDao')
 
 const getNotifications = async (req, res, next) => {
   try {
@@ -90,11 +92,46 @@ const getFileSystems = async (req, res, next) => {
   }
 }
 
+const reg = async (req, res, next) => {
+  try {
+    const { user, student } = req.body
+    let u = await userDao.searchUser(user.user_id)
+    console.log('查找用户',u)
+    if (u.code == 200 && u.data.length > 0) {
+      res.send({
+        code: 100,
+        msg: '已存在该用户'
+      })
+    }
+    else {
+      let v = await userDao.regUser(user)
+      v = await studentDao.addStudent(student)
+      if (v.code == 200) {
+        res.send({
+          code: 200,
+          message: '注册成功'
+        })
+      }
+      else {
+        throw new Error()
+      }
+    }
+  } 
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      msg: '注册失败'
+    })
+  }
+}
+
 let controller = {
   getNotifications,
   geTeams,
   getPolicys,
-  getFileSystems
+  getFileSystems,
+  reg
 }
 
 module.exports = controller

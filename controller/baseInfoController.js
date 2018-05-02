@@ -262,6 +262,9 @@ let addClass = (req, res, next) => {
 }
 
 
+
+
+
 let baseInfoController = {
   getAllAcademy,
   changeAcademy,
@@ -273,7 +276,7 @@ let baseInfoController = {
   deleteAcademy,
   addAcademy,
   addMajor,
-  addClass,
+  addClass
 }
 
 module.exports = baseInfoController

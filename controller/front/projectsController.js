@@ -38,10 +38,25 @@ const getProject = async (req, res, next) => {
 
 }
 
+const getSideItems = async (req, res, next) => {
+  try {
+    let sides = await projectDao.getSideItems()
+    sides = utils.transformRes(sides.data)
+    res.send({
+      code: 200,
+      data: sides
+    })  
+  } 
+  catch (err) {
+    console.log()
+  }
+}
+
 
 let controller = {
   getProjects,
-  getProject
+  getProject,
+  getSideItems
 }
 
 module.exports = controller

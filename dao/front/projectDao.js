@@ -9,8 +9,14 @@ const getProjectByProjectId = projectId => {
   return queryHelper.queryPromise(sql)
 }
 
+const getSideItems = () => {
+  const sql = `select project_id, project_name from project order by register_year desc limit 0, 3`
+  return queryHelper.queryPromise(sql)
+}
+
 const dao = {
   getAllProjects,
-  getProjectByProjectId
+  getProjectByProjectId,
+  getSideItems
 }
 module.exports = dao

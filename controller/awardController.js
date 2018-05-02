@@ -94,10 +94,14 @@ let deleteAward = (req, res, next) => {
             code: 200,
             msg: '删除获奖信息成功'
           })
+          return awardDao.deleteUsersByAwardId(awardId)
         }
         else {
           throw new Error()
         }
+      })
+      .then(v => {
+        console.log(v)
       })
       .catch(err => {
         console.log(err)

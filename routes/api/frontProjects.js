@@ -4,5 +4,6 @@ const controller = require('../../controller/front/projectsController')
 
 router.get('/projects', controller.getProjects)
 router.post('/project', controller.getProject)
+router.get('/side', controller.getSideItems)
 
 module.exports = router

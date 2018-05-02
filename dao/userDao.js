@@ -77,11 +77,18 @@ let searchUser = function (userId) {
   return queryHelper.queryPromise(sql, userId)
 }
 
+// 注册用户
+let regUser = u => {
+  const sql = `insert into user set ?`
+  return queryHelper.queryPromise(sql, u)
+}
+
 let userDao = {
   getCount,
   createUser,
   changeUserInfo,
   getUsers,
-  searchUser
+  searchUser,
+  regUser
 }
 module.exports = userDao
