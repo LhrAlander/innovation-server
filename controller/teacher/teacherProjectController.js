@@ -81,7 +81,7 @@ let getPojrectUsers = async (req, res, next) => {
     let users = await projectDao.getProjectUsersByTeacher(userId, pageNum, pageSize, filter)
     utils.formatDate(['joinTime'], users.data, 'yyyy-MM-dd')
     console.log(users.data)
-    if (users.data[0].userId == null) {
+    if (users.data.length > 0 && users.data[0].userId == null) {
       users.data = []
     }
     if (users.code == 200) {

@@ -3,8 +3,8 @@ const jwt = require("jsonwebtoken");
 
 
 const adminRouter = ['/api/user', '/api/baseInfo', '/api/student', '/api/teacher', '/api/company', '/api/category', '/api/project', '/api/team', '/api/award', '/api/policy', '/api/dependent', '/api/notification', '/api/fileSystem', '/api/recruitment']
-const studentRouter = ['/api/st', '/api/category', '/api/dependent/choices', '/api/award/awardNames']
-const teacherRouter = ['/api/th', '/api/category', '/api/dependent/choices', '/api/award/awardNames']
+const studentRouter = ['/api/st', '/api/category', '/api/dependent/choices', '/api/award/awardNames', '/api/team/del/team/user', '/api/project/del/project/user']
+const teacherRouter = ['/api/th', '/api/category', '/api/dependent/choices', '/api/award/awardNames', '/api/team/del/team/user', '/api/project/del/project/user']
 const companyRouter = []
 
 // 对所有路由进行鉴权处理

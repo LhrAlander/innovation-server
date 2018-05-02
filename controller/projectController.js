@@ -284,11 +284,14 @@ let delProjectUser = async (req, res, next) => {
     console.log(user)
     user.leaveTime = new Date().toLocaleDateString()
     let values = await projectDao.delProjectUser(user)
-    await teamDao.delTeamUser({
+    console.log('删除项目成员', values)
+    values = await teamDao.delTeamUser({
       team_id: user.teamId,
       user_id: user.userId,
       del: true
     })
+    console.log('删除团队成员', values)
+    
     if (values.code == 200) {
       res.send({
         code: 200,

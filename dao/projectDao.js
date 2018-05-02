@@ -162,7 +162,7 @@ let getProject = async projectId => {
  * 获取所有的项目成员
  */
 let getAllUsers = (pageNum, pageSize, filter) => {
-  const sql = `select * from (select p.project_name as projectName,p.project_id as projectId, u.user_id as userId,u.user_name as username, u.user_phone as contact, st.add_time as joinTime from project_student as st left join project as p on st.project_id = p.project_id left join user as u on u.user_id = st.user_id where st.is_in_service='1') as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const sql = `select * from (select p.team_id as teamId, p.project_name as projectName,p.project_id as projectId, u.user_id as userId,u.user_name as username, u.user_phone as contact, st.add_time as joinTime from project_student as st left join project as p on st.project_id = p.project_id left join user as u on u.user_id = st.user_id where st.is_in_service='1') as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   console.log(sql)
   return queryHelper.queryPromise(sql, null)
 }
@@ -258,7 +258,7 @@ let studentProjectUserCount = (userId, filter) => {
 
 // 为学生查询项目成员
 let getProjectUsersByStudent = (userId, pageNum, pageSize, filter) => {
-  const sql = `select * from (select t.projectName,t.leaderId,t.PID as projectId, user.user_id as userId,user.user_name as username,user.user_phone as contact,project_student.add_time as joinTime from project_student right join (select project.project_id as PID,project.project_principal as leaderId,project.project_name as projectName from project_student left join project on project.project_id=project_student.project_id where user_id='${userId}') as t on project_student.project_id=t.PID left join user on project_student.user_id=user.user_id) as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const sql = `select * from (select t.teamId, t.projectName,t.leaderId,t.PID as projectId, user.user_id as userId,user.user_name as username,user.user_phone as contact,project_student.add_time as joinTime from project_student right join (select project.team_id as teamId, project.project_id as PID,project.project_principal as leaderId,project.project_name as projectName from project_student left join project on project.project_id=project_student.project_id where user_id='${userId}') as t on project_student.project_id=t.PID left join user on project_student.user_id=user.user_id) as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   return queryHelper.queryPromise(sql)
 }
 
@@ -270,7 +270,7 @@ let teacherProjectUserCount = (userId, filter) => {
 
 // 为教师查询项目成员
 let getProjectUsersByTeacher = (userId, pageNum, pageSize, filter) => {
-  const sql = `select * from (select t.projectName,t.leaderId,t.PID as projectId,user.user_name as username,user.user_id as userId,user.user_phone as contact,project_student.add_time as joinTime from project_student right join (select project_id as PID,project_principal as leaderId,project_name as projectName from project where project_teacher='${userId}') as t on project_student.project_id=t.PID left join user on project_student.user_id=user.user_id) as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const sql = `select * from (select t.teamId, t.projectName,t.leaderId,t.PID as projectId,user.user_name as username,user.user_id as userId,user.user_phone as contact,project_student.add_time as joinTime from project_student right join (select team_id as teamId, project_id as PID,project_principal as leaderId,project_name as projectName from project where project_teacher='${userId}') as t on project_student.project_id=t.PID left join user on project_student.user_id=user.user_id where project_student.is_in_service=1) as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   return queryHelper.queryPromise(sql)
 }
 
