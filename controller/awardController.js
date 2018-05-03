@@ -178,14 +178,14 @@ let addUser = async (req, res, next) => {
       }
     }
     else {
-      throw Error('没有该奖项信息')
+      throw new Error('没有该奖项信息')
     }
   }
   catch (err) {
     console.log(err)
     res.send({
       code: 500,
-      err
+      msg: '没有该奖项信息'
     })
   }
 
