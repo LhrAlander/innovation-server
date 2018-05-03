@@ -165,12 +165,44 @@ let addNotification = async (req, res, next) => {
   }
 }
 
+let deleteNotification = async (req, res, next) => {
+  try {
+    const notification = req.body.notification
+    console.log(notification)
+    let v = await notificationDao.deleteNotification(notification.notificationId)
+    let files = await notificationDao.getFilesById(notification.notificationId)
+    files = files.data
+    let rmRes = await utils.rmFile(files)
+    for (let i = 0; i < rmRes.length; i++) {
+      if (rmRes[i].code == 200) {
+        let delRes = await notificationDao.deleteFile(rmRes[i].filePath)
+        if (delRes.code != 200) {
+          throw new Error('删除成功')
+        }
+      }
+    }
+    res.send({
+      code: 200,
+      data: '删除通知公告信息成功'
+    })
+  } 
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      data: '删除通知公告信息失败'
+    })
+  }
+}
+
+
 let controller = {
   getAllNotifications,
   getNotification,
   deleteFiles,
   updateNotification,
-  addNotification
+  addNotification,
+  deleteNotification
 }
 
 module.exports = controller

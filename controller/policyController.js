@@ -107,12 +107,42 @@ let getPolicy = (req, res, next) => {
 
 }
 
+let deletePolicy = async (req, res, next) => {
+  try {
+    const policy = req.body.policy
+    let v = await policyDao.deletePolicy(policy.policy_id)
+    let files = await policyDao.getFilesById(policy.policy_id)
+    files = files.data
+    let rmRes = await utils.rmFile(files)
+    for (let i = 0; i < rmRes.length; i++) {
+      if (rmRes[i].code == 200) {
+        let delRes = await policyDao.deleteFile(rmRes[i].filePath)
+        if (delRes.code != 200) {
+          throw new Error('删除成功')
+        }
+        console.log(delRes.code)
+      }
+    }
+    console.log('success')
+    res.send({
+      code: 200,
+      data: '删除政策成功'
+    })
+  } 
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      data: '删除政策失败'
+    })
+  }
+}
+
 // 删除项目材料附件
 let deleteFiles = async (req, res, next) => {
   let files = req.body.files
   try {
     let rmRes = await utils.rmFile(files)
-    console.log(rmRes)
     for (let i = 0; i < rmRes.length; i++) {
       if (rmRes[i].code == 200) {
         let delRes = await policyDao.deleteFile(rmRes[i].filePath)
@@ -143,7 +173,8 @@ let controller = {
   updatePolicy,
   addPolicy,
   getPolicy,
-  deleteFiles
+  deleteFiles,
+  deletePolicy
 }
 
 module.exports = controller

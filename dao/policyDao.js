@@ -67,6 +67,17 @@ let deleteFile = path => {
   return queryHelper.queryPromise(sql, path)
 }
 
+let deletePolicy = id => {
+  const sql = `delete from policy where policy_id = ?`
+  return queryHelper.queryPromise(sql, id)
+}
+
+let getFilesById = id => {
+  const sql = `select file_path as filePath from policy_files where policy_id = ?`
+  return queryHelper.queryPromise(sql, id)
+}
+
+
 let policyDao = {
   getCount,
   addPolicy,
@@ -75,7 +86,9 @@ let policyDao = {
   getPolicy,
   getFile,
   uploadFile,
-  deleteFile
+  deleteFile,
+  deletePolicy,
+  getFilesById
 }
 
 module.exports = policyDao

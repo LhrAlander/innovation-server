@@ -100,7 +100,6 @@ let deleteFiles = async (req, res, next) => {
         if (delRes.code != 200) {
           throw new Error('删除数据库失败')
         }
-        console.log(delRes.code)
       }
     }
     res.send({
@@ -132,7 +131,6 @@ let updateFileSystem = async (req, res, next) => {
         })
       })
       .catch(err => {
-        // console.log(err)
         res.send({
           code: 500,
           msg: '修改失败'
@@ -140,7 +138,6 @@ let updateFileSystem = async (req, res, next) => {
       })
   }
   catch (err) {
-    // console.log(err)
   }
 }
 
@@ -150,8 +147,6 @@ let addFileSystem = async (req, res, next) => {
     const {info} = req.body
     info.file_system_id = utils.getId('fileSystem')
     let values = await fileSystemDao.addFileSystem(info)
-    console.log(values)
-    values.fileSystemId = info.file_system_id
     res.send(values)
   } 
   catch (err) {
@@ -164,11 +159,42 @@ let addFileSystem = async (req, res, next) => {
 }
 
 
+let deleteFileSystem = async (req, res, next) => {
+  try {
+    const fileSystem = req.body.fileSystem
+    console.log(fileSystem)
+    let v = await fileSystemDao.deletefileSystem(fileSystem.id)
+    let files = await fileSystemDao.getFilesById(fileSystem.id)
+    files = files.data
+    let rmRes = await utils.rmFile(files)
+    for (let i = 0; i < rmRes.length; i++) {
+      if (rmRes[i].code == 200) {
+        let delRes = await fileSystemDao.deleteFile(rmRes[i].filePath)
+        if (delRes.code != 200) {
+          throw new Error('删除成功')
+        }
+      }
+    }
+    res.send({
+      code: 200,
+      data: '删除通知公告信息成功'
+    })
+  } 
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      data: '删除通知公告信息失败'
+    })
+  }
+}
+
 let controller = {
   getAllFiles,
   getFile,
   deleteFiles,
   updateFileSystem,
-  addFileSystem
+  addFileSystem,
+  deleteFileSystem
 }
 module.exports = controller

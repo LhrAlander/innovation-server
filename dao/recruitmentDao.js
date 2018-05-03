@@ -128,6 +128,18 @@ const addSignup = info => {
 	return queryHelper.queryPromise(sql, info)
 }
 
+
+let deleterecruitment = id => {
+  const sql = `delete from recruitment where id = ?`
+  return queryHelper.queryPromise(sql, id)
+}
+
+let getFilesById = id => {
+  const sql = `select file_path as filePath from recruitment_files where recruitment_id = ?`
+  return queryHelper.queryPromise(sql, id)
+}
+
+
 let dao = {
 	getCount,
 	getSignupCount,
@@ -147,6 +159,8 @@ let dao = {
 	getRecruitmentBySignup,
 	changeRecruitmentSignup,
 	getOptions,
-	addSignup
+	addSignup,
+  deleterecruitment,
+  getFilesById
 }
 module.exports = dao

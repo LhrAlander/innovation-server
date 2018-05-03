@@ -8,6 +8,8 @@ router.get('/policys', controller.getAllPolicys)
 router.post('/change/policy', controller.updatePolicy)
 // 增加政策信息
 router.post('/add/policy', controller.addPolicy)
+// 删除政策信息
+router.post('/del/policy', controller.deletePolicy)
 // 获取一个政策信息
 router.post('/policy', controller.getPolicy)
 // 删除材料附件

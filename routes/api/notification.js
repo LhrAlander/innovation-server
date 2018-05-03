@@ -12,5 +12,7 @@ router.post('/delete/files', controller.deleteFiles)
 router.post('/change/notification', controller.updateNotification)
 // 增加通知公告信息
 router.post('/add/notification', controller.addNotification)
+// 删除通知公告信息
+router.post('/del/notification', controller.deleteNotification)
 
 module.exports = router

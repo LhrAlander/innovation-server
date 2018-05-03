@@ -65,6 +65,16 @@ let addNotification = notification => {
   return queryHelper.queryPromise(sql, notification)
 }
 
+let deleteNotification = id => {
+  const sql = `delete from notification where notification_id = ?`
+  return queryHelper.queryPromise(sql, id)
+}
+
+let getFilesById = id => {
+  const sql = `select file_path as filePath from notification_files where notification_id = ?`
+  return queryHelper.queryPromise(sql, id)
+}
+
 
 let dao = {
   getCount,
@@ -74,6 +84,8 @@ let dao = {
   uploadFile,
   deleteFile,
   updateNotification,
-  addNotification
+  addNotification,
+  deleteNotification,
+  getFilesById
 }
 module.exports = dao

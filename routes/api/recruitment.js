@@ -16,6 +16,8 @@ router.post('/change/signup', controller.changeSignup)
 router.post('/delete/files', controller.deleteFiles)
 // 增加招募信息
 router.post('/add/recruitment', controller.addRecruitment)
+// 删除政策信息
+router.post('/del/recruitment', controller.deleteRecruitment)
 
 
 module.exports = router

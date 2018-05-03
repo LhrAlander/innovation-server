@@ -17,6 +17,10 @@ router.post('/', async (req, res, next) => {
     let values = await db.queryPromise(`select * from user where user_id='${user.id}' and user_pwd='${user.password}'`)
     if (values.code == 200 && values.data.length > 0) {
       console.log(values)
+      if (values.data[0].account_state != '可用') {
+        res.status(401).send('您的账号当前不可用')
+        return
+      }
       // 加密，获取token
       var authToken = jwt.sign({
         username: values.data[0].user_name,

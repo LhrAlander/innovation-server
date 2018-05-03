@@ -164,7 +164,36 @@ const addRecruitment = async (req, res, next) => {
 	}
 }
 
-
+let deleteRecruitment = async (req, res, next) => {
+  try {
+    const recruitment = req.body.recruitment
+    let v = await recruitmentDao.deleterecruitment(recruitment.id)
+    let files = await recruitmentDao.getFilesById(recruitment.id)
+    files = files.data
+    let rmRes = await utils.rmFile(files)
+    for (let i = 0; i < rmRes.length; i++) {
+      if (rmRes[i].code == 200) {
+        let delRes = await recruitmentDao.deleteFile(rmRes[i].filePath)
+        if (delRes.code != 200) {
+          throw new Error('删除成功')
+        }
+        console.log(delRes.code)
+      }
+    }
+    console.log('success')
+    res.send({
+      code: 200,
+      data: '删除招募信息成功'
+    })
+  } 
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      data: '删除招募信息失败'
+    })
+  }
+}
 
 let controller = {
 	getRecruitments,
@@ -173,6 +202,7 @@ let controller = {
 	changeRecruitment,
 	changeSignup,
 	deleteFiles,
-	addRecruitment
+	addRecruitment,
+	deleteRecruitment
 }
 module.exports = controller

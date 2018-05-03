@@ -74,6 +74,16 @@ let addFileSystem = info => {
   return queryHelper.queryPromise(sql, info)
 }
 
+let deletefileSystem = id => {
+  const sql = `delete from file_system where file_system_id = ?`
+  return queryHelper.queryPromise(sql, id)
+}
+
+let getFilesById = id => {
+  const sql = `select file_path as filePath from file_system_files where file_system_id = ?`
+  return queryHelper.queryPromise(sql, id)
+}
+
 let dao = {
   getCount,
   getAllFiles,
@@ -83,6 +93,8 @@ let dao = {
   updateFileSystem,
   deleteFile,
   uploadFile,
-  addFileSystem
+  addFileSystem,
+  deletefileSystem,
+  getFilesById
 }
 module.exports = dao
