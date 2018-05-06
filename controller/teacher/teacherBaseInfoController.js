@@ -1,9 +1,11 @@
 const teacherDao = require('../../dao/teacherDao')
 const studentDao = require('../../dao/studentDao')
+const companyDao = require('../../dao/companyDao')
 let getMyInfo = async (req, res, next) => {
   try {
     const userId = req.user.userId
-    student = await teacherDao.getTeacher(userId)
+    let type = req.user.type
+    student = await teacherDao.getTeacher(userId, type)
     if (student.code == 200 && student.data.length > 0) {
       res.send(student)
     }
@@ -19,10 +21,13 @@ let getMyInfo = async (req, res, next) => {
 
 let changeInfo = async (req, res, next) => {
   try {
-    let { user } = req.body
+    let { user, company } = req.body
     const userId = user.user_id
     delete user.user_id
-    let value = studentDao.changeInfo(userId, user)
+    let value = await studentDao.changeInfo(userId, user)
+    if ('user_id' in company) {
+      value = await companyDao.changeCompany(company)
+    }
     res.send({
       code: 200,
       msg: '更改个人信息成功'

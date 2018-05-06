@@ -18,7 +18,7 @@ let getTeams = async (req, res, next) => {
     count = count.data[0].number
     let teams = await teamDao.getTeamsByTeacher(userId, pageNum, pageSize, filter)
     console.log(count, teams)
-    if (teams.code == 200 && teams.data.length > 0) {
+    if (teams.code == 200) {
       res.send({
         code: 200,
         data: teams.data,

@@ -18,7 +18,7 @@ let getMajors = () => {
 
 // 获取信息数量
 let getCount = filter => {
-  let sql = `select count(*) as number from (select user.user_id as teacherId,user.user_name as name,user.user_phone as phone,user.account_state as status,user.user_sex as gender,user.user_mail as email,teacher.teacher_degree as degree,teacher.teacher_bachelor as background,teacher.teacher_major as specialty from teacher left join user on teacher.user_id=user.user_id) as t ${filter ? 'where ' + filter : ''}`
+  let sql = `select count(*) as number from (select user.user_id as teacherId,user.user_name as name,user.user_phone as phone,user.account_state as status,user.user_sex as gender,user.user_mail as email,teacher.teacher_degree as degree,teacher.teacher_bachelor as background,teacher.teacher_major as specialty from teacher left join user on teacher.user_id=user.user_id where teacher.is_teacher=1) as t ${filter ? 'where ' + filter : ''}`
   return queryHelper.queryPromise(sql, null)
 }
 
@@ -42,8 +42,11 @@ let changeTeacher = teacher => {
 }
 
 // 获取特定教师信息
-let getTeacher = userId => {
-  const sql = 'select user.user_id, user.user_name, user.user_sex, user.user_mail, user.user_phone, user.account_state, teacher.teacher_degree, teacher.teacher_bachelor, teacher.teacher_major from user, teacher where user.user_id = teacher.user_id and user.user_id = ?'
+let getTeacher = (userId, type) => {
+  let sql = 'select user.user_id, user.user_name, user.user_sex, user.user_mail, user.user_phone, user.account_state, teacher.teacher_degree, teacher.teacher_bachelor, teacher.teacher_major from user, teacher where user.user_id = teacher.user_id and user.user_id = ?'
+  if (type == '企业') {
+    sql = `select user.user_id, user.user_name, user.user_sex, user.user_mail, user.user_phone, user.account_state, company_name, company_phone, company_principal, company_address from user left join company on company.user_id=user.user_id where user.user_id=?`
+  }
   return queryHelper.queryPromise(sql, userId)
 }
 

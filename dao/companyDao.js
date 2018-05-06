@@ -36,6 +36,7 @@ let addCompany = company => {
           }
           let res1 = await queryHelper.queryPromise('insert into user set ?', user, connection)
           let res2 = await queryHelper.queryPromise(`insert into company set user_id = ?, user_name = ?, company_name = ?`, [company.user_id, company.user_name, company.company_name], connection)
+          let res3 = await queryHelper.queryPromise(`insert into teacher set user_id = ?, user_name = ?, is_teacher=0`, [company.user_id, company.user_name])
           await connection.commit()
           connection.release()
           resolve({

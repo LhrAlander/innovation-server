@@ -54,6 +54,9 @@ let addCompany = (req, res, next) => {
 let changeCompany = (req, res, next) => {
   let company = req.body.company
   company = utils.camel2_(company)
+  console.log('c', company)
+  company.user_id = company.company_id
+  delete company.company_id
   dao.changeCompany(company)
     .then(values => {
       if (values.code == 200) {
