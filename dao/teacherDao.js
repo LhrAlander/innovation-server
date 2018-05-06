@@ -24,7 +24,7 @@ let getCount = filter => {
 
 // 获取所有的教师信息
 let getAllTeachers = (pageNum, pageSize, filter) => {
-  const sql = `select * from (select user.user_id as teacherId,user.user_name as name,user.user_phone as phone,user.account_state as status,user.user_sex as gender,user.user_mail as email,teacher.teacher_degree as degree,teacher.teacher_bachelor as background,teacher.teacher_major as specialty from teacher left join user on teacher.user_id=user.user_id order by user.account_state desc) as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const sql = `select * from (select user.user_id as teacherId,user.user_name as name,user.user_phone as phone,user.account_state as status,user.user_sex as gender,user.user_mail as email,teacher.teacher_degree as degree,teacher.teacher_bachelor as background,teacher.teacher_major as specialty from teacher left join user on teacher.user_id=user.user_id where teacher.is_teacher=1 order by user.account_state desc) as t ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   console.log(sql)
   return queryHelper.queryPromise(sql, null)
 }

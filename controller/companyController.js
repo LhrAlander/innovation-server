@@ -37,6 +37,7 @@ let getAllCompanies = async (req, res, next) => {
 // 增加企业信息
 let addCompany = (req, res, next) => {
   const { user } = req.body
+  console.log(user)
   dao.addCompany(user)
     .then(values => {
       if (values.code == 200) {
