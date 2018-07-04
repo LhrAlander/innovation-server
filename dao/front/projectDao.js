@@ -14,9 +14,33 @@ const getSideItems = () => {
   return queryHelper.queryPromise(sql)
 }
 
+const getAllPendProjectsCount = () => {
+  const sql = `select count(*) as number from pend_project where status != '不可用'`
+  return queryHelper.queryPromise(sql)
+}
+
+const getAllPendProjects = (pageNum, pageSize) => {
+  const sql = `select * from pend_project where status != '不可用' order by apply_year desc  limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  return queryHelper.queryPromise(sql)
+}
+
+const getPendProjectById = id => {
+  const sql = `select * from pend_project where id = ?`
+  return queryHelper.queryPromise(sql, id)
+}
+
+const getPendSideItems = () => {
+  const sql = `select id, project_name, apply_year from pend_project order by apply_year desc limit 0, 3`
+  return queryHelper.queryPromise(sql)
+}
+
 const dao = {
   getAllProjects,
   getProjectByProjectId,
-  getSideItems
+  getSideItems,
+  getAllPendProjects,
+  getAllPendProjectsCount,
+  getPendProjectById,
+  getPendSideItems
 }
 module.exports = dao

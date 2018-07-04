@@ -111,14 +111,18 @@ let getProject = async projectId => {
       let files = await queryHelper.queryPromise(uploadFileSql, projectId)
       let regFiles = []     // 项目申请材料
       let finishFiles = []  // 项目结题材料
+      let midFiles = []  // 项目中期材料
       if (files.code == 200) {
         files = files.data
         files.forEach(file => {
           if (file.file_type == config.projectFile.REG_FILE) {
             regFiles.push(JSON.parse(JSON.stringify(file)))
           }
-          else {
+          else if (file.file_type == config.projectFile.FINISH_FILE) {
             finishFiles.push(JSON.parse(JSON.stringify(file)))
+          }
+          else {
+            midFiles.push(JSON.parse(JSON.stringify(file)))
           }
         })
       }
@@ -126,12 +130,14 @@ let getProject = async projectId => {
       project.data[0].projectTeacher = teacher.data[0].user_name
       regFiles = utils.transformRes(regFiles)
       finishFiles = utils.transformRes(finishFiles)
+      midFiles = utils.transformRes(midFiles)
       console.log(regFiles, finishFiles)
       return {
         code: 200,
         project: project.data[0],
         regFile: regFiles,
         finishFile: finishFiles,
+        midFile: midFiles,
         leader: {
           userId: student.data[0].user_id,
           name: student.data[0].user_name,

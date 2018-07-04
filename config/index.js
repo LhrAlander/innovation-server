@@ -10,7 +10,8 @@ const config = {
   },
   projectFile: {
     REG_FILE: 1,
-    FINISH_FILE: 2
+    FINISH_FILE: 2,
+    MID_FILE: 3
   }
 }
 
