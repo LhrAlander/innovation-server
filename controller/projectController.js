@@ -1,4 +1,5 @@
 const projectDao = require('../dao/projectDao')
+const dependentDao = require('../dao/dependentDao')
 const teamDao = require('../dao/teamDao')
 const userDao = require('../dao/userDao')
 const utils = require('../utils/util')
@@ -291,7 +292,7 @@ let delProjectUser = async (req, res, next) => {
       del: true
     })
     console.log('删除团队成员', values)
-    
+
     if (values.code == 200) {
       res.send({
         code: 200,
@@ -308,6 +309,135 @@ let delProjectUser = async (req, res, next) => {
   }
 }
 
+// 获取所有审核中的项目
+let getAllPendProjects = async (req, res, next) => {
+  try {
+    let { filter, pageNum, pageSize } = req.body
+    filter = utils.camel2_(filter)
+    let y = []
+    if ('apply_year' in  filter && filter['apply_year']) {
+      apy = filter['apply_year']
+      y.push({
+        apply_year: apy
+      })
+      delete filter['apply_year']
+    }
+    if ('deadline_year' in  filter && filter['deadline_year']) {
+      apy = filter['deadline_year']
+      y.push({
+        deadline_year: apy
+      })
+      delete filter['deadline_year']
+    }
+    filter = utils.obj2MySql(filter)
+    filter = utils.yearMysql(y, filter)
+    console.log(filter)
+    let projects = await projectDao.getAllPendProjects(filter, pageNum, pageSize)
+    projects = utils.transformRes(projects.data)
+    utils.formatDate(['deadlineYear', 'applyYear'], projects, 'yyyy-MM-dd')
+    res.send({
+      data: projects,
+    })
+  }
+  catch (err) {
+    console.log(err)
+  }
+}
+
+let addPendProject = async (req, res, next) => {
+  try {
+    let project = req.body.project
+    project.id = utils.getId('pendProject')
+    project = utils.camel2_(project)
+    console.log(project)
+    let values = await projectDao.addPendProject(project)
+    values.id = project.id
+    res.send(values)
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      msg: '增加立项信息失败'
+    })
+  }
+}
+
+let changePendProject = async (req, res, next) => {
+  try {
+    let { id, info } = req.body
+    console.log(id, info)
+    info = utils.camel2_(info)
+    let values = await projectDao.changePendProject(id, info)
+    console.log(values)
+    res.send(values)
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      msg: '更改信息失败，请联系管理员'
+    })
+  }
+}
+
+let getPendProject = async (req, res, next) => {
+  try {
+    let id = req.body.id
+    let project = await projectDao.getPendProject(id)
+    project = utils.transformRes(project.data)[0]
+    if (project.dependentUnit != '无') {
+      let unit = await teamDao.getTeam(project.dependentUnit)
+      project.dependentUnit = unit.data[0].team_name
+    }
+    utils.formatDate(["applyYear", "deadlineYear"], [project], "yyyy-MM-dd")
+    let files = await projectDao.getPendProjectFilesById(id)
+    files = utils.transformRes(files.data)
+    files.forEach(file => {
+      file.name = file.fileName
+      file.status = true
+    })
+    res.send({
+      code: 200,
+      data: project,
+      files: files
+    })
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      msg: '查询信息失败'
+    })
+  }
+}
+
+let deletePendProjectFiles = async (req, res, next) => {
+  try {
+    let files = req.body.files
+    let rmRes = await utils.rmFile(files)
+    for (let i = 0; i < rmRes.length; i++) {
+      if (rmRes[i].code == 200) {
+        let delRes = await projectDao.deletePendProjectFile(rmRes[i].filePath)
+        if (delRes.code != 200) {
+          throw new Error('删除数据库失败')
+        }
+      }
+    }
+    res.send({
+      code: 200,
+      data: '删除材料成功'
+    })
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      data: '删除材料失败'
+    })
+  }
+}
+
 let controller = {
   addProjectUser,
   getAllProjects,
@@ -317,7 +447,12 @@ let controller = {
   getProject,
   getAllUsers,
   deleteFiles,
-  delProjectUser
+  delProjectUser,
+  getAllPendProjects,
+  addPendProject,
+  changePendProject,
+  getPendProject,
+  deletePendProjectFiles
 }
 
 module.exports = controller

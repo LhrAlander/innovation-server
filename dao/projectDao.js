@@ -274,6 +274,40 @@ let getProjectUsersByTeacher = (userId, pageNum, pageSize, filter) => {
   return queryHelper.queryPromise(sql)
 }
 
+let getAllPendProjects = (filter, pageNum, pageSize) => {
+  const sql = `select * from pend_project  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  return queryHelper.queryPromise(sql)
+}
+
+let addPendProject = project => {
+  const sql = `insert into pend_project set ?`
+  return queryHelper.queryPromise(sql, project)
+}
+
+let changePendProject = (id, info) => {
+  const sql = `update pend_project set ? where id = ?`
+  return queryHelper.queryPromise(sql, [info, id])
+}
+
+let uploadPendProjectFiles = file => {
+  const sql = `insert into pend_project_files set ?`
+  return queryHelper.queryPromise(sql, file)
+}
+
+let getPendProject = id => {
+  const sql = `select * from pend_project where id = ?`
+  return queryHelper.queryPromise(sql, id)
+}
+
+let getPendProjectFilesById = id => {
+  const sql = `select * from pend_project_files where project_id = ?`
+  return queryHelper.queryPromise(sql, id)
+}
+
+let deletePendProjectFile = path => {
+  const sql = `delete from pend_project_files where file_path = ?`
+  return queryHelper.queryPromise(sql, path)
+}
 
 let dao = {
   addProjectUser,
@@ -295,7 +329,14 @@ let dao = {
   getProjectsByTeacher,
   teacherProjectUserCount,
   teacherProjectCount,
-  getExpandInfoById
+  getExpandInfoById,
+  getAllPendProjects,
+  addPendProject,
+  changePendProject,
+  uploadPendProjectFiles,
+  getPendProject,
+  getPendProjectFilesById,
+  deletePendProjectFile
 }
 
 module.exports = dao

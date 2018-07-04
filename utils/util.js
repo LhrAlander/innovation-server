@@ -11,7 +11,8 @@ const id = {
   notification: '06',
   fileSystem: '07',
   recruitment: '08',
-  signup: '09'
+  signup: '09',
+  pendProject: '10'
 }
 
 //格式化日期
@@ -82,7 +83,6 @@ let transformRes = obj => {
  * @param {*需要转换的对象数组} obj 
  */
 let camel2_ = obj => {
-  console.log(obj)
   const transformObj = obj => {
     let tmp = {}
     for (let key in obj) {

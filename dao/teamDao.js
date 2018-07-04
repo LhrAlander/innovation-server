@@ -71,7 +71,7 @@ let updateTeam = (payload, teamId) => {
  * 查找一个团队,包括团队下的项目、负责人、教师
  * @param {*团队的ID} teamId 
  */
-let getTeam = async teamId => {
+let getTeam = teamId => {
   try {
     const teamSql = 'select * from team where team_id = ?'
     return queryHelper.queryPromise(teamSql, teamId)

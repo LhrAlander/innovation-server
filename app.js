@@ -87,7 +87,7 @@ app.use(expressJwt({
   secret: "secret"//加密密钥，可换
 }).unless({
   path: ["/api/login", "/index", '/api/download', '/api/upload/notification', 
-  '/api/upload/fileSystem', '/api/upload/project', '/api/upload/policy', '/api/upload/recruitment', '/api/upload/signup',
+  '/api/upload/fileSystem', '/api/upload/pendProject', '/api/upload/project', '/api/upload/policy', '/api/upload/recruitment', '/api/upload/signup',
 "/api/front/index"]//添加不需要token的接口
 }));
 

@@ -20,5 +20,14 @@ router.post('/delete/files', controller.deleteFiles)
 router.post('/add/project/user', controller.addProjectUser)
 // 删除一个项目成员
 router.post('/del/project/user', controller.delProjectUser)
-
+// 获取所有审核中的项目
+router.post('/pend/all', controller.getAllPendProjects)
+// 增加一个立项信息
+router.post('/add/pendProject', controller.addPendProject)
+// 修改一个立项信息
+router.post('/change/pendProject', controller.changePendProject)
+// 获取一个立项信息
+router.post('/get/pendProject', controller.getPendProject)
+// 删除立项材料
+router.post('/delete/pendProject/files', controller.deletePendProjectFiles)
 module.exports = router

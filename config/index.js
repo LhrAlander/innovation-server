@@ -5,7 +5,8 @@ const config = {
     notification: './public/uploads/notification',
     fileSystem: './public/uploads/fileSystem',
     recruitment: './public/uploads/recruitment',
-    signup: './public/uploads/signup'
+    signup: './public/uploads/signup',
+    pendProject: './public/uploads/pendProject'
   },
   projectFile: {
     REG_FILE: 1,
