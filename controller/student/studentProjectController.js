@@ -120,10 +120,104 @@ let getPojrectUsers = async (req, res, next) => {
   }
 }
 
+const createPendProject = async (req, res, next) => {
+  try {
+    let project = req.body.project
+    let users = req.body.users
+    let projectId = utils.getId('project')
+    project.project_id = projectId
+    project = await projectDao.addProject(project)
+    console.log(project)
+    for (let i = 0; i < users.length; i++) {
+      let user = users[i]
+      user['project_id'] = projectId
+      projectDao.addProjectUser(user)
+        .then(res => {
+          console.log(user)
+        })
+        .catch(err => {
+          console.log(err)
+          throw err
+        })
+    }
+    res.send({
+      code: 200,
+      projectId
+    })
+  } 
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      msg: '立项失败'
+    })
+  }
+}
+
+// 获取学生端项目信息
+let getPendProjects = async (req, res, next) => {
+  try {
+    const userId = req.user.userId
+    let { param, pageNum, pageSize } = req.query
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    let rgy = null
+    let sty = null
+    let finy = null
+    let y = []
+    if ('register_year' in param) {
+      rgy = param['register_year']
+      y.push({
+        register_year: rgy
+      })
+      delete param['register_year']
+    }
+    if ('start_year' in param) {
+      sty = param['start_year']
+      y.push({
+        start_year: sty
+      })
+      delete param['start_year']
+    }
+    if ('finish_year' in param) {
+      finy = param['finish_year']
+      y.push({
+        finish_year: finy
+      })
+      delete param['finish_year']
+    }
+    if ('team_id' in param) {
+      param.team_id = param.team_id.split(',')[1]
+    }
+    let filter = utils.obj2MySql(param)
+    filter = utils.yearMysql(y, filter)
+    let count = await projectDao.studentPendProjectCount(userId, filter)
+    count = count.data[0].number
+    let projects = await projectDao.getPendProjectsByStudent(userId, pageNum, pageSize, filter)
+    if (projects.code == 200) {
+      res.send({
+        code: 200,
+        data: projects.data,
+        count: count
+      })
+    }
+    else {
+      res.status(500).send('查询失败')
+    }
+  }
+  catch (err) {
+    console.log(err)
+    res.status(500).send('查询失败')
+  }
+}
+
 let controller = {
   getProjects,
   getExpandInfoById,
-  getPojrectUsers
+  getPojrectUsers,
+  createPendProject,
+  getPendProjects
 }
 
 module.exports = controller

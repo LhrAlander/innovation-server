@@ -9,5 +9,9 @@ router.get('/projects', controller.getProjects)
 router.post('/project/detail', controller.getExpandInfoById)
 // 查询学生项目成员路由
 router.get('/users', controller.getPojrectUsers)
+// 立项
+router.post('/create/project', controller.createPendProject)
+// 学生待审项目
+router.get('/pendProjects', controller.getPendProjects)
 
 module.exports = router

@@ -21,11 +21,11 @@ let getCount = filter => {
 // 获取信息数量
 let getUserCount = filter => {
   if (filter) {
-    let sql = `select count(*) as number from(select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id) as t where ${filter} and project_status not like '%删除%'`
+    let sql = `select count(*) as number from(select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id) as t where ${filter} and project_status not like '%删除%' and pend_status='已结题'`
     return queryHelper.queryPromise(sql, null)
   }
   else {
-    let sql = `select count(*) as number from(select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id) as t where project_status not like '%删除%'`
+    let sql = `select count(*) as number from(select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id) as t where project_status not like '%删除%' and pend_status='已结题'`
     return queryHelper.queryPromise(sql, null)
   }
 }
@@ -34,7 +34,7 @@ let getUserCount = filter => {
  * 获取所有的项目信息
  */
 let getAllProjects = (pageNum, pageSize, filter) => {
-  const projectSql = `select * from (select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName,team.team_name from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id left join team on project.team_id = team.team_id) as t  where ${filter ? filter + ' and ' : ''} project_status not like "%删除%" limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  const projectSql = `select * from (select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName,team.team_name from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id left join team on project.team_id = team.team_id) as t  where ${filter ? filter + ' and ' : ''} project_status not like "%删除%" and pend_status='已结题' limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   console.log(projectSql)
   return queryHelper.queryPromise(projectSql)
 }
@@ -179,7 +179,7 @@ let getAllUsers = (pageNum, pageSize, filter) => {
  */
 let getProjectsByTeam = teamId => {
   try {
-    const sql = 'select project_name, project_id from project where team_id = ?'
+    const sql = 'select project_name, project_id from project where team_id = ? and project_status="可用" and pend_status="已结题"'
     return queryHelper.queryPromise(sql, teamId)
   }
   catch (err) {
@@ -315,6 +315,19 @@ let deletePendProjectFile = path => {
   return queryHelper.queryPromise(sql, path)
 }
 
+// 学生待审项目数目
+let studentPendProjectCount = (userId, filter) => {
+  const sql = `select count(*) as number from (select p.team_id, register_year, start_year, finish_year,p.project_level,p.project_identity,p.project_teacher as teacherId,p.project_principal as studentName, p.project_id as projectId,p.project_name as projectName,p.project_identity as projectCategory,p.project_level as projectLevel,user.user_name as guideTeacher from project as p left join user on p.project_teacher=user.user_id left join project_student on project_student.project_id=p.project_id left join team on team.team_id=p.team_id where project_student.user_id='${userId}' and p.pend_status!='已结题') as t  ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql)
+}
+
+// 为学生查询待审项目
+let getPendProjectsByStudent = (userId, pageNum, pageSize, filter) => {
+  const sql = `select * from (select p.team_id,pend_status, register_year, start_year, finish_year,p.project_principal as studentName,p.project_teacher as teacherId,p.project_identity,p.project_level, p.project_id as projectId,p.project_name as projectName,p.project_identity as projectCategory,p.project_level as projectLevel,user.user_name as guideTeacher from project as p left join user on p.project_teacher=user.user_id left join project_student on project_student.project_id=p.project_id left join team on team.team_id=p.team_id where project_student.user_id='${userId}' and p.pend_status!='已结题') as t  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  console.log(sql)
+  return queryHelper.queryPromise(sql)
+}
+
 let dao = {
   addProjectUser,
   getCount,
@@ -342,7 +355,9 @@ let dao = {
   uploadPendProjectFiles,
   getPendProject,
   getPendProjectFilesById,
-  deletePendProjectFile
+  deletePendProjectFile,
+  studentPendProjectCount,
+  getPendProjectsByStudent
 }
 
 module.exports = dao
