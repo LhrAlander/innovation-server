@@ -325,7 +325,7 @@ let deletePendProjectFile = path => {
 
 // 学生待审项目数目
 let studentPendProjectCount = (userId, filter) => {
-  const sql = `select count(*) as number from (select p.team_id, register_year, start_year, finish_year,p.project_level,p.project_identity,p.project_teacher as teacherId,p.project_principal as studentName, p.project_id as projectId,p.project_name as projectName,p.project_identity as projectCategory,p.project_level as projectLevel,user.user_name as guideTeacher from project as p left join user on p.project_teacher=user.user_id left join project_student on project_student.project_id=p.project_id left join team on team.team_id=p.team_id where project_student.user_id='${userId}' and p.pend_status!='已结题') as t  ${filter ? 'where ' + filter : ''}`
+  const sql = `select count(*) as number from (select p.pend_status, p.team_id, register_year, start_year, finish_year,p.project_level,p.project_identity,p.project_teacher as teacherId,p.project_principal as studentName, p.project_id as projectId,p.project_name as projectName,p.project_identity as projectCategory,p.project_level as projectLevel,user.user_name as guideTeacher from project as p left join user on p.project_teacher=user.user_id left join project_student on project_student.project_id=p.project_id left join team on team.team_id=p.team_id where project_student.user_id='${userId}' and p.pend_status!='已结题') as t  ${filter ? 'where ' + filter : ''}`
   return queryHelper.queryPromise(sql)
 }
 
@@ -339,6 +339,7 @@ let getPendProjectsByStudent = (userId, pageNum, pageSize, filter) => {
 // 查询所有待审项目
 const getUnPended = (pageNum, pageSize, filter) => {
   const projectSql = `select * from (select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName,team.team_name from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id left join team on project.team_id = team.team_id) as t  where ${filter ? filter + ' and ' : ''} project_status not like "%删除%" and pend_status!='已结题' limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  console.log(projectSql)
   return queryHelper.queryPromise(projectSql)
 }
 

@@ -476,7 +476,7 @@ const getUnPended = async (req, res, next) => {
     }
     let filter = utils.obj2MySql(param)
     filter = utils.yearMysql(y, filter)
-    console.log(filter)
+    console.log('filter', filter)
     let count = await projectDao.getUnPendedCount(filter)
     count = count.data[0].number
     let project = await projectDao.getUnPended(pageNum, pageSize, filter)
@@ -499,6 +499,7 @@ const getUnPended = async (req, res, next) => {
       tmp.guideTeacher = project.teacherName
       tmp.guideTeacherName = project.teacherId
       tmp.status = project.pend_status
+      tmp.isPendingNow = false
       utils.formatDate(['applyYear', 'startDate', 'finishDate', 'beginYear', 'deadlineYear'], [tmp], 'yyyy-MM-dd')
       responseData.push(tmp)
     }

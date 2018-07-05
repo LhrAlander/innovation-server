@@ -192,6 +192,7 @@ let getPendProjects = async (req, res, next) => {
     }
     let filter = utils.obj2MySql(param)
     filter = utils.yearMysql(y, filter)
+    console.log(filter)
     let count = await projectDao.studentPendProjectCount(userId, filter)
     count = count.data[0].number
     let projects = await projectDao.getPendProjectsByStudent(userId, pageNum, pageSize, filter)
