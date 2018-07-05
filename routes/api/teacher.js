@@ -20,4 +20,7 @@ router.post('/change/teacher', controller.changeTeacher)
 // 查询特定教师信息
 router.post('/teacher', controller.getTeacher)
 
+// 查询所有教师名字形成选项返回
+router.get('/teacher/choices', controller.getTeacherNames)
+
 module.exports = router

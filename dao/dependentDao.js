@@ -73,6 +73,10 @@ const getUnitsByTeacher = (userId, pageNum, pageSize, filter) => {
   return queryHelper.queryPromise(sql)
 }
 
+const getLeaderChoices = () => {
+  const sql = `select user_name, user_id, user_phone from user where user_identity='企业' order by user_name`
+  return queryHelper.queryPromise(sql)
+}
 
 let dao = {
   getCount,
@@ -81,6 +85,7 @@ let dao = {
   addDependent,
   getDependent,
   teacherUnitCount,
-  getUnitsByTeacher
+  getUnitsByTeacher,
+  getLeaderChoices
 }
 module.exports = dao

@@ -223,6 +223,31 @@ let delDependent = (req, res, next) => {
     })
 }
 
+// 获取所有单位负责人形成选项
+const getLeaderChoices = async (req, res, next) => {
+  try {
+    let names = await dependentDao.getLeaderChoices()
+    names = names.data.map(n => {
+      return {
+        label: n.user_name,
+        value: n.user_id,
+        userPhone: n.user_phone
+      }
+    })
+    res.send({
+      code: 200,
+      names
+    })
+  } 
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      msg: '查询信息失败'
+    })  
+  }
+}
+
 
 let controller = {
   getAllDependents,
@@ -231,6 +256,7 @@ let controller = {
   addDependent,
   getDependent,
   getSelectors,
-  delDependent
+  delDependent,
+  getLeaderChoices
 }
 module.exports = controller

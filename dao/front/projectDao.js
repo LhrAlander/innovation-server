@@ -30,7 +30,7 @@ const getPendProjectById = id => {
 }
 
 const getPendSideItems = () => {
-  const sql = `select id, project_name, apply_year from pend_project order by apply_year desc limit 0, 3`
+  const sql = `select id, project_category,project_level, apply_year from pend_project order by apply_year desc limit 0, 3`
   return queryHelper.queryPromise(sql)
 }
 

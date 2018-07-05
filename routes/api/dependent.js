@@ -14,5 +14,7 @@ router.post('/add/dependent', controller.addDependent)
 router.post('/dependent', controller.getDependent)
 // 删除一个依托单位
 router.post('/del/dependent', controller.delDependent)
+// 获取所有地单位人员进行选择
+router.get('/leader/choices', controller.getLeaderChoices)
 
 module.exports = router

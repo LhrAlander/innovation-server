@@ -50,6 +50,12 @@ let getTeacher = (userId, type) => {
   return queryHelper.queryPromise(sql, userId)
 }
 
+// 获取所有教师名字生成选项
+const getTeacherNames = () => {
+  const sql = `select user_name, user_id, user_phone from user where user_identity='教师' order by user_name`
+  return queryHelper.queryPromise(sql)
+}
+
 let dao = {
   getAllTeachers,
   addTeacher,
@@ -58,7 +64,8 @@ let dao = {
   getCount,
   getDegrees,
   getBachelors,
-  getMajors
+  getMajors,
+  getTeacherNames
 }
 
 module.exports = dao

@@ -125,12 +125,39 @@ let getTeacher = (req, res, next) => {
     })
 }
 
+// 查询教师名字形成选项
+const getTeacherNames = async (req, res, next) => {
+  try {
+    let names = await dao.getTeacherNames()
+    console.log(names)
+    names = names.data.map(n => {
+      return {
+        label: n.user_name,
+        value: n.user_id,
+        userPhone: n.user_phone
+      }
+    })
+    res.send({
+      code: 200,
+      names
+    })
+  } 
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      msg: '查询信息失败'
+    })  
+  }
+}
+
 let controller = {
   getSelectors,
   getAllTeachers,
   addTeacher,
   changeTeacher,
-  getTeacher
+  getTeacher,
+  getTeacherNames
 }
 
 module.exports = controller

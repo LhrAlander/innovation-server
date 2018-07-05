@@ -77,7 +77,7 @@ const getAllPendProjects = async (req, res, next) => {
         yearMonth: p.yearMonth,
         deadlineYear: p.deadlineYear,
         introduction: p.introduction,
-        title: p.projectName,
+        title: `${date.getFullYear()}年${p.projectLevel} ${p.projectCategory}报名`,
         id: p.id
       }
     })
@@ -98,6 +98,8 @@ const getPendProjectById = async (req, res, next) => {
     project = utils.transformRes(project.data)
     utils.formatDate(["applyYear", "deadlineYear"], project, "yyyy-MM-dd")
     project = project[0]
+    let date = new Date(project.applyYear)
+    project.projectName = `${date.getFullYear()}年${project.projectLevel} ${project.projectCategory}报名`
     project.introduction = project.introduce || '暂无介绍'
     let files = await fileDao.getPendProjectFilesById(project.id)
     files = utils.transformRes(files.data)
@@ -125,6 +127,12 @@ const getPendSideItems = async (req, res, next) => {
     let sides = await projectDao.getPendSideItems()
     sides = utils.transformRes(sides.data)
     utils.formatDate('applyYear', sides, 'yyyy-MM-dd')
+    sides.forEach(project => {
+      console.log(project)
+      let date = new Date(project.applyYear)
+      project.projectName = `${date.getFullYear()}年${project.projectLevel} ${project.projectCategory}报名`
+      project.introduction = project.introduce || '暂无介绍'
+    })
     res.send({
       code: 200,
       data: sides
