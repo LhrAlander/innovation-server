@@ -315,14 +315,14 @@ let getAllPendProjects = async (req, res, next) => {
     let { filter, pageNum, pageSize } = req.body
     filter = utils.camel2_(filter)
     let y = []
-    if ('apply_year' in  filter && filter['apply_year']) {
+    if ('apply_year' in filter && filter['apply_year']) {
       apy = filter['apply_year']
       y.push({
         apply_year: apy
       })
       delete filter['apply_year']
     }
-    if ('deadline_year' in  filter && filter['deadline_year']) {
+    if ('deadline_year' in filter && filter['deadline_year']) {
       apy = filter['deadline_year']
       y.push({
         deadline_year: apy
@@ -332,11 +332,15 @@ let getAllPendProjects = async (req, res, next) => {
     filter = utils.obj2MySql(filter)
     filter = utils.yearMysql(y, filter)
     console.log(filter)
+    let count = await projectDao.getPendProjectsCount(filter)
     let projects = await projectDao.getAllPendProjects(filter, pageNum, pageSize)
+    count = count.data[0].number
+    console.log(count)
     projects = utils.transformRes(projects.data)
     utils.formatDate(['deadlineYear', 'applyYear'], projects, 'yyyy-MM-dd')
     res.send({
       data: projects,
+      count
     })
   }
   catch (err) {
@@ -438,6 +442,81 @@ let deletePendProjectFiles = async (req, res, next) => {
   }
 }
 
+// 获取所有待审项目
+const getUnPended = async (req, res, next) => {
+  try {
+    let { param, pageNum, pageSize } = req.query
+    if (typeof param == 'string') {
+      param = JSON.parse(param)
+    }
+    let rgy = null
+    let sty = null
+    let finy = null
+    let y = []
+    if ('register_year' in param) {
+      rgy = param['register_year']
+      y.push({
+        register_year: rgy
+      })
+      delete param['register_year']
+    }
+    if ('start_year' in param) {
+      sty = param['start_year']
+      y.push({
+        start_year: sty
+      })
+      delete param['start_year']
+    }
+    if ('finish_year' in param) {
+      finy = param['finish_year']
+      y.push({
+        finish_year: finy
+      })
+      delete param['finish_year']
+    }
+    let filter = utils.obj2MySql(param)
+    filter = utils.yearMysql(y, filter)
+    console.log(filter)
+    let count = await projectDao.getUnPendedCount(filter)
+    count = count.data[0].number
+    let project = await projectDao.getUnPended(pageNum, pageSize, filter)
+    let responseData = []
+    const projects = project.data
+    for (let i = 0; i < projects.length; i++) {
+      let tmp = {}
+      const project = projects[i]
+      tmp.projectName = project.project_name
+      tmp.projectCategory = project.project_identity
+      tmp.projectLevel = project.project_level
+      tmp.applyYear = project.register_year
+      tmp.startDate = project.start_year
+      tmp.finishDate = project.finish_year
+      tmp.projectId = project.project_id
+      tmp.dependentUnit = project.team_name
+      tmp.beginYear = project.start_year
+      tmp.deadlineYear = project.finish_year
+      tmp.principalName = project.studentId
+      tmp.guideTeacher = project.teacherName
+      tmp.guideTeacherName = project.teacherId
+      tmp.status = project.pend_status
+      utils.formatDate(['applyYear', 'startDate', 'finishDate', 'beginYear', 'deadlineYear'], [tmp], 'yyyy-MM-dd')
+      responseData.push(tmp)
+    }
+    res.send({
+      code: 200,
+      data: responseData,
+      count: count
+    })
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      msg: '查询失败'
+    })
+  }
+}
+
 let controller = {
   addProjectUser,
   getAllProjects,
@@ -452,7 +531,8 @@ let controller = {
   addPendProject,
   changePendProject,
   getPendProject,
-  deletePendProjectFiles
+  deletePendProjectFiles,
+  getUnPended
 }
 
 module.exports = controller

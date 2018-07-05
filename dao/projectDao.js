@@ -35,7 +35,6 @@ let getUserCount = filter => {
  */
 let getAllProjects = (pageNum, pageSize, filter) => {
   const projectSql = `select * from (select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName,team.team_name from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id left join team on project.team_id = team.team_id) as t  where ${filter ? filter + ' and ' : ''} project_status not like "%删除%" and pend_status='已结题' limit ${(pageNum - 1) * pageSize}, ${pageSize}`
-  console.log(projectSql)
   return queryHelper.queryPromise(projectSql)
 }
 
@@ -101,11 +100,15 @@ let getProject = async projectId => {
       let student = await userDao.searchUser(studentId)
       let teacher = await userDao.searchUser(teacherId)
       let _student = await studentDao.getStudent(studentId)
-      let team = await teamDao.getTeam(teamId)
+      let team = null
+      if (teamId != '无') {
+        team = await teamDao.getTeam(teamId)
+      }
+      console.log(teamId)
       project.data[0].projectPerson = _student.data[0].user_name
       project.data[0].personMajor = _student.data[0].student_major
       project.data[0].personClass = _student.data[0].student_class
-      project.data[0].projectDep = team.data[0].team_name
+      project.data[0].projectDep = teamId != '无' ? team.data[0].team_name : '无'
 
       const uploadFileSql = 'select * from project_files where project_id = ?'
       let files = await queryHelper.queryPromise(uploadFileSql, projectId)
@@ -280,6 +283,11 @@ let getProjectUsersByTeacher = (userId, pageNum, pageSize, filter) => {
   return queryHelper.queryPromise(sql)
 }
 
+let getPendProjectsCount = filter => {
+  const sql = `select count(*) as number from pend_project  ${filter ? 'where ' + filter : ''}`
+  return queryHelper.queryPromise(sql)
+}
+
 let getAllPendProjects = (filter, pageNum, pageSize) => {
   const sql = `select * from pend_project  ${filter ? 'where ' + filter : ''} limit ${(pageNum - 1) * pageSize}, ${pageSize}`
   return queryHelper.queryPromise(sql)
@@ -328,6 +336,18 @@ let getPendProjectsByStudent = (userId, pageNum, pageSize, filter) => {
   return queryHelper.queryPromise(sql)
 }
 
+// 查询所有待审项目
+const getUnPended = (pageNum, pageSize, filter) => {
+  const projectSql = `select * from (select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName,team.team_name from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id left join team on project.team_id = team.team_id) as t  where ${filter ? filter + ' and ' : ''} project_status not like "%删除%" and pend_status!='已结题' limit ${(pageNum - 1) * pageSize}, ${pageSize}`
+  return queryHelper.queryPromise(projectSql)
+}
+
+// 所有待审项目条数
+const getUnPendedCount = filter => {
+  const sql = `select count(*) as number from (select project.*, student.user_id as studentId, student.user_name as studentName, teacher.user_id as teacherId, teacher.user_name as teacherName,team.team_name from project left join student on project.project_principal = student.user_id left join teacher on project.project_teacher = teacher.user_id left join team on project.team_id = team.team_id) as t where ${filter ? filter + ' and ' : ''} project_status not like "%删除%" and pend_status!='已结题'`
+  return queryHelper.queryPromise(sql)
+}
+
 let dao = {
   addProjectUser,
   getCount,
@@ -350,6 +370,7 @@ let dao = {
   teacherProjectCount,
   getExpandInfoById,
   getAllPendProjects,
+  getPendProjectsCount,
   addPendProject,
   changePendProject,
   uploadPendProjectFiles,
@@ -357,7 +378,9 @@ let dao = {
   getPendProjectFilesById,
   deletePendProjectFile,
   studentPendProjectCount,
-  getPendProjectsByStudent
+  getPendProjectsByStudent,
+  getUnPended,
+  getUnPendedCount
 }
 
 module.exports = dao
