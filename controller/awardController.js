@@ -1,4 +1,6 @@
 const awardDao = require('../dao/awardDao')
+const userDao = require('../dao/userDao')
+const projectDao = require('../dao/projectDao')
 const utils = require('../utils/util')
 const countHelper = require('../utils/DBQuery')
 
@@ -135,7 +137,7 @@ let getAllUsers = async (req, res, next) => {
     if (users.code == 200) {
       users.data.forEach(user => {
         // user.awardName = `${user.awardTime.toLocaleDateString()} ${user.name} ${user.awardLevel} ${user.awardSecondLevel}`
-        user.awardName = ` ${user.name} ${user.awardLevel} ${user.awardSecondLevel}`
+        user.awardName = `${new Date(user.awardTime).getFullYear()} ${user.name} ${user.awardLevel} ${user.awardSecondLevel}`
         if (user.projectId == '个人') {
           user.projectName = '个人'
         }
@@ -188,7 +190,74 @@ let addUser = async (req, res, next) => {
       msg: '没有该奖项信息'
     })
   }
+}
 
+let insertAwardUsersFromExcel = async (req, res, next) => {
+  try {
+    let users = req.body.users
+    let eUsers = []
+    for (let i = 0; i < users.length; i++) {
+      let u = users[i]
+
+      let _award = {
+        award_name: u['奖项名称'],
+        award_identity: u['奖项类别'],
+        award_level: u['奖项等级']
+      }
+      let filter = utils.obj2MySql(_award)
+      filter = utils.yearMysql([{ award_time: u['获奖年份（四位数字）'] }], filter)
+      // 构建获奖 ID
+      let award = await awardDao.getAwardByFilter(filter)
+      if (award.code == 200 && award.data.length > 0) {
+        _award.award_id = award.data[0].award_id
+      }
+      else {
+        _award.award_id = utils.getId('award')
+        _award.award_time = `${u['获奖年份（四位数字）']}-1-1`
+        await awardDao.addAward(_award)
+      }
+      // 构建项目 ID
+      let projectId = u['获奖项目（个人或者项目名称）']
+      if (projectId !== '个人') {
+        let _p = await projectDao.getProjectByName(projectId)
+        if (_p.data.length > 0) {
+          projectId = _p.data[0].project_id
+        }
+        else {
+          projectId = '个人'
+        }
+      }
+      // 构建获奖人员信息
+      let _users = u['获奖人员（以中文半角顿号分隔多个名字）'].split('、')
+      let _userIds = []
+      for (let i = 0; i < _users.length; i++) {
+        let username = _users[i]
+        let user = await userDao.getUserByName(username)
+        let user_id = user.data[0].user_id
+        console.log(user_id, projectId, _award.award_id)
+        let values = await awardDao.addUser({
+          user_id,
+          award_id: _award.award_id,
+          award_project: projectId
+        })
+        console.log(values)
+        if (values.code != 200) {
+          eUsers.push({
+            user_id,
+            award_id: _award.award_id,
+            award_project: projectId
+          })
+        }
+      }
+    }
+    res.send({
+      code: 200,
+      eUsers
+    })
+  }
+  catch (err) {
+    console.log(err)
+  }
 }
 
 // 删除一个获奖成员信息
@@ -220,6 +289,7 @@ let controller = {
   deleteAward,
   getAllUsers,
   addUser,
+  insertAwardUsersFromExcel,
   deleteUser
 }
 

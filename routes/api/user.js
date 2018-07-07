@@ -13,5 +13,7 @@ router.post('/user', userController.createUser)
 router.post('/delUser', userController.delUser)
 // 更改一个用户的信息
 router.post('/changeUser', userController.changeUser)
+// 增加多个用户
+router.post('/insert/usersfromexcel', userController.createUsers)
 
 module.exports = router;

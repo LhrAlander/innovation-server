@@ -61,9 +61,16 @@ let getAllProjects = async (req, res, next) => {
         tmp.beginYear = project.start_year
         tmp.deadlineYear = project.finish_year
         tmp.principalName = project.studentId
+        tmp.principal = project.studentName
         tmp.guideTeacher = project.teacherName
         tmp.guideTeacherName = project.teacherId
         tmp.status = project.project_status
+        let p = await projectDao.getProject(tmp.projectId)
+        let members = p.members.map(m => {
+          return m.name
+        })
+        tmp.members = members.join(',')
+        console.log(tmp.members)
         utils.formatDate(['applyYear', 'startDate', 'finishDate', 'beginYear', 'deadlineYear'], [tmp], 'yyyy-MM-dd')
         responseData.push(tmp)
       }

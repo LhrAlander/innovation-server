@@ -27,6 +27,7 @@ let createUser = async function (user) {
       else {
         try {
           await connection.beginTransaction()
+          console.log(user)
           let res1 = await queryHelper.queryPromise('insert into user set ?', user, connection)
           let tableName = null
           switch (user.user_identity) {
@@ -83,12 +84,18 @@ let regUser = u => {
   return queryHelper.queryPromise(sql, u)
 }
 
+let getUserByName = name => {
+  const sql = `select * from user where user_name = ?`
+  return queryHelper.queryPromise(sql, name)
+}
+
 let userDao = {
   getCount,
   createUser,
   changeUserInfo,
   getUsers,
   searchUser,
-  regUser
+  regUser,
+  getUserByName,
 }
 module.exports = userDao

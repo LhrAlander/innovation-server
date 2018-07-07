@@ -91,7 +91,6 @@ let getProject = async projectId => {
     const memberSql = `select user.user_id as userId,user.user_name as name,user.user_phone as userPhone from project_student left join user on user.user_id=project_student.user_id where project_id=?`
     let project = await queryHelper.queryPromise(sql, projectId)
     let members = await queryHelper.queryPromise(memberSql, projectId)
-    console.log(members)
     if (project.code == 200 && project.data.length > 0) {
       utils.formatDate(['register_year', 'start_year', 'finish_year'], project.data, 'yyyy-MM-dd')
       const studentId = project.data[0].project_principal
@@ -349,6 +348,11 @@ const getUnPendedCount = filter => {
   return queryHelper.queryPromise(sql)
 }
 
+const getProjectByName = name => {
+  const sql = `select * from project where project_name = ?`
+  return queryHelper.queryPromise(sql, name)
+}
+
 let dao = {
   addProjectUser,
   getCount,
@@ -381,7 +385,8 @@ let dao = {
   studentPendProjectCount,
   getPendProjectsByStudent,
   getUnPended,
-  getUnPendedCount
+  getUnPendedCount,
+  getProjectByName
 }
 
 module.exports = dao

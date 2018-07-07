@@ -39,6 +39,42 @@ let createUser = async (req, res, next) => {
   res.send(result)
 
 }
+let createUsers = async (req, res, next) => {
+  try {
+    let users = req.body.users
+    let eUsers = []
+    let v = []
+    for (let i = 0; i < users.length; i++) {
+      let u = users[i]
+      let user = {
+        user_id: u['学号/工号'],
+        user_name: u['姓名'],
+        user_sex: u['性别'],
+        user_identity: u['账号类别（仅限学生、教师、企业）'],
+        user_pwd: '123456',
+        account_state: '可用'
+      }
+      let result = await userDao.createUser(user)
+      if (result.code != 200) {
+        eUsers.push({
+          '学号': user.user_id,
+          '姓名': user.user_name
+        })
+      }
+    }
+    res.send({
+      code: 200,
+      eUsers
+    })
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      msg: '导入失败'
+    })
+  }
+}
 
 // 删除一个用户
 let delUser = (req, res, next) => {
@@ -125,6 +161,7 @@ let changeUser = (req, res, next) => {
 let userController = {
   getUsers,
   createUser,
+  createUsers,
   delUser,
   searchUser,
   changeUser

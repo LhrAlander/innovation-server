@@ -18,5 +18,6 @@ router.get('/users', controller.getAllUsers)
 router.post('/add/user', controller.addUser)
 // 删除一个获奖成员信息
 router.post('/delete/user', controller.deleteUser)
-
+// 从excel导入获奖人员信息
+router.post('/insert/awardusersfromexcel', controller.insertAwardUsersFromExcel)
 module.exports = router
