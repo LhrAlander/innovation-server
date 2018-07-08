@@ -3,6 +3,7 @@ const policyDao = require('../dao/policyDao')
 const notificationDao = require('../dao/notificationDao')
 const fileSystemDao = require('../dao/fileSystemDao')
 const recruitmentDao = require('../dao/recruitmentDao')
+const teamDao = require('../dao/teamDao')
 
 let uploadProjectFiles = (req, res, next) => {
   try {
@@ -295,6 +296,47 @@ let uploadPendProjectFiles = (req, res, next) => {
   }
 }
 
+const uploadTeamPhotos = (req, res, next) => {
+  try {
+    const file = req.file
+    console.log(file)
+    // 上传成功
+    if (file != null) {
+      // 构建数据库表对象
+      const sqlValue = {
+        team_id: req.body.teamId,
+        file_path: `./${file.path}`,
+        file_name: file.originalname,
+        display_name: file.filename
+      }
+      teamDao.uploadTeamPhotos(sqlValue)
+        .then(values => {
+          console.log(values)
+          res.send({
+            code: 200,
+            fileName: file.originalname,
+            filePath: sqlValue.file_path
+          })
+        })
+        .catch(err => {
+          console.log(err)
+          throw new Error('上传文件失败!')
+        })
+
+    }
+    else {
+      throw new Error('上传文件失败!')
+    }
+  }
+  catch (err) {
+    console.log('shangchuan err', err)
+    res.send({
+      code: 500,
+      msg: '上传文件失败!'
+    })
+  }
+}
+
 let controller = {
   uploadProjectFiles,
   uploadPolicyFiles,
@@ -302,7 +344,8 @@ let controller = {
   uploadfileSystemFiles,
   uploadRecruitmentFiles,
   uploadSignupFiles,
-  uploadPendProjectFiles
+  uploadPendProjectFiles,
+  uploadTeamPhotos
 }
 
 module.exports = controller

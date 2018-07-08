@@ -177,8 +177,23 @@ let getTeamUsersByTeacher = (userId, pageNum, pageSize, filter) => {
 
 // 为主页查询所有团队
 let getTeamsForIndex = () => {
-  const sql = `select * from team limit 0, 6`
+  const sql = `select * from team where team_state='可用' limit 0, 6`
   return queryHelper.queryPromise(sql)
+}
+
+const uploadTeamPhotos = photo => {
+  const sql = `insert into team_files set ?`
+  return queryHelper.queryPromise(sql, photo)
+}
+
+const getTeamPhotosById = id => {
+  const sql = `select * from team_files where team_id = ?`
+  return queryHelper.queryPromise(sql, id)
+}
+
+const deleteTeamPhoto = path => {
+  const sql = `delete from team_files where file_path = ?`
+  return queryHelper.queryPromise(sql, path)
 }
 
 let teamDao = {
@@ -201,8 +216,10 @@ let teamDao = {
   getTeamsByTeacher,
   teacherTeamUserCount,
   getTeamUsersByTeacher,
-  
+  uploadTeamPhotos,
   getTeamsForIndex,
+  getTeamPhotosById,
+  deleteTeamPhoto
 }
 
 module.exports = teamDao

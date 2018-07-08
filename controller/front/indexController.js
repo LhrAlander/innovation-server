@@ -5,6 +5,7 @@ const policyDao = require('../../dao/policyDao')
 const fileDao = require('../../dao/fileSystemDao')
 const userDao = require('../../dao/userDao')
 const studentDao = require('../../dao/studentDao')
+const config = require('../../config/index')
 
 const getNotifications = async (req, res, next) => {
   try {
@@ -61,11 +62,19 @@ const geTeams = async (req, res, next) => {
         teamIntroduce: team.team_introduction
       }
     })
+    for (let i = 0; i < responseData.length; i++) {
+      let t = responseData[i]
+      let photos = await teamDao.getTeamPhotosById(t.teamId)
+      if (photos.data.length > 0) {
+        t.photo = `${config.imgPath}/uploads/teamPhotos/${photos.data[0].display_name}`
+      }
+    }
     res.send({
       data: responseData
     })
   }
   catch (err) {
+    console.log(err)
     res.status(500).send('查询失败')
   }
 }

@@ -40,6 +40,8 @@ const recruitmentUpload = getUpload('recruitment', 'uploadFile')
 const signupUpload = getUpload('signup', 'uploadFile')
 // 获取立项信息上传中间件
 const pendProjectUpload = getUpload('pendProject', 'uploadFile')
+// 获取团队照片上传中间件
+const teamPhotoUpload = getUpload('teamPhoto', 'uploadFile')
 
 
 // 上传项目材料
@@ -56,5 +58,7 @@ router.post('/recruitment', recruitmentUpload, controller.uploadRecruitmentFiles
 router.post('/signup', signupUpload, controller.uploadSignupFiles)
 // 上传理想信息材料
 router.post('/pendProject', pendProjectUpload, controller.uploadPendProjectFiles)
+// 上传团队照片
+router.post('/teamPhotos', teamPhotoUpload, controller.uploadTeamPhotos)
 
 module.exports = router

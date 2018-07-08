@@ -86,9 +86,9 @@ app.use('/api/front/awards', frontAwards)
 app.use(expressJwt({
   secret: "secret"//加密密钥，可换
 }).unless({
-  path: ["/api/login", "/index", '/api/download', '/api/upload/notification', 
+  path: ["/api/login", "/index", '/api/download', '/api/upload/notification', /\/public*/,/\/styleSheets*/, /\/uploads\/teamPhotos*/,
   '/api/upload/fileSystem', '/api/upload/pendProject', '/api/upload/project', '/api/upload/policy', '/api/upload/recruitment', '/api/upload/signup',
-"/api/front/index"]//添加不需要token的接口
+"/api/front/index", '/api/upload/teamPhotos']//添加不需要token的接口
 }));
 
 // 未携带token请求接口会出错，触发这个

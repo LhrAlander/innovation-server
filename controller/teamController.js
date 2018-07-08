@@ -6,6 +6,7 @@ const projectDao = require('../dao/projectDao')
 const unitDao = require('../dao/dependentDao')
 const utils = require('../utils/util')
 const countHelper = require('../utils/DBQuery')
+const config = require('../config/index')
 
 // 处理项目信息, 返回完整的项目信息包括项目基本信息，依托单位信息，负责人用户信息，负责老师用户信息
 let dealTeamInfo = async _team => {
@@ -282,6 +283,53 @@ let delTeamUser = async (req, res, next) => {
   }
 }
 
+const getTeamPhotosById = async (req, res, next) => {
+  try {
+    const teamId = req.body.teamId
+    let photos = await teamDao.getTeamPhotosById(teamId)
+    console.log(teamId, photos)
+    let _p = photos.data.map(p => {
+      return {
+        name: p.file_name,
+        url: `${config.imgPath}/uploads/teamPhotos/${p.display_name}`,
+        filePath: p.file_path,
+        status: 'success'
+      }
+    })
+    res.send({
+      code: 200,
+      photos: _p
+    })
+  } 
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      msg: '查询失败'
+    })
+  }
+}
+
+const deleteTeamPhoto = async (req, res, next) => {
+  try {
+    let path = req.body.files
+    let rmRes = await utils.rmFile(path)
+    let v = await teamDao.deleteTeamPhoto(path)
+    console.log(v)
+    res.send({
+      code: 200,
+      data: '删除材料成功'
+    })
+  }
+  catch (err) {
+    console.log(err)
+    res.send({
+      code: 500,
+      data: '删除材料失败'
+    })
+  }
+}
+
 let controller = {
   addTeamUser,
   getAllTeams,
@@ -290,7 +338,9 @@ let controller = {
   changeTeam,
   getTeam,
   getAllUsers,
-  delTeamUser
+  delTeamUser,
+  getTeamPhotosById,
+  deleteTeamPhoto
 }
 
 module.exports = controller

@@ -1,10 +1,10 @@
 const expressJwt = require("express-jwt");
 const jwt = require("jsonwebtoken");
 
-
-const adminRouter = ['/api/user', '/api/baseInfo', '/api/student', '/api/teacher', '/api/company', '/api/category', '/api/project', '/api/team', '/api/award', '/api/policy', '/api/dependent', '/api/notification', '/api/fileSystem', '/api/recruitment']
-const studentRouter = ['/api/st', '/api/category', '/api/dependent/choices', '/api/award/awardNames', '/api/team/del/team/user', '/api/project/del/project/user', '/api/project/pend', '/api/project/get/pendProject', '/api/user/searchUser', '/api/teacher/teacher/choice']
-const teacherRouter = ['/api/th', '/api/category', '/api/dependent/choices', '/api/award/awardNames', '/api/team/del/team/user', '/api/project/del/project/user']
+const public = ['/public', '/styleSheets', '/uploads/teamPhotos']
+const adminRouter = ['/api/user', '/api/baseInfo', '/api/student', '/api/teacher', '/api/company', '/api/category', '/api/project', '/api/team', '/api/award', '/api/policy', '/api/dependent', '/api/notification', '/api/fileSystem', '/api/recruitment', '/public']
+const studentRouter = ['/api/st', '/api/category', '/api/dependent/choices', '/api/award/awardNames', '/api/team/del/team/user', '/api/project/del/project/user', '/api/project/pend', '/api/project/get/pendProject', '/api/user/searchUser', '/api/teacher/teacher/choice', '/public']
+const teacherRouter = ['/api/th', '/api/category', '/api/dependent/choices', '/api/award/awardNames', '/api/team/del/team/user', '/api/project/del/project/user', '/public']
 const companyRouter = teacherRouter
 
 // 对所有路由进行鉴权处理
@@ -14,6 +14,12 @@ const auth = (req, res, next) => {
     const url = req.path
     let needAuth = null
     let judgeRt = []
+    console.log('判断权限', url)
+    if (public.some(rt => {
+      return url.startsWith(rt)
+    })) {
+      next()
+    }
     // 判断发送请求的用户类型
     switch (token.type) {
       case '管理员':
@@ -29,7 +35,6 @@ const auth = (req, res, next) => {
         judgeRt = companyRouter
         break
     }
-    console.log('判断权限', url)
     if (judgeRt.some(rt => {
       return url.startsWith(rt)
     })) {

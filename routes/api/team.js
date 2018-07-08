@@ -18,5 +18,9 @@ router.get('/users', controller.getAllUsers)
 router.post('/add/team/user', controller.addTeamUser)
 // 删除项目成员
 router.post('/del/team/user', controller.delTeamUser)
+// 获取一个团队的照片信息
+router.post('/get/teamPhotos', controller.getTeamPhotosById)
+// 删除团队照片
+router.post('/delete/photo', controller.deleteTeamPhoto)
 
 module.exports = router

@@ -220,6 +220,9 @@ let rmFile = (files, cb) => {
     }
     return Promise.all(promises)
   }
+  else {
+    return createPromise(files)
+  }
 }
 
 let transforKey = (keys, param) => {
